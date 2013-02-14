@@ -3,10 +3,12 @@
 
 Härnäst:
 
-1. Skapa ett supersimpelt neuralt nätverk och träna det till något simpelt
+* Lägg till config klassen
 
-2. Ordna kopplingen mellan kromosomer och nätverk, fitness funktionen är något produkt av nätverkets output
+* Hitta en profilerare
 
-3. Hitta lämpligt sätt att kombinera två individer mha pyevolve wikin
+* Lägg till kollisioner
+
+* Lägg till gener
 
 
