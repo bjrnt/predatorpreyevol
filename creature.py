@@ -17,27 +17,24 @@
 # 4: Object detection 2...
 
 from brain import Brain
+from inhabitant import Inhabitant
 import math, random, funcs
 
-class Creature(object):
+class Creature(Inhabitant):
 	"""docstring for ClassName"""
 	G_MAX_SPEED = 0.005
 	G_MAX_ROTATION = 0.05
 	antennae = 2
-	maximum_radius = 0.05
 	antennae_angles = [math.pi/6.0, -1.0 * math.pi/6.0]
 
 	def __init__(self, genes, x=0.0, y=0.0):
+		super(Creature, self).__init__([x,y], 
+			radius_multiplier=0.5, 
+			color=(0.1 + 0.9 * random.random(), 0.01 + 0.09 * random.random(), 0.1 + 0.9 * random.random()))
 		self.rotation = 0.0
 		self.speed = random.random()
-		self.pos = [0,0]
 		self.distance = 0.0
-		self.radius_multiplier = 0.5
-		self.antennae_length = self.radius_multiplier * Creature.maximum_radius * 3.5
-		self.max_speed = self.G_MAX_SPEED
-		self.pos[0] = x
-		self.pos[1] = y
-		self.color = (0.1 + 0.9 * random.random(), 0.01 + 0.09 * random.random(), 0.1 + 0.9 * random.random())
+		self.antennae_length = self.radius_multiplier * self.G_MAXIMUM_RADIUS * 3.5
 		self.brain = Brain(genes)
 
 	def gather_input(self, data):
@@ -57,8 +54,8 @@ class Creature(object):
 			self.speed = -1
 
 	def move(self):
-		d_x = math.cos(self.rotation * 2.0 * math.pi) * self.speed * self.max_speed
-		d_y = -1.0 * math.sin(self.rotation * 2.0 * math.pi) * self.speed * self.max_speed
+		d_x = math.cos(self.rotation * 2.0 * math.pi) * self.speed * self.G_MAX_SPEED
+		d_y = -1.0 * math.sin(self.rotation * 2.0 * math.pi) * self.speed * self.G_MAX_SPEED
 		self.pos[0] += d_x
 		if self.pos[0] + self.get_radius() > 1:
 			self.pos[0] = 1 - self.get_radius()
@@ -73,9 +70,3 @@ class Creature(object):
 
 	def evaluate(self):
 		return self.distance
-
-	def get_radius(self):
-		return self.radius_multiplier * self.maximum_radius
-
-	def get_color(self):
-		return self.color

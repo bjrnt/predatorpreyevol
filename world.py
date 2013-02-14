@@ -1,58 +1,59 @@
 import random, funcs, math
 from brain import Brain
 from creature import Creature
+from bush import Bush
 
 class World(object):
 	"""docstring for ClassName"""
-
-	def __init__(self, gene_pool=None, world_spec=None, nticks=10000):
+	def __init__(self, gene_pool=None, max_bush_count=0, world_spec=None, nticks=10000):
 		self.creatures = []
+		self.bushes = []
 		self.nticks = nticks
 		if gene_pool != None:
 			for gene in gene_pool:
 				self.creatures += [Creature(gene, x=random.random(), y=random.random())]
+		
+		self.max_bush_count = max_bush_count
+		
 		if world_spec != None:
 			self.world_spec = world_spec
 		else:
 			self.world_spec = {}
 
 	def run_tick(self):
+		self.spawn_bushes()
 
 		# Get data for creatures to process
 		for creature in self.creatures:
 			creature_got_input = False
 			
 			if 'disable_detection' not in self.world_spec.keys():
-				for creature2 in self.creatures:
-					if creature2 != creature:
-						[left, right] = self.check_detection(creature,creature2)
+				for inhabitant in self.get_inhabitants():
+					if inhabitant != creature:
+						[left, right] = self.check_detection(creature,inhabitant)
 
 						if left != [0] * (Brain.G_INPUTNODES/2) or right != [0] * (Brain.G_INPUTNODES/2):
 							creature_got_input = True
 				[left, right] = self.detect_walls(creature, left, right)
-				
+
 				creature.gather_input(left + right)
 
 			if 'disable_default_input' not in self.world_spec.keys():
 				if not creature_got_input:
 					creature.gather_input([0] * Brain.G_INPUTNODES)
 
-			if 'disable_think' not in self.world_spec.keys():
-				creature.think()
-
+		if 'disable_think' not in self.world_spec.keys():
+			for inhabitant in self.get_inhabitants():
+				inhabitant.think()
+		
 		if 'disable_move' not in self.world_spec.keys():
-			self.move_all()
+			for inhabitant in self.get_inhabitants():
+				inhabitant.move()
 		
 	def run_ticks(self):
 		for tick in xrange(self.nticks):
 			self.run_tick()
 		return [creature.evaluate() for creature in self.creatures]
-
-	def get_positions(self):
-		return [creature.pos for creature in self.creatures]
-
-	def get_creatures(self):
-		return [creature for creature in self.creatures]		
 
 	def detect_walls(self, looker, left, right):
 		if left == [0] * (Brain.G_INPUTNODES/2):
@@ -122,9 +123,27 @@ class World(object):
 		
 		return left, right
 
+	def spawn_bushes(self):
+		if len(self.get_bushes()) < self.max_bush_count:
+			for i in xrange(self.max_bush_count - len(self.get_bushes())):
+				if random.random() < 0.01:
+					self.add_bush(Bush(random.random(), random.random()))
+
+	def add_bush(self, bush):
+		self.bushes += [bush]
+
 	def add_creature(self,creature):
 		self.creatures += [creature]
 
-	def move_all(self):
-		for creature in self.creatures:
-			creature.move()
+	def get_inhabitants(self):
+		return self.creatures + self.bushes
+
+
+	def get_positions(self):
+		return [creature.pos for creature in self.creatures]
+
+	def get_creatures(self):
+		return self.creatures
+
+	def get_bushes(self):
+		return self.bushes
