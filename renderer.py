@@ -20,10 +20,26 @@ class Renderer(object):
 		for tick in xrange(world.nticks):
 			world.run_tick()
 			if tick % disp_freq == 0:
-				self.render_creatures(world)
+				self.render(world)
+
+	def render(self, world):
+		self.screen.blit(self.background,(0,0))
+
+		self.render_bushes(world)
+		self.render_creatures(world)
+
+		pygame.display.flip()
+
+
+	def render_bushes(self, world):
+		for bush in world.get_bushes():
+			pygame.draw.circle(self.screen, 
+				[color * 255 for color in bush.get_color()], 
+				(int(self.width * bush.pos[0]), int(self.height * bush.pos[1])),
+				1 + int(bush.get_radius() * self.height),
+				0)
 
 	def render_creatures(self, world):	
-		self.screen.blit(self.background,(0,0))
 		for creature in world.get_creatures():
 			pygame.draw.line(self.screen,
 				(255,255,255),
@@ -41,7 +57,4 @@ class Renderer(object):
 				[color * 255 for color in creature.get_color()], 
 				(int(self.width * creature.pos[0]), int(self.height * creature.pos[1])),
 				1 + int(creature.get_radius() * self.height),
-				0
-				)
-
-		pygame.display.flip()
+				0)

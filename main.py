@@ -1,5 +1,6 @@
-import math
+import math, time
 from world import World
+from config import Config
 from creature import Creature
 from renderer import Renderer
 
@@ -24,18 +25,37 @@ def onevsone():
 	renderer.play_epoch(world,1)
 
 def default():
+	options = {
+		('World','move'):True,
+		('World','think'):True,
+		('World','default_input'):True,
+		('World','detection'):True,
+	}
+
+	apply_config(options)
+
 	renderer = Renderer(700,700)
 
-	world = World([0]*10,nticks=1000)
+	world = World([0]*10,nticks=1000,max_bush_count=0)
 
 	renderer.play_epoch(world,1)
-
+	#world.run_ticks()
 
 def main():
+	start = time.clock()
 	default()
-	
+	end = time.clock()
 	print "Done!"
+	print "Run-time %f" % (0.0 + end - start)
 	dontexit = raw_input()
+
+def apply_config(config):
+	for key in config.keys():
+		clses = key[:-1]
+		attr = key[-1]
+		for cls in clses:
+			if cls.istitle():
+				setattr(eval(cls),attr,config[key])
 
 if __name__ == '__main__':
 	main()

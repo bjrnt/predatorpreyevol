@@ -2,10 +2,12 @@ import random, funcs, math
 from brain import Brain
 from creature import Creature
 from bush import Bush
+from config import Config
 
 class World(object):
 	"""docstring for ClassName"""
-	def __init__(self, gene_pool=None, max_bush_count=0, world_spec=None, nticks=10000):
+	def __init__(self, gene_pool=None, max_bush_count=0, nticks=10000):
+		self.c = Config()
 		self.creatures = []
 		self.bushes = []
 		self.nticks = nticks
@@ -14,11 +16,6 @@ class World(object):
 				self.creatures += [Creature(gene, x=random.random(), y=random.random())]
 		
 		self.max_bush_count = max_bush_count
-		
-		if world_spec != None:
-			self.world_spec = world_spec
-		else:
-			self.world_spec = {}
 
 	def run_tick(self):
 		self.spawn_bushes()
@@ -26,8 +23,8 @@ class World(object):
 		# Get data for creatures to process
 		for creature in self.creatures:
 			creature_got_input = False
-			
-			if 'disable_detection' not in self.world_spec.keys():
+
+			if World.detection:
 				for inhabitant in self.get_inhabitants():
 					if inhabitant != creature:
 						[left, right] = self.check_detection(creature,inhabitant)
@@ -38,15 +35,15 @@ class World(object):
 
 				creature.gather_input(left + right)
 
-			if 'disable_default_input' not in self.world_spec.keys():
+			if World.default_input:
 				if not creature_got_input:
 					creature.gather_input([0] * Brain.G_INPUTNODES)
 
-		if 'disable_think' not in self.world_spec.keys():
+		if World.think:
 			for inhabitant in self.get_inhabitants():
 				inhabitant.think()
 		
-		if 'disable_move' not in self.world_spec.keys():
+		if World.move:
 			for inhabitant in self.get_inhabitants():
 				inhabitant.move()
 		
@@ -65,7 +62,6 @@ class World(object):
 			if antennae_point1[0] < 0 or antennae_point1[0] > 1 or antennae_point1[1] < 0 or antennae_point1[1] > 1:
 				left[0] = 1
 				left[1], left[2], left[3] = [1,1,1]
-				print "Wall detection 1"
 
 		if right == [0] * (Brain.G_INPUTNODES/2):
 			v_an2 = [looker.antennae_length * math.cos(looker.rotation * 2 * math.pi + looker.antennae_angles[1]),
@@ -76,7 +72,6 @@ class World(object):
 			if antennae_point2[0] < 0 or antennae_point2[0] > 1 or antennae_point2[1] < 0 or antennae_point2[1] > 1:
 				right[0] = 1
 				right[1], right[2], right[3] = [1,1,1]
-				print "Wall detection 2"
 
 		return left, right
 
@@ -85,24 +80,28 @@ class World(object):
 		invalid1 = False
 		invalid2 = False
 
-		left = [0] * (Brain.G_INPUTNODES/2)
-		right = [0] * (Brain.G_INPUTNODES/2)
+		inputs = Brain.G_INPUTNODES/2
+		left = [0] * inputs
+		right = [0] * inputs
 
 		v_dist = funcs.vminus(target.pos, looker.pos)
-		v_an1 = [looker.antennae_length * math.cos(looker.rotation * 2 * math.pi + looker.antennae_angles[0]),
-			-1 * looker.antennae_length * math.sin(looker.rotation * 2 * math.pi + looker.antennae_angles[0])]
-		v_an2 = [looker.antennae_length * math.cos(looker.rotation * 2 * math.pi + looker.antennae_angles[1]),
-			-1 * looker.antennae_length * math.sin(looker.rotation * 2 * math.pi + looker.antennae_angles[1])]
+
+		angle = looker.rotation * 2 * math.pi
+		v_an1 = [looker.antennae_length * math.cos(angle + looker.antennae_angles[0]),
+			-1 * looker.antennae_length * math.sin(angle + looker.antennae_angles[0])]
+		v_an2 = [looker.antennae_length * math.cos(angle + looker.antennae_angles[1]),
+			-1 * looker.antennae_length * math.sin(angle + looker.antennae_angles[1])]
 		
-		v_proj1 = [v_an1[0] * funcs.dot(v_an1, v_dist) / funcs.vlen(v_an1)**2, v_an1[1] * funcs.dot(v_an1, v_dist) / funcs.vlen(v_an1)**2]
-		v_proj2 = [v_an2[0] * funcs.dot(v_an2, v_dist) / funcs.vlen(v_an2)**2, v_an2[1] * funcs.dot(v_an2, v_dist) / funcs.vlen(v_an2)**2]
+		an1_dist_sq = funcs.dot(v_an1, v_dist) / funcs.vlen(v_an1)**2
+		an2_dist_sq = funcs.dot(v_an2, v_dist) / funcs.vlen(v_an2)**2
+		v_proj1 = [v_an1[0] * an1_dist_sq, v_an1[1] * an1_dist_sq]
+		v_proj2 = [v_an2[0] * an2_dist_sq, v_an2[1] * an2_dist_sq]
 
 		# If the projection points in the exact opposite direction of the antenna no detection is possible
 		if v_an1[0] > 0 and v_proj1[0] < 0 or v_an1[0] < 0 and v_proj1[0] > 0:
 			invalid1 = True
 		if v_an2[0] > 0 and v_proj2[0] < 0 or v_an2[0] < 0 and v_proj2[0] > 0:
 			invalid2 = True
-
 
 		# If the projection is longer than the antennae we pretend that the antennae is the projection to avoid false positives
 		if funcs.vlen(v_proj1) > funcs.vlen(v_an1): 
@@ -137,7 +136,6 @@ class World(object):
 
 	def get_inhabitants(self):
 		return self.creatures + self.bushes
-
 
 	def get_positions(self):
 		return [creature.pos for creature in self.creatures]
