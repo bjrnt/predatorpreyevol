@@ -3,6 +3,7 @@ from world import World
 from config import Config
 from creature import Creature
 from renderer import Renderer
+from bush import Bush
 
 def onevsone():
 	renderer = Renderer(700,700)
@@ -30,6 +31,9 @@ def default():
 		('World','think'):True,
 		('World','default_input'):True,
 		('World','detection'):True,
+		('World','collision'):True,
+		('World','remove_dead'):True,
+		('Creature','Bush','use_energy'):True,
 	}
 
 	apply_config(options)

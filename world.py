@@ -27,7 +27,14 @@ class World(object):
 			if World.detection:
 				for inhabitant in self.get_inhabitants():
 					if inhabitant != creature:
-						[left, right] = self.check_detection(creature,inhabitant)
+						left = [0] * (Brain.G_INPUTNODES/2)
+						right = [0] * (Brain.G_INPUTNODES/2)
+						# Optimization 1
+						# if the distance is larger than radius + radius + antennae length
+						# there is no point in doing all the expensive calculations for detection if we know
+						# that it's impossible for the antennae to reach anyway
+						if funcs.vlen(funcs.vminus(creature.get_pos(), inhabitant.get_pos())) <= creature.get_radius() + inhabitant.get_radius() + creature.antennae_length:
+							[left, right] = self.check_detection(creature,inhabitant)
 
 						if left != [0] * (Brain.G_INPUTNODES/2) or right != [0] * (Brain.G_INPUTNODES/2):
 							creature_got_input = True
@@ -39,6 +46,12 @@ class World(object):
 				if not creature_got_input:
 					creature.gather_input([0] * Brain.G_INPUTNODES)
 
+		if World.collision:
+			for inhabitant in self.get_inhabitants():
+				for inhabitant2 in self.get_inhabitants():
+					if inhabitant != inhabitant2:
+						self.check_collision(inhabitant, inhabitant2)
+
 		if World.think:
 			for inhabitant in self.get_inhabitants():
 				inhabitant.think()
@@ -46,11 +59,24 @@ class World(object):
 		if World.move:
 			for inhabitant in self.get_inhabitants():
 				inhabitant.move()
+
+		if World.remove_dead:
+			for inhabitant in self.get_inhabitants():
+				if inhabitant.alive == False:
+					if inhabitant.__class__ == Creature:
+						self.creatures.remove(inhabitant)
+					if inhabitant.__class__ == Bush:
+						self.bushes.remove(inhabitant)
 		
 	def run_ticks(self):
 		for tick in xrange(self.nticks):
 			self.run_tick()
 		return [creature.evaluate() for creature in self.creatures]
+
+	def check_collision(self, inh1, inh2):
+		dist = funcs.vminus(inh1.get_pos(), inh2.get_pos())
+		if funcs.vlen(dist) <= inh1.get_radius() + inh2.get_radius():
+			inh1.on_collision(inh2)
 
 	def detect_walls(self, looker, left, right):
 		if left == [0] * (Brain.G_INPUTNODES/2):
