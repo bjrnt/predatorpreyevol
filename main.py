@@ -1,8 +1,9 @@
 import math, time
 from world import World
-from config import Config
+#from config import Config
 from creature import Creature
 from renderer import Renderer
+import cProfile
 
 def onevsone():
 	renderer = Renderer(700,700)
@@ -41,9 +42,12 @@ def default():
 	renderer.play_epoch(world,1)
 	#world.run_ticks()
 
+def profile():
+	cProfile.run('default()', 'stats.txt')
+
 def main():
 	start = time.clock()
-	default()
+	profile()
 	end = time.clock()
 	print "Done!"
 	print "Run-time %f" % (0.0 + end - start)

@@ -2,12 +2,12 @@ import random, funcs, math
 from brain import Brain
 from creature import Creature
 from bush import Bush
-from config import Config
+#from config import Config
 
 class World(object):
 	"""docstring for ClassName"""
 	def __init__(self, gene_pool=None, max_bush_count=0, nticks=10000):
-		self.c = Config()
+		#self.c = Config()
 		self.creatures = []
 		self.bushes = []
 		self.nticks = nticks
