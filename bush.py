@@ -1,4 +1,5 @@
 from inhabitant import Inhabitant
+from creature import Creature
 
 class Bush(Inhabitant):
 	"""docstring for Bush"""
@@ -9,8 +10,16 @@ class Bush(Inhabitant):
 		if self.radius_multiplier < 0.4:
 			self.radius_multiplier += 0.01
 
-		if self.energy < 100:
-			self.energy += 1
+		if Bush.use_energy:
+			if self.energy < 100:
+				self.energy += 1
 
 		if self.color[1] < 1:
 			self.color = (0.1,self.color[1] + 0.01, 0.1)
+
+	def on_collision(self, target):
+		if Bush.use_energy:
+			target.energy += self.energy
+
+		if target.__class__ == Creature:
+			self.alive = 0

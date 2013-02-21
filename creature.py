@@ -30,7 +30,8 @@ class Creature(Inhabitant):
 	def __init__(self, genes, x=0.0, y=0.0):
 		super(Creature, self).__init__([x,y], 
 			radius_multiplier=0.5, 
-			color=(0.1 + 0.9 * random.random(), 0.01 + 0.09 * random.random(), 0.1 + 0.9 * random.random()))
+			color=(0.1 + 0.9 * random.random(), 0.01 + 0.09 * random.random(), 0.1 + 0.9 * random.random()),
+			energy=300)
 		self.rotation = 0.0
 		self.speed = random.random()
 		self.distance = 0.0
@@ -54,6 +55,11 @@ class Creature(Inhabitant):
 			self.speed = -1
 
 	def move(self):
+		if Creature.use_energy:
+			self.energy -= 1
+			if self.energy == 0:
+				self.alive = False
+
 		d_x = math.cos(self.rotation * 2.0 * math.pi) * self.speed * self.G_MAX_SPEED
 		d_y = -1.0 * math.sin(self.rotation * 2.0 * math.pi) * self.speed * self.G_MAX_SPEED
 		self.pos[0] += d_x

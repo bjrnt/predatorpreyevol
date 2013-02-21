@@ -1,9 +1,10 @@
 import math, time
 from world import World
-#from config import Config
+
 from creature import Creature
 from renderer import Renderer
 import cProfile
+from bush import Bush
 
 def onevsone():
 	renderer = Renderer(700,700)
@@ -31,6 +32,9 @@ def default():
 		('World','think'):True,
 		('World','default_input'):True,
 		('World','detection'):True,
+		('World','collision'):True,
+		('World','remove_dead'):True,
+		('Creature','Bush','use_energy'):True,
 	}
 
 	apply_config(options)
@@ -47,7 +51,7 @@ def profile():
 
 def main():
 	start = time.clock()
-	profile()
+	default()
 	end = time.clock()
 	print "Done!"
 	print "Run-time %f" % (0.0 + end - start)

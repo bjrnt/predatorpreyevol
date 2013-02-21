@@ -4,12 +4,14 @@ class Brain(object):
 	"""docstring for Brain"""
 	G_INPUTNODES = 8
 	G_HIDDENNODES = 15
-	
+	G_OUTPUTNODES = 2
+	G_TOTAL_CONNECTIONS = G_INPUTNODES * G_HIDDENNODES * G_OUTPUTNODES
+
 	def __init__(self, genes):
 		self.net = FeedForwardNetwork()
-		inLayer = LinearLayer(self.G_INPUTNODES, name='input')
-		hiddenLayer = SigmoidLayer(self.G_HIDDENNODES, name='hidden')
-		outLayer = SigmoidLayer(2, name='out')
+		inLayer = LinearLayer(Brain.G_INPUTNODES, name='input')
+		hiddenLayer = SigmoidLayer(Brain.G_HIDDENNODES, name='hidden')
+		outLayer = SigmoidLayer(Brain.G_OUTPUTNODES, name='out')
 
 		bias = BiasUnit(name='bias')
 
