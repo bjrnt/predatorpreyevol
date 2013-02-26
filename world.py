@@ -2,6 +2,9 @@ import random, funcs, math
 from brain import Brain
 from creature import Creature
 from bush import Bush
+
+import numpy as np
+from numpy import array
 #from config import Config
 
 class World(object):
@@ -9,6 +12,7 @@ class World(object):
 	def __init__(self, gene_pool=None, max_bush_count=0, nticks=10000):
 		#self.c = Config()
 		self.creatures = []
+		self.dead_creatures = []
 		self.bushes = []
 		self.nticks = nticks
 		if gene_pool != None:
@@ -21,30 +25,9 @@ class World(object):
 		self.spawn_bushes()
 
 		# Get data for creatures to process
-		for creature in self.creatures:
-			creature_got_input = False
-
-			if World.detection:
-				for inhabitant in self.get_inhabitants():
-					if inhabitant != creature:
-						left = [0] * (Brain.G_INPUTNODES/2)
-						right = [0] * (Brain.G_INPUTNODES/2)
-						# Optimization 1
-						# if the distance is larger than radius + radius + antennae length
-						# there is no point in doing all the expensive calculations for detection if we know
-						# that it's impossible for the antennae to reach anyway
-						if funcs.vlen(funcs.vminus(creature.get_pos(), inhabitant.get_pos())) <= creature.get_radius() + inhabitant.get_radius() + creature.antennae_length:
-							[left, right] = self.check_detection(creature,inhabitant)
-
-						if left != [0] * (Brain.G_INPUTNODES/2) or right != [0] * (Brain.G_INPUTNODES/2):
-							creature_got_input = True
-				[left, right] = self.detect_walls(creature, left, right)
-
-				creature.gather_input(left + right)
-
-			if World.default_input:
-				if not creature_got_input:
-					creature.gather_input([0] * Brain.G_INPUTNODES)
+		creature_inputs = map(self.run_detection, self.creatures)
+		for creature,inp in zip(self.creatures,creature_inputs):
+			creature.gather_input(inp)
 
 		if World.collision:
 			for inhabitant in self.get_inhabitants():
@@ -65,13 +48,36 @@ class World(object):
 				if inhabitant.alive == False:
 					if inhabitant.__class__ == Creature:
 						self.creatures.remove(inhabitant)
+						self.dead_creatures += [inhabitant]
 					if inhabitant.__class__ == Bush:
 						self.bushes.remove(inhabitant)
 		
+	def run_detection(self, creature):
+		if World.detection:
+			creature_got_input = False
+
+			for inhabitant in self.get_inhabitants():
+				if inhabitant != creature:
+					left = [0] * (Brain.G_INPUTNODES/2)
+					right = [0] * (Brain.G_INPUTNODES/2)
+
+					if funcs.vlen(funcs.vminus(creature.get_pos(), inhabitant.get_pos())) <= inhabitant.get_radius() + creature.antennae_length:
+						[left, right] = self.check_detection(creature,inhabitant)
+
+					if creature.get_x() - creature.antennae_length < 0 or creature.get_x() + creature.antennae_length > 1 or creature.get_y() - creature.antennae_length < 0 or creature.get_y() + creature.antennae_length > 1:
+						[left, right] = self.detect_walls(creature, left, right)
+
+					if left != [0] * (Brain.G_INPUTNODES/2) or right != [0] * (Brain.G_INPUTNODES/2):
+						creature_got_input = True
+						return left + right
+
+			if World.default_input:
+				if not creature_got_input:
+					return [0] * Brain.G_INPUTNODES
+
 	def run_ticks(self):
 		for tick in xrange(self.nticks):
 			self.run_tick()
-		return [creature.evaluate() for creature in self.creatures]
 
 	def check_collision(self, inh1, inh2):
 		dist = funcs.vminus(inh1.get_pos(), inh2.get_pos())
@@ -79,9 +85,10 @@ class World(object):
 			inh1.on_collision(inh2)
 
 	def detect_walls(self, looker, left, right):
+		angle = looker.rotation * 2 * math.pi
 		if left == [0] * (Brain.G_INPUTNODES/2):
-			v_an1 = [looker.antennae_length * math.cos(looker.rotation * 2 * math.pi + looker.antennae_angles[0]),
-			-1 * looker.antennae_length * math.sin(looker.rotation * 2 * math.pi + looker.antennae_angles[0])]
+			v_an1 = [looker.antennae_length * math.cos(angle + looker.antennae_angles[0]),
+			-1 * looker.antennae_length * math.sin(angle + looker.antennae_angles[0])]
 
 			antennae_point1 = funcs.vplus(looker.pos, v_an1)
 
@@ -90,8 +97,8 @@ class World(object):
 				left[1], left[2], left[3] = [1,1,1]
 
 		if right == [0] * (Brain.G_INPUTNODES/2):
-			v_an2 = [looker.antennae_length * math.cos(looker.rotation * 2 * math.pi + looker.antennae_angles[1]),
-			-1 * looker.antennae_length * math.sin(looker.rotation * 2 * math.pi + looker.antennae_angles[1])]
+			v_an2 = [looker.antennae_length * math.cos(angle + looker.antennae_angles[1]),
+			-1 * looker.antennae_length * math.sin(angle + looker.antennae_angles[1])]
 
 			antennae_point2 = funcs.vplus(looker.pos, v_an2)
 
@@ -102,7 +109,6 @@ class World(object):
 		return left, right
 
 	def check_detection(self,looker, target):
-		"""Todo: detection doesn't work well, at all"""
 		invalid1 = False
 		invalid2 = False
 
@@ -113,15 +119,15 @@ class World(object):
 		v_dist = funcs.vminus(target.pos, looker.pos)
 
 		angle = looker.rotation * 2 * math.pi
-		v_an1 = [looker.antennae_length * math.cos(angle + looker.antennae_angles[0]),
-			-1 * looker.antennae_length * math.sin(angle + looker.antennae_angles[0])]
-		v_an2 = [looker.antennae_length * math.cos(angle + looker.antennae_angles[1]),
-			-1 * looker.antennae_length * math.sin(angle + looker.antennae_angles[1])]
+		v_an1 = array([looker.antennae_length * math.cos(angle + looker.antennae_angles[0]),
+			-1 * looker.antennae_length * math.sin(angle + looker.antennae_angles[0])])
+		v_an2 = array([looker.antennae_length * math.cos(angle + looker.antennae_angles[1]),
+			-1 * looker.antennae_length * math.sin(angle + looker.antennae_angles[1])])
 		
 		an1_dist_sq = funcs.dot(v_an1, v_dist) / funcs.vlen(v_an1)**2
 		an2_dist_sq = funcs.dot(v_an2, v_dist) / funcs.vlen(v_an2)**2
-		v_proj1 = [v_an1[0] * an1_dist_sq, v_an1[1] * an1_dist_sq]
-		v_proj2 = [v_an2[0] * an2_dist_sq, v_an2[1] * an2_dist_sq]
+		v_proj1 = array([v_an1[0] * an1_dist_sq, v_an1[1] * an1_dist_sq])
+		v_proj2 = array([v_an2[0] * an2_dist_sq, v_an2[1] * an2_dist_sq])
 
 		# If the projection points in the exact opposite direction of the antenna no detection is possible
 		if v_an1[0] > 0 and v_proj1[0] < 0 or v_an1[0] < 0 and v_proj1[0] > 0:
@@ -167,6 +173,9 @@ class World(object):
 		return [creature.pos for creature in self.creatures]
 
 	def get_creatures(self):
+		return self.creatures + self.dead_creatures
+
+	def get_living_creatures(self):
 		return self.creatures
 
 	def get_bushes(self):

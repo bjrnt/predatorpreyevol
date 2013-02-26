@@ -22,7 +22,6 @@ import math, random, funcs
 
 class Creature(Inhabitant):
 	"""docstring for ClassName"""
-	G_MAX_SPEED = 0.005
 	G_MAX_ROTATION = 0.05
 	antennae = 2
 	antennae_angles = [math.pi/6.0, -1.0 * math.pi/6.0]
@@ -32,9 +31,11 @@ class Creature(Inhabitant):
 			radius_multiplier=0.5, 
 			color=(0.1 + 0.9 * random.random(), 0.01 + 0.09 * random.random(), 0.1 + 0.9 * random.random()),
 			energy=300)
+
 		self.rotation = 0.0
 		self.speed = random.random()
 		self.distance = 0.0
+		self.consumed_energy = 1
 		self.antennae_length = self.radius_multiplier * self.G_MAXIMUM_RADIUS * 3.5
 		self.brain = Brain(genes)
 
@@ -73,6 +74,3 @@ class Creature(Inhabitant):
 		elif self.pos[1] - self.get_radius() < 0:
 			self.pos[1] = 0 + self.get_radius()
 		self.distance += math.sqrt(d_x**2 + d_y**2)
-
-	def evaluate(self):
-		return self.distance

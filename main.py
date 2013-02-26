@@ -3,24 +3,43 @@ from world import World
 from creature import Creature
 from renderer import Renderer
 from bush import Bush
+from darwin import Darwin
+#from deap import dtm
 
-import argparse
-import sys
-import cProfile
-import math, time
+import argparse, sys, cProfile, math, time
 
 def onevsone():
 	renderer = Renderer(700,700)
 
-	c1 = Creature([0], 0.2, 0.56)
+	options = {
+		('World','move'):True,
+		('World','think'):False,
+		('World','default_input'):True,
+		('World','detection'):True,
+		('World','collision'):True,
+		('World','remove_dead'):True,
+		('Creature','Bush','use_energy'):False,
+		('Creature','G_MAX_SPEED'):0.08,
+	}
+
+	apply_config(options)
+
+	world = World()
+
+	b1 = Bush(0.5, 0.65)
+	for x in xrange(100):
+		b1.think()
+
+	c1 = Creature(None, 0.2, 0.60)
 	c1.speed = 0.05
 	c1.rotation = 0
-	c2 = Creature([0], 0.8, 0.5)
+	c2 = Creature(None, 0.8, 0.8)
 	c2.speed = 0.05
 	c2.rotation = 0.5
 	
 	world.add_creature(c1)
 	world.add_creature(c2)
+	world.add_bush(b1)
 
 	renderer.play_epoch(world,1)
 
@@ -33,35 +52,38 @@ def default():
 		('World','collision'):True,
 		('World','remove_dead'):True,
 		('Creature','Bush','use_energy'):True,
+		('Creature','G_MAX_SPEED'):0.007,
+		('Darwin','NGEN'):20,
+		('Darwin','CXPB'):0.4,
+		('Darwin','MUTPB'):0.7,
+		('Darwin','NINDS'):10,
+		('Darwin','NTICKS'):400,
 	}
 
 	apply_config(options)
 
-	renderer = Renderer(700,700)
-
-	world = World([0]*10,nticks=1000,max_bush_count=20)
-
-	renderer.play_epoch(world,1)
-	#world.run_ticks()
+	darwin = Darwin()
+	darwin.begin_evolution()
 
 def profile():
 	cProfile.run('default()', 'stats.pstats')
 
 def main():
 	parser = argparse.ArgumentParser(description='Run the simulation.')
-	parser.add_argument('--load',dest='load_path', metavar='File', type=file, help="Path to file with saved state, used to resume simulations.")
+	parser.add_argument('-l',dest='load_path', metavar='file', type=file, help="Path to file with saved state, used to resume simulations.")
 	parser.add_argument('--profile',dest='profiling_enabled', help="Use to enable or disable generation of profiling information.", required=False, action='store_const', const=True)
 	args = parser.parse_args(sys.argv[1:])
 	# args.load_path
 
-	start = time.clock()
 	if args.profiling_enabled:
 		profile()
 	else:
+		start = time.clock()
 		default()
-	end = time.clock()
+		end = time.clock()	
+		print "Run-time %f" % (0.0 + end - start)
+
 	print "Done!"
-	print "Run-time %f" % (0.0 + end - start)
 	dontexit = raw_input()
 
 def apply_config(config):

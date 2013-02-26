@@ -1,3 +1,5 @@
+from numpy import array
+
 class Inhabitant(object):
 	"""docstring for Inhabitant"""
 	G_MAXIMUM_RADIUS = 0.05
@@ -5,7 +7,7 @@ class Inhabitant(object):
 	def __init__(self, pos=[0,0], radius_multiplier=1, color=(0,0,0), energy=0):
 		self.alive = True
 		self.energy = energy
-		self.pos = pos
+		self.pos = array(pos)
 		self.radius_multiplier = radius_multiplier
 		self.color = color
 

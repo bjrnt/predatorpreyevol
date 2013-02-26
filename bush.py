@@ -18,8 +18,9 @@ class Bush(Inhabitant):
 			self.color = (0.1,self.color[1] + 0.01, 0.1)
 
 	def on_collision(self, target):
-		if Bush.use_energy:
+		if Bush.use_energy and target.__class__ == Creature:
 			target.energy += self.energy
+			target.consumed_energy += self.energy
 
 		if target.__class__ == Creature:
 			self.alive = 0
