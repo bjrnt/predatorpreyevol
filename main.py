@@ -41,17 +41,17 @@ def default():
 
 	renderer = Renderer(700,700)
 
-	world = World([0]*10,nticks=1000,max_bush_count=0)
+	world = World([0]*10,nticks=1000,max_bush_count=20)
 
 	renderer.play_epoch(world,1)
 	#world.run_ticks()
 
 def profile():
-	cProfile.run('default()', 'stats.txt')
+	cProfile.run('default()', 'stats.pstats')
 
 def main():
 	start = time.clock()
-	default()
+	profile()
 	end = time.clock()
 	print "Done!"
 	print "Run-time %f" % (0.0 + end - start)

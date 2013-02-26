@@ -7,7 +7,7 @@ class Brain(object):
 	G_OUTPUTNODES = 2
 	G_TOTAL_CONNECTIONS = G_INPUTNODES * G_HIDDENNODES * G_OUTPUTNODES
 
-	def __init__(self, genes):
+	def __init__(self, genes=None):
 		self.net = FeedForwardNetwork()
 		inLayer = LinearLayer(Brain.G_INPUTNODES, name='input')
 		hiddenLayer = SigmoidLayer(Brain.G_HIDDENNODES, name='hidden')

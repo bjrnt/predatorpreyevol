@@ -27,7 +27,7 @@ class Creature(Inhabitant):
 	antennae = 2
 	antennae_angles = [math.pi/6.0, -1.0 * math.pi/6.0]
 
-	def __init__(self, genes, x=0.0, y=0.0):
+	def __init__(self, genes=None, x=0.0, y=0.0):
 		super(Creature, self).__init__([x,y], 
 			radius_multiplier=0.5, 
 			color=(0.1 + 0.9 * random.random(), 0.01 + 0.09 * random.random(), 0.1 + 0.9 * random.random()),
