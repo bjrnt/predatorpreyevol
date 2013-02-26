@@ -1,18 +1,16 @@
-import math, time
+#!/usr/bin/env python
 from world import World
-
 from creature import Creature
 from renderer import Renderer
-import cProfile
 from bush import Bush
+
+import argparse
+import sys
+import cProfile
+import math, time
 
 def onevsone():
 	renderer = Renderer(700,700)
-
-	world_spec = {}
-	world_spec['disable_think'] = 1
-
-	world = World(world_spec=world_spec, nticks=600)
 
 	c1 = Creature([0], 0.2, 0.56)
 	c1.speed = 0.05
@@ -50,8 +48,17 @@ def profile():
 	cProfile.run('default()', 'stats.pstats')
 
 def main():
+	parser = argparse.ArgumentParser(description='Run the simulation.')
+	parser.add_argument('--load',dest='load_path', metavar='File', type=file, help="Path to file with saved state, used to resume simulations.")
+	parser.add_argument('--profile',dest='profiling_enabled', help="Use to enable or disable generation of profiling information.", required=False, action='store_const', const=True)
+	args = parser.parse_args(sys.argv[1:])
+	# args.load_path
+
 	start = time.clock()
-	profile()
+	if args.profiling_enabled:
+		profile()
+	else:
+		default()
 	end = time.clock()
 	print "Done!"
 	print "Run-time %f" % (0.0 + end - start)
