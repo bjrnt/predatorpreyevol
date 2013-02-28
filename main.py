@@ -54,9 +54,9 @@ def default():
 		('World','remove_dead'):True,
 		('Creature','Bush','use_energy'):True,
 		('Creature','G_MAX_SPEED'):0.006,
-		('Darwin','NGEN'):60,
-		('Darwin','CXPB'):0.0,
-		('Darwin','MUTPB'):0.7,
+		('Darwin','NGEN'):300,
+		('Darwin','CXPB'):0.25,
+		('Darwin','MUTPB'):0.5,
 		('Darwin','NINDS'):10,
 		('Darwin','NTICKS'):1000,
 	}

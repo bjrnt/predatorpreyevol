@@ -20,6 +20,7 @@ class World(object):
 				self.creatures += [Creature(gene, x=random.random(), y=random.random())]
 		
 		self.max_bush_count = max_bush_count
+		#self.spawn_bushes_grid()
 
 	def run_tick(self):
 		self.spawn_bushes()
@@ -53,10 +54,10 @@ class World(object):
 						self.bushes.remove(inhabitant)
 		
 	def run_detection(self, creature):
-		if World.detection:
-			creature_got_input = False
+		creature_got_input = False
 
-			for inhabitant in self.get_inhabitants():
+		if World.detection:
+			for inhabitant in self.get_bushes(): # Only detect bushes
 				if inhabitant != creature:
 					left = [0] * (Brain.G_INPUTNODES/2)
 					right = [0] * (Brain.G_INPUTNODES/2)
@@ -71,9 +72,9 @@ class World(object):
 						creature_got_input = True
 						return left + right
 
-			if World.default_input:
-				if not creature_got_input:
-					return [0] * Brain.G_INPUTNODES
+		if World.default_input:
+			if not creature_got_input:
+				return [0] * Brain.G_INPUTNODES
 
 	def run_ticks(self):
 		for tick in xrange(self.nticks):
@@ -159,6 +160,11 @@ class World(object):
 			for i in xrange(self.max_bush_count - len(self.get_bushes())):
 				if random.random() < 0.01:
 					self.add_bush(Bush(random.random(), random.random()))
+
+	def spawn_bushes_grid(self):
+		for i in xrange(1,5):
+			for j in xrange(1,5):
+				self.add_bush(Bush(i*0.2, j*0.2))
 
 	def add_bush(self, bush):
 		self.bushes += [bush]

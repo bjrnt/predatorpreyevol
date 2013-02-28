@@ -27,16 +27,29 @@ class Creature(Inhabitant):
 	antennae_angles = [math.pi/6.0, -1.0 * math.pi/6.0]
 
 	def __init__(self, genes=None, x=0.0, y=0.0):
+		
+		R = 0.1 + (genes[-1] + 1) * 0.5 
+		G = 0.01 + (genes[-2] + 1) * 0.3
+		B = 0.1 + (genes[-3] + 1) * 0.5
+		R = R if R < 1 else 1
+		R = R if R > 0 else 0
+		G = G if G < 1 else 1
+		G = G if G > 0 else 0
+		B = B if B < 1 else 1
+		B = B if B > 0 else 0
+
 		super(Creature, self).__init__([x,y], 
 			radius_multiplier=0.5, 
-			color=(0.1 + 0.9 * random.random(), 0.01 + 0.09 * random.random(), 0.1 + 0.9 * random.random()),
-			energy=300)
-
-		self.rotation = 0.0
-		self.speed = random.random()
+			color=(R,G,B),
+			energy=500)
+			
+		self.rotation = random.random()
+		self.speed = 0.0
+		self.num_detections = 1
 		self.distance = 0.0
+		self.rotated = 0.0
 		self.consumed_energy = 1
-		self.antennae_length = self.radius_multiplier * self.G_MAXIMUM_RADIUS * 3.5
+		self.antennae_length = self.radius_multiplier * self.G_MAXIMUM_RADIUS * 5
 		self.brain = Brain(genes)
 
 	def gather_input(self, data):
@@ -44,16 +57,29 @@ class Creature(Inhabitant):
 
 	def think(self):
 		[d_s, d_r] = self.brain.think(self.data)
-		d_s = d_s * 2 - 1
-		d_r = d_r * 2 - 1
-
 		self.rotation = funcs.sign(self.rotation + d_r * Creature.G_MAX_ROTATION) * (abs(self.rotation + d_r * Creature.G_MAX_ROTATION) % 1.0)
-
 		self.speed += d_s
 		if self.speed > 1:
 			self.speed = 1
 		if self.speed < -1:
 			self.speed = -1
+
+	# def think(self):
+	# 	if self.data[2] > 0.6 and self.data[1] < 0.4 or self.data[6] > 0.6 and self.data[5] < 0.4 and self.speed > 0:
+	# 		self.num_detections += 1
+
+	# 	[d_s, d_r] = self.brain.think(self.data)
+	# 	d_s = d_s * 2 - 1
+	# 	d_r = d_r * 2 - 1
+
+	# 	self.rotated += d_r
+	# 	self.rotation = funcs.sign(self.rotation + d_r * Creature.G_MAX_ROTATION) * (abs(self.rotation + d_r * Creature.G_MAX_ROTATION) % 1.0)
+
+	# 	self.speed += d_s
+	# 	if self.speed > 1:
+	# 		self.speed = 1
+	# 	if self.speed < -1:
+	# 		self.speed = -1
 
 	def move(self):
 		if Creature.use_energy:
