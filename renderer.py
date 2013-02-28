@@ -9,8 +9,8 @@ class Renderer(object):
 		self.width = 700
 		self.height = 700
 
-		self.screen = pygame.display.set_mode((self.width,self.height))
-		pygame.display.set_caption('Our kEX')
+		self.screen = pygame.display.set_mode((self.width,self.height), DOUBLEBUF)
+		pygame.display.set_caption('Our kex')
 		self.background = pygame.Surface(self.screen.get_size())
 		self.background = self.background.convert()
 		self.background.fill((0,0,0))
@@ -40,7 +40,7 @@ class Renderer(object):
 				0)
 
 	def render_creatures(self, world):	
-		for creature in world.get_creatures():
+		for creature in world.get_living_creatures():
 			pygame.draw.line(self.screen,
 				(255,255,255),
 				(int(self.width * creature.pos[0]), int(self.height * creature.pos[1])),

@@ -53,12 +53,15 @@ def default():
 		('World','collision'):True,
 		('World','remove_dead'):True,
 		('Creature','Bush','use_energy'):True,
-		('Creature','G_MAX_SPEED'):0.006,
-		('Darwin','NGEN'):300,
-		('Darwin','CXPB'):0.25,
-		('Darwin','MUTPB'):0.5,
-		('Darwin','NINDS'):10,
+		('Creature','G_MAX_SPEED'):0.015,
+		('Darwin','NGEN'):3,
+		('Darwin','CXPB'):0.0,
+		('Darwin','MUTPB'):0.2,
+		('Darwin','NINDS'):30,
+		('Darwin','max_bush_count'):20,
 		('Darwin','NTICKS'):1000,
+		('Darwin','graphics'):True,
+		('Darwin','disp_freq'):4,
 	}
 
 	apply_config(options)

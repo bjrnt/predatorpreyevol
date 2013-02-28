@@ -2,15 +2,12 @@ import random, funcs, math
 from brain import Brain
 from creature import Creature
 from bush import Bush
-
 import numpy as np
 from numpy import array
-#from config import Config
 
 class World(object):
 	"""docstring for ClassName"""
 	def __init__(self, gene_pool=None, max_bush_count=0, nticks=10000):
-		#self.c = Config()
 		self.creatures = []
 		self.dead_creatures = []
 		self.bushes = []
@@ -26,15 +23,37 @@ class World(object):
 		self.spawn_bushes()
 
 		# Get data for creatures to process
-		creature_inputs = map(self.run_detection, self.creatures)
-		for creature,inp in zip(self.creatures,creature_inputs):
-			creature.gather_input(inp)
+		if World.detection:
+			inhabitants = self.bushes # Only detecting/colliding with bushes
+			positions = array([inh.get_pos() for inh in inhabitants])
+			radii = array([inh.get_radius() for inh in inhabitants])
 
-		if World.collision:
-			for inhabitant in self.get_inhabitants():
-				for inhabitant2 in self.get_inhabitants():
-					if inhabitant != inhabitant2:
-						self.check_collision(inhabitant, inhabitant2)
+			for creature in self.creatures:
+				creature_got_input = False
+				left = [0] * (Brain.G_INPUTNODES/2)
+				right = [0] * (Brain.G_INPUTNODES/2)
+
+				if positions != []:
+					diffs = positions - creature.get_pos()
+					distances = array([funcs.vlen(diff) for diff in diffs] - radii)
+					for index, val in enumerate(distances):
+						if val <= creature.antennae_length and creature != inhabitants[index]:
+							[left, right] = self.check_detection(creature,inhabitants[index])
+
+						if val <= creature.get_radius() and creature != inhabitants[index]:
+							creature.on_collision(inhabitants[index])
+							inhabitants[index].on_collision(creature)
+					
+				if creature.get_x() - creature.antennae_length < 0 or creature.get_x() + creature.antennae_length > 1 or creature.get_y() - creature.antennae_length < 0 or creature.get_y() + creature.antennae_length > 1:
+					[left, right] = self.detect_walls(creature, left, right)
+
+				if left != [0] * (Brain.G_INPUTNODES/2) or right != [0] * (Brain.G_INPUTNODES/2):
+					creature_got_input = True
+					creature.gather_input(left + right)
+
+				if World.default_input:
+					if not creature_got_input:
+						creature.gather_input(left + right)
 
 		if World.think:
 			for inhabitant in self.get_inhabitants():
@@ -52,38 +71,10 @@ class World(object):
 						self.dead_creatures += [inhabitant]
 					if inhabitant.__class__ == Bush:
 						self.bushes.remove(inhabitant)
-		
-	def run_detection(self, creature):
-		creature_got_input = False
-
-		if World.detection:
-			for inhabitant in self.get_bushes(): # Only detect bushes
-				if inhabitant != creature:
-					left = [0] * (Brain.G_INPUTNODES/2)
-					right = [0] * (Brain.G_INPUTNODES/2)
-
-					if funcs.vlen(funcs.vminus(creature.get_pos(), inhabitant.get_pos())) <= inhabitant.get_radius() + creature.antennae_length:
-						[left, right] = self.check_detection(creature,inhabitant)
-
-					if creature.get_x() - creature.antennae_length < 0 or creature.get_x() + creature.antennae_length > 1 or creature.get_y() - creature.antennae_length < 0 or creature.get_y() + creature.antennae_length > 1:
-						[left, right] = self.detect_walls(creature, left, right)
-
-					if left != [0] * (Brain.G_INPUTNODES/2) or right != [0] * (Brain.G_INPUTNODES/2):
-						creature_got_input = True
-						return left + right
-
-		if World.default_input:
-			if not creature_got_input:
-				return [0] * Brain.G_INPUTNODES
 
 	def run_ticks(self):
 		for tick in xrange(self.nticks):
 			self.run_tick()
-
-	def check_collision(self, inh1, inh2):
-		dist = funcs.vminus(inh1.get_pos(), inh2.get_pos())
-		if funcs.vlen(dist) <= inh1.get_radius() + inh2.get_radius():
-			inh1.on_collision(inh2)
 
 	def detect_walls(self, looker, left, right):
 		angle = looker.rotation * 2 * math.pi

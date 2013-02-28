@@ -27,7 +27,7 @@ class Darwin(object):
 		self.toolbox.register("population", tools.initRepeat, list, self.toolbox.individual)
 		self.toolbox.register("mate", tools.cxUniform, indpb=0.5)
 		#self.toolbox.register("mutate", Darwin.mutate_nodes, sigma=0.3, indpb=0.2)
-		self.toolbox.register("mutate", tools.mutGaussian, mu=0, sigma=0.5, indpb=0.2)
+		self.toolbox.register("mutate", tools.mutGaussian, mu=0, sigma=0.3, indpb=1.0/Brain.G_TOTAL_CONNECTIONS)
 		self.toolbox.register("select", tools.selRoulette)
 		self.toolbox.register("selectBest", tools.selBest)
 		self.toolbox.register("map",map)
@@ -92,7 +92,7 @@ class Darwin(object):
 			pop = self.pop
 			#self.history.update(pop)
 
-			if g % 1 == 0 and g != 0:
+			if g % 1 == 0 and g != 0 and Darwin.graphics:
 				creatures = self.simulate(True)
 			else:
 				creatures = self.simulate(False)
@@ -100,15 +100,12 @@ class Darwin(object):
 			fitnesses = [self.evaluate(creature) for creature in creatures]
 			for ind,fit in zip(pop, fitnesses):
 				ind.fitness.values = fit,
-				#print "%s %s" % (sum(ind), fit)
 
 			print "--Generation %d (size: %d) --" % (g, len(pop))
 			self.printStats(pop)
 
 			bestInds = self.toolbox.selectBest(pop, len(pop)/10 * 2)
 			bestInds = list(self.toolbox.map(self.toolbox.clone, bestInds))
-			#print bestInds[0]
-			#print bestInds[1]
 			offspring = self.toolbox.select(pop, len(pop)/10 * 8)
 			offspring = list(self.toolbox.map(self.toolbox.clone, offspring))
 
@@ -144,10 +141,10 @@ class Darwin(object):
 		print ("Max: %s, Avg: %s, Min: %s" % (max(fits), mean, min(fits)))
 
 	def simulate(self, draw=False):
-		world = World(gene_pool=self.pop,nticks=Darwin.NTICKS,max_bush_count=10)
+		world = World(gene_pool=self.pop,nticks=Darwin.NTICKS,max_bush_count=Darwin.max_bush_count)
 
 		if draw:
-			self.renderer.play_epoch(world, 1)
+			self.renderer.play_epoch(world, disp_freq=Darwin.disp_freq)
 		else:
 			world.run_ticks()
 
