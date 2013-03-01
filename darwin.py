@@ -28,6 +28,7 @@ class Darwin(object):
 			self.renderer = Renderer(700,700)
 
 		self.toolbox = base.Toolbox()
+		self.gen_number = 0
 
 		creator.create("FitnessMax", base.Fitness, weights=(1.0,))
 		creator.create("Individual", list, fitness=creator.FitnessMax)
@@ -59,7 +60,7 @@ class Darwin(object):
 	def begin_evolution(self):
 
 		# Begin actual evolution
-		for g in xrange(1,Darwin.NGEN+1):
+		for g in xrange(self.gen_number+1,self.gen_number+Darwin.NGEN+1):
 			pop = self.pop
 
 			creatures = self.simulate()
@@ -89,6 +90,7 @@ class Darwin(object):
 			for ind in self.pop:
 				del ind.fitness.values
 
+		self.gen_number = g
 		f = open('save.txt','w')
 		self.save_population(f)
 
@@ -116,11 +118,11 @@ class Darwin(object):
 
 	def save_population(self,save_file):
 		pickler = Pickler(save_file)
-		pickler.dump(self.pop)
+		data = (self.pop, self.gen_number)
+		pickler.dump(data)
 		save_file.close()
 
 	def load_population(self,load_file):
 		unpickler = Unpickler(load_file)
-		self.pop = unpickler.load()
+		self.pop, self.gen_number = unpickler.load()
 		load_file.close()
-

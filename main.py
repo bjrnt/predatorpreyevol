@@ -29,7 +29,7 @@ def default():
 		('Darwin','num_per_sim'):10,
 		('Darwin','NTICKS'):1000,
 
-		('Darwin','graphics'):True,
+		('Darwin','graphics'):False,
 		('Renderer','disp_freq'):4,
 		('Darwin','enable_multiprocessing'):True,
 	}
