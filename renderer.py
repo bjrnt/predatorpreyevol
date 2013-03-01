@@ -8,19 +8,27 @@ class Renderer(object):
 
 		self.width = 700
 		self.height = 700
-
+		self.disp_freq = Renderer.disp_freq
 		self.screen = pygame.display.set_mode((self.width,self.height), DOUBLEBUF)
 		pygame.display.set_caption('Our kex')
 		self.background = pygame.Surface(self.screen.get_size())
 		self.background = self.background.convert()
 		self.background.fill((0,0,0))
 		self.screen.blit(self.background,(0,0))
+		pygame.display.flip()
 
-	def play_epoch(self, world, disp_freq=1):
+	def play_epoch(self, world):
+		disp_freq = self.disp_freq
+			
 		for tick in xrange(world.nticks):
 			world.run_tick()
 			if tick % disp_freq == 0:
 				self.render(world)
+
+		self.screen.blit(self.background,(0,0))
+		pygame.display.flip()
+
+		return world.get_creatures()
 
 	def render(self, world):
 		self.screen.blit(self.background,(0,0))

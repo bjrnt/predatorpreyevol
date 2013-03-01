@@ -9,41 +9,6 @@ from disker import Disker
 
 import argparse, sys, cProfile, math, time
 
-def onevsone():
-	renderer = Renderer(700,700)
-
-	options = {
-		('World','move'):True,
-		('World','think'):False,
-		('World','default_input'):True,
-		('World','detection'):True,
-		('World','collision'):True,
-		('World','remove_dead'):True,
-		('Creature','Bush','use_energy'):False,
-		('Creature','G_MAX_SPEED'):0.08,
-	}
-
-	apply_config(options)
-
-	world = World()
-
-	b1 = Bush(0.5, 0.65)
-	for x in xrange(100):
-		b1.think()
-
-	c1 = Creature(None, 0.2, 0.60)
-	c1.speed = 0.05
-	c1.rotation = 0
-	c2 = Creature(None, 0.8, 0.8)
-	c2.speed = 0.05
-	c2.rotation = 0.5
-	
-	world.add_creature(c1)
-	world.add_creature(c2)
-	world.add_bush(b1)
-
-	renderer.play_epoch(world,1)
-
 def default():
 	options = {
 		('World','move'):True,
@@ -52,16 +17,23 @@ def default():
 		('World','detection'):True,
 		('World','collision'):True,
 		('World','remove_dead'):True,
+
 		('Creature','Bush','use_energy'):True,
-		('Creature','G_MAX_SPEED'):0.015,
-		('Darwin','NGEN'):3,
+		('Creature','G_MAX_SPEED'):0.01,
+
 		('Darwin','CXPB'):0.0,
-		('Darwin','MUTPB'):0.2,
-		('Darwin','NINDS'):30,
-		('Darwin','max_bush_count'):20,
+		('Darwin','MUTPB'):0.4,
+
+		('Darwin','NGEN'):3,
+		('Darwin','NINDS'):30, # Must be a number divisible by 10 and by num_per_sim
+		('Darwin','max_bush_count'):10,
+
+		('Darwin','num_per_sim'):10,
 		('Darwin','NTICKS'):1000,
-		('Darwin','graphics'):True,
-		('Darwin','disp_freq'):4,
+
+		('Darwin','graphics'):False,
+		('Renderer','disp_freq'):4,
+		('Darwin','enable_multiprocessing'):True,
 	}
 
 	apply_config(options)
@@ -90,9 +62,9 @@ def main():
 	if args.profiling_enabled:
 		profile()
 	else:
-		start = time.clock()
+		start = time.time()
 		default()
-		end = time.clock()	
+		end = time.time()	
 		print "Run-time %f" % (0.0 + end - start)
 
 	print "Done!"

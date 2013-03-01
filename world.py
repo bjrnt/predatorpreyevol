@@ -86,7 +86,7 @@ class World(object):
 
 			if antennae_point1[0] < 0 or antennae_point1[0] > 1 or antennae_point1[1] < 0 or antennae_point1[1] > 1:
 				left[0] = 1
-				left[1], left[2], left[3] = [1,1,1]
+				left[1], left[2], left[3] = [0,0,1]
 
 		if right == [0] * (Brain.G_INPUTNODES/2):
 			v_an2 = [looker.antennae_length * math.cos(angle + looker.antennae_angles[1]),
@@ -96,7 +96,7 @@ class World(object):
 
 			if antennae_point2[0] < 0 or antennae_point2[0] > 1 or antennae_point2[1] < 0 or antennae_point2[1] > 1:
 				right[0] = 1
-				right[1], right[2], right[3] = [1,1,1]
+				right[1], right[2], right[3] = [0,0,1]
 
 		return left, right
 
