@@ -3,8 +3,8 @@
 
 Härnäst:
 
-* Lägg till gener
-
-* Lägg till så man kan spara och ladda
-
+* Byt till NSGA-II (C versionen om möjligt)
+* PyPy, separera grafiskt och logiskt
+* C++ version av world.py
+* Multicore
 * Börja skriva på rapporten
