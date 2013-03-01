@@ -1,16 +1,19 @@
-from deap import base,creator,tools,cTools
+from deap import base,creator,tools
 from brain import Brain
 from world import World
-import funcs
 from renderer import Renderer
 from creature import Creature
 from cPickle import Pickler, Unpickler
 
 import multiprocessing
-import matplotlib.pyplot as plt
-import networkx
 import random
 import itertools
+
+try:
+	from deap import cTools
+	cTools_available = True
+except ImportError:
+	cTools_available = False
 
 def simulate(creatures, nticks=None, max_bush_count=None):
 	w = World(gene_pool=creatures,nticks=nticks,max_bush_count=max_bush_count)
@@ -34,9 +37,13 @@ class Darwin(object):
 		self.toolbox.register("population", tools.initRepeat, list, self.toolbox.individual)
 		self.toolbox.register("mate", tools.cxUniform, indpb=0.5)
 		self.toolbox.register("mutate", tools.mutGaussian, mu=0, sigma=0.3, indpb=2.0/Brain.G_TOTAL_CONNECTIONS)
-		self.toolbox.register("select", cTools.selNSGA2)
 		self.toolbox.register("selectBest", tools.selBest)
 		self.toolbox.register("simulate", simulate, nticks=Darwin.NTICKS, max_bush_count=Darwin.max_bush_count)
+
+		if cTools_available:
+			self.toolbox.register("select", cTools.selNSGA2)
+		else:
+			self.toolbox.register("select", tools.selNSGA2)
 
 		self.pop = self.toolbox.population(n=Darwin.NINDS)
 

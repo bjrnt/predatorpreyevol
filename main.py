@@ -4,8 +4,6 @@ from creature import Creature
 from renderer import Renderer
 from bush import Bush
 from darwin import Darwin
-from disker import Disker
-#from deap import dtm
 
 import argparse, sys, cProfile, math, time
 
@@ -19,7 +17,7 @@ def default():
 		('World','remove_dead'):True,
 
 		('Creature','Bush','use_energy'):True,
-		('Creature','G_MAX_SPEED'):0.01,
+		('Creature','G_MAX_SPEED'):0.005,
 
 		('Darwin','CXPB'):0.0,
 		('Darwin','MUTPB'):0.4,
@@ -31,7 +29,7 @@ def default():
 		('Darwin','num_per_sim'):10,
 		('Darwin','NTICKS'):1000,
 
-		('Darwin','graphics'):False,
+		('Darwin','graphics'):True,
 		('Renderer','disp_freq'):4,
 		('Darwin','enable_multiprocessing'):True,
 	}
@@ -53,7 +51,9 @@ def main():
 	parser.add_argument('-l',dest='load_file', metavar='file', type=file, help="Path to file with saved state, used to resume simulations.")
 	parser.add_argument('--profile',dest='profiling_enabled', help="Use to enable or disable generation of profiling information.", required=False, action='store_const', const=True)
 	args = parser.parse_args(sys.argv[1:])
+
 	global load_file
+
 	if args.load_file:
 		load_file = args.load_file
 	else:
