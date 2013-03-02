@@ -17,21 +17,21 @@ def default():
 		('World','remove_dead'):True,
 
 		('Creature','Bush','use_energy'):True,
-		('Creature','G_MAX_SPEED'):0.005,
+		('Creature','G_MAX_SPEED'):0.015,
 
 		('Darwin','CXPB'):0.0,
 		('Darwin','MUTPB'):0.4,
 
-		('Darwin','NGEN'):3,
+		('Darwin','NGEN'):50,
 		('Darwin','NINDS'):30, # Must be a number divisible by 10 and by num_per_sim
-		('Darwin','max_bush_count'):10,
+		('Darwin','max_bush_count'):13,
 
 		('Darwin','num_per_sim'):10,
 		('Darwin','NTICKS'):1000,
 
-		('Darwin','graphics'):False,
 		('Renderer','disp_freq'):4,
 		('Darwin','enable_multiprocessing'):True,
+		('Darwin','graphics'):True,
 	}
 
 	apply_config(options)

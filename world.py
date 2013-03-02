@@ -149,8 +149,8 @@ class World(object):
 	def spawn_bushes(self):
 		if len(self.get_bushes()) < self.max_bush_count:
 			for i in xrange(self.max_bush_count - len(self.get_bushes())):
-				if random.random() < 0.01:
-					self.add_bush(Bush(random.random(), random.random()))
+				if random.random() < 0.05:
+					self.add_bush(Bush(random.uniform(0.05,0.95), random.uniform(0.05,0.95)))
 
 	def spawn_bushes_grid(self):
 		for i in xrange(1,5):

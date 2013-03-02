@@ -1,21 +1,3 @@
-# Creature:
-# Max speed: float ~0.0005/tick
-# ANN gives wheel multipliers: float 0-1
-# Size: float (radius)
-# Positions in X and Y: float 0-1
-# Brain: ANN
-# Antennae: 2
-# Antennae length: 3 * Size
-# Antennae angle: 0 - 90 degrees
-
-# Inputs:
-# 5 for first antennae, i.e. antennae_angles[0]
-# 0: Object detection, 1 if detected 0 if not
-# 1: R 0 - 1
-# 2: G 0 - 1
-# 3: B 0 - 1
-# 4: Object detection 2...
-
 from brain import Brain
 from inhabitant import Inhabitant
 import math, random, funcs
@@ -29,7 +11,7 @@ class Creature(Inhabitant):
 	def __init__(self, genes=None, x=0.0, y=0.0):
 		
 		R = 0.1 + (genes[-1] + 1) * 0.5 
-		G = 0.01 + (genes[-2] + 1) * 0.3
+		G = 0.1 + (genes[-2] + 1) * 0.5
 		B = 0.1 + (genes[-3] + 1) * 0.5
 		R = R if R < 1 else 1
 		R = R if R > 0 else 0
@@ -87,8 +69,9 @@ class Creature(Inhabitant):
 			if self.energy == 0:
 				self.alive = False
 
-		d_x = math.cos(self.rotation * 2.0 * math.pi) * self.speed * self.G_MAX_SPEED
-		d_y = -1.0 * math.sin(self.rotation * 2.0 * math.pi) * self.speed * self.G_MAX_SPEED
+		angle = self.rotation * 2.0 * math.pi
+		d_x = math.cos(angle) * self.speed * self.G_MAX_SPEED
+		d_y = -1.0 * math.sin(angle) * self.speed * self.G_MAX_SPEED
 		self.pos[0] += d_x
 		if self.pos[0] + self.get_radius() > 1:
 			self.pos[0] = 1 - self.get_radius()

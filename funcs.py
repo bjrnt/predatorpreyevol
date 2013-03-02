@@ -1,7 +1,5 @@
 import numpy as np
-import world
 from numpy import array
-from math import sqrt
 
 def dot(v1, v2):
 	return v1.dot(v2)

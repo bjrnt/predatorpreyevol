@@ -8,7 +8,8 @@ from cPickle import Pickler, Unpickler
 import multiprocessing
 import random
 import itertools
-
+import time
+	
 try:
 	from deap import cTools
 	cTools_available = True
@@ -28,7 +29,7 @@ class Darwin(object):
 			self.renderer = Renderer(700,700)
 
 		self.toolbox = base.Toolbox()
-		self.gen_number = 0
+		self.gen_start_number = 1
 
 		creator.create("FitnessMax", base.Fitness, weights=(1.0,))
 		creator.create("Individual", list, fitness=creator.FitnessMax)
@@ -36,8 +37,10 @@ class Darwin(object):
 		self.toolbox.register("attr_float", random.uniform, -1, 1)
 		self.toolbox.register("individual", tools.initRepeat, creator.Individual, self.toolbox.attr_float, Brain.G_TOTAL_CONNECTIONS + 3)
 		self.toolbox.register("population", tools.initRepeat, list, self.toolbox.individual)
+
 		self.toolbox.register("mate", tools.cxUniform, indpb=0.5)
 		self.toolbox.register("mutate", tools.mutGaussian, mu=0, sigma=0.3, indpb=2.0/Brain.G_TOTAL_CONNECTIONS)
+		
 		self.toolbox.register("selectBest", tools.selBest)
 		self.toolbox.register("simulate", simulate, nticks=Darwin.NTICKS, max_bush_count=Darwin.max_bush_count)
 
@@ -60,7 +63,8 @@ class Darwin(object):
 	def begin_evolution(self):
 
 		# Begin actual evolution
-		for g in xrange(self.gen_number+1,self.gen_number+Darwin.NGEN+1):
+		start_time = time.time()
+		for g in xrange(self.gen_start_number,self.gen_start_number+Darwin.NGEN+1):
 			pop = self.pop
 
 			creatures = self.simulate()
@@ -70,6 +74,8 @@ class Darwin(object):
 				ind.fitness.values = fit,
 
 			self.printStats(pop,g)
+			if g % 10 == 0:
+				self.printTimeStats(start_time,g)
 
 			bestInds = self.toolbox.selectBest(pop, len(pop)/10)
 			bestInds = list(self.toolbox.map(self.toolbox.clone, bestInds))
@@ -90,14 +96,21 @@ class Darwin(object):
 			for ind in self.pop:
 				del ind.fitness.values
 
-		self.gen_number = g
+		self.gen_start_number = g
 		f = open('save.txt','w')
 		self.save_population(f)
+
+	def printTimeStats(self,start_time,gen):
+		time_spent = time.time() - start_time
+		avg = time_spent / (gen + 1 - self.gen_start_number)
+		generations_left = (self.gen_start_number + Darwin.NGEN - gen)
+		print '\033[95m' + "# Time stats: Spent: %2.2f s, Avg/gen: %2.2f s" % (time_spent, avg)
+		print "# Time to run %i gens: %2.2f s" % (generations_left, generations_left * avg), '\033[0m'
 
 	def printStats(self,pop,gen):
 		fits = [ind.fitness.values[0] for ind in pop]
 		mean = sum(fits) / len(pop)
-		print ("(%3i): Max: %6.2f, Avg: %6.2f, Min: %6.2f" % (gen, max(fits), mean, min(fits)))
+		print ("(%3i): Max: %6.2f, Avg: %6.2f, Min: %5.2f" % (gen, max(fits), mean, min(fits)))
 
 	def simulate(self):
 		res = []
@@ -118,11 +131,11 @@ class Darwin(object):
 
 	def save_population(self,save_file):
 		pickler = Pickler(save_file)
-		data = (self.pop, self.gen_number)
+		data = (self.pop, self.gen_start_number + 1)
 		pickler.dump(data)
 		save_file.close()
 
 	def load_population(self,load_file):
 		unpickler = Unpickler(load_file)
-		self.pop, self.gen_number = unpickler.load()
+		self.pop, self.gen_start_number = unpickler.load()
 		load_file.close()

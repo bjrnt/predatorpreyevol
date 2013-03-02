@@ -21,6 +21,6 @@ class Bush(Inhabitant):
 		if Bush.use_energy and target.__class__ == Creature:
 			target.energy += self.energy
 			target.consumed_energy += self.energy
-
-		if target.__class__ == Creature:
 			self.alive = 0
+
+			
