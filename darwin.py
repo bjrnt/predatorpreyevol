@@ -1,15 +1,24 @@
-from deap import base,creator,tools
-from brain import Brain
-from world import World
-from renderer import Renderer
-from creature import Creature
-from cPickle import Pickler, Unpickler
-
 import multiprocessing
+import platform
 import random
 import itertools
 import time
+
+import numpypy
+from deap import base,creator,tools
+from brain import Brain
+from world import World
+from creature import Creature
+from cPickle import Pickler, Unpickler
+from numpypy import array
+#from numpy import array
 	
+if platform.python_implementation() != 'PyPy':
+	from renderer import Renderer
+	renderer_available = True
+else:
+	renderer_available = False
+
 try:
 	from deap import cTools
 	cTools_available = True
@@ -25,7 +34,7 @@ class Darwin(object):
 	"""docstring for Darwin"""
 	def __init__(self):
 
-		if Darwin.graphics:
+		if Darwin.graphics and renderer_available:
 			self.renderer = Renderer(700,700)
 
 		self.toolbox = base.Toolbox()
@@ -116,13 +125,13 @@ class Darwin(object):
 		res = []
 		if len(self.pop) > Darwin.num_per_sim:
 			inputs = [self.pop[i*Darwin.num_per_sim:(i+1)*Darwin.num_per_sim] for i in xrange(0,len(self.pop)/Darwin.num_per_sim)]
-			if Darwin.graphics:
+			if Darwin.graphics and renderer_available:
 				res += list(itertools.chain(*self.toolbox.map(self.toolbox.simulate, inputs[1:])))
 				res += self.renderer.play_epoch(World(gene_pool=inputs[0], nticks=Darwin.NTICKS, max_bush_count=Darwin.max_bush_count))
 			else:
 				res = list(itertools.chain(*self.toolbox.map(self.toolbox.simulate, inputs)))
 		else:
-			if Darwin.graphics:
+			if Darwin.graphics and renderer_available:
 				res = self.renderer.play_epoch(World(gene_pool=self.pop, nticks=Darwin.NTICKS, max_bush_count=Darwin.max_bush_count))
 			else:
 				res = self.toolbox.simulate(self.pop)

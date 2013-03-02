@@ -1,7 +1,12 @@
 #!/usr/bin/env python
+import platform
+if platform.python_implementation() == 'PyPy':
+	import numpypy
+else:
+	from renderer import Renderer
+
 from world import World
 from creature import Creature
-from renderer import Renderer
 from bush import Bush
 from darwin import Darwin
 
@@ -22,7 +27,7 @@ def default():
 		('Darwin','CXPB'):0.0,
 		('Darwin','MUTPB'):0.4,
 
-		('Darwin','NGEN'):50,
+		('Darwin','NGEN'):200,
 		('Darwin','NINDS'):30, # Must be a number divisible by 10 and by num_per_sim
 		('Darwin','max_bush_count'):13,
 
@@ -76,7 +81,10 @@ def apply_config(config):
 		attr = key[-1]
 		for cls in clses:
 			if cls.istitle():
-				setattr(eval(cls),attr,config[key])
+				try:
+					setattr(eval(cls),attr,config[key])
+				except NameError:
+					pass
 
 if __name__ == '__main__':
 	main()

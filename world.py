@@ -2,7 +2,6 @@ import random, funcs, math
 from brain import Brain
 from creature import Creature
 from bush import Bush
-import numpy as np
 from numpy import array
 
 class World(object):
@@ -33,7 +32,7 @@ class World(object):
 				left = [0] * (Brain.G_INPUTNODES/2)
 				right = [0] * (Brain.G_INPUTNODES/2)
 
-				if positions != []:
+				if len(positions) > 0:
 					diffs = positions - creature.get_pos()
 					distances = array([funcs.vlen(diff) for diff in diffs] - radii)
 					for index, val in enumerate(distances):
@@ -82,7 +81,7 @@ class World(object):
 			v_an1 = [looker.antennae_length * math.cos(angle + looker.antennae_angles[0]),
 			-1 * looker.antennae_length * math.sin(angle + looker.antennae_angles[0])]
 
-			antennae_point1 = funcs.vplus(looker.pos, v_an1)
+			antennae_point1 = funcs.vplus(looker.get_pos(), v_an1)
 
 			if antennae_point1[0] < 0 or antennae_point1[0] > 1 or antennae_point1[1] < 0 or antennae_point1[1] > 1:
 				left[0] = 1
@@ -92,7 +91,7 @@ class World(object):
 			v_an2 = [looker.antennae_length * math.cos(angle + looker.antennae_angles[1]),
 			-1 * looker.antennae_length * math.sin(angle + looker.antennae_angles[1])]
 
-			antennae_point2 = funcs.vplus(looker.pos, v_an2)
+			antennae_point2 = funcs.vplus(looker.get_pos(), v_an2)
 
 			if antennae_point2[0] < 0 or antennae_point2[0] > 1 or antennae_point2[1] < 0 or antennae_point2[1] > 1:
 				right[0] = 1
@@ -108,7 +107,7 @@ class World(object):
 		left = [0] * inputs
 		right = [0] * inputs
 
-		v_dist = funcs.vminus(target.pos, looker.pos)
+		v_dist = funcs.vminus(target.get_pos(), looker.get_pos())
 
 		angle = looker.rotation * 2 * math.pi
 		v_an1 = array([looker.antennae_length * math.cos(angle + looker.antennae_angles[0]),
@@ -167,7 +166,7 @@ class World(object):
 		return self.creatures + self.bushes
 
 	def get_positions(self):
-		return [creature.pos for creature in self.creatures]
+		return [creature.get_pos() for creature in self.creatures]
 
 	def get_creatures(self):
 		return self.creatures + self.dead_creatures
