@@ -4,14 +4,12 @@ import random
 import itertools
 import time
 
-import numpypy
 from deap import base,creator,tools
 from brain import Brain
 from world import World
 from creature import Creature
 from cPickle import Pickler, Unpickler
-from numpypy import array
-#from numpy import array
+from numpy import array
 	
 if platform.python_implementation() != 'PyPy':
 	from renderer import Renderer
@@ -20,12 +18,14 @@ else:
 	renderer_available = False
 
 try:
-	from deap import cTools
+	# Note, cTools are not compatible with PyPy
+	from deap import cTools 
 	cTools_available = True
 except ImportError:
 	cTools_available = False
 
 def simulate(creatures, nticks=None, max_bush_count=None):
+	"""Used to run a simulation, placed outside of class to enable multiprocessing"""
 	w = World(gene_pool=creatures,nticks=nticks,max_bush_count=max_bush_count)
 	w.run_ticks()
 	return w.get_creatures()
@@ -83,7 +83,7 @@ class Darwin(object):
 				ind.fitness.values = fit,
 
 			self.printStats(pop,g)
-			if g % 10 == 0:
+			if g % 20 == 0:
 				self.printTimeStats(start_time,g)
 
 			bestInds = self.toolbox.selectBest(pop, len(pop)/10)
