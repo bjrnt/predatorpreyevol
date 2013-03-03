@@ -34,7 +34,7 @@ class World(object):
 
 				if len(positions) > 0:
 					diffs = positions - creature.get_pos()
-					distances = array([funcs.vlen(diff) for diff in diffs] - radii)
+					distances = array([funcs.vlen(diff) for diff in diffs]) - radii
 					for index, val in enumerate(distances):
 						if val <= creature.antennae_length and creature != inhabitants[index]:
 							[left, right] = self.check_detection(creature,inhabitants[index])
