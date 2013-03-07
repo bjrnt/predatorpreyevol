@@ -38,8 +38,8 @@ class BrainLinear(object):
 			else:
 				right = (0,0)
 			
-		print "# Input: %s" % data
-		print "# Output: (%s,%s)" % ((left[0] + right[0]) / 6, (left[1] + right[1]) / 6)
+		#print "# Input: %s" % data
+		#print "# Output: (%s,%s)" % ((left[0] + right[0]) / 6, (left[1] + right[1]) / 6)
 		return ((left[0] + right[0]) / 6, (left[1] + right[1]) / 6)
 
 	def import_genes(self, genes):
