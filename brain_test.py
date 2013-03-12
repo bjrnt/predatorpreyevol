@@ -1,4 +1,6 @@
 import unittest
+import random
+import operator
 from brain_linear import BrainLinear
 from brain_rbf import BrainRBF
 
@@ -56,16 +58,36 @@ class BrainLinearTest(unittest.TestCase):
 		self.assertEqual(self.brain.think([0] * (ins / 2) + [1] * 2 + [0] * 2), (0.5/3,0.5/3), 'Output when only detecting 1 color incorrect.')
 		self.assertEqual(self.brain.think([0] * (ins / 2) + [1] + [0] + [1] + [0]), (0.5/3,0.5/3), 'Output when only detecting 1 color incorrect.')
 		self.assertEqual(self.brain.think([0] * (ins / 2) + [1] + [0] * 2 + [1]), (0.5/3,0.5/3), 'Output when only detecting 1 color incorrect.')
+	def test_fuzz(self):
+		num_tests = 10000
+		ins = BrainLinear.G_INPUTNODES
+		res = [0]*num_tests 
+		for i in xrange(num_tests) :
+			
+			self.brain.import_genes(map(lambda x: random.random()*x*2-1, [1]*BrainLinear.G_TOTAL_CONNECTIONS))
+			res[i] = self.brain.think(map(lambda x: random.random()*x, [1]*ins))
+			
+		#print 'random weights, random input %d vs %d' % (len([ds for (ds,dr) in res if ds > 0]) , num_tests - len([ds for (ds,dr) in res if ds > 0]))
+		self.assertTrue(len([ds for (ds,dr) in res if ds > 0]) / float(num_tests) > 0.45 and len([ds for (ds,dr) in res if ds > 0]) / float(num_tests) < 0.55, "fuzz testing gave abnormal distribution of results")
 
 	def tearDown(self):
 		del self.brain
 
 class BrainRBFTest(unittest.TestCase):
 	def setUp(self):
-		pass
+		self.brain = BrainRBF()
 
-	def test_blabla(self):
-		pass
+	def test_fuzz(self):
+		num_tests = 10000
+		ins = BrainRBF.G_INPUTNODES
+		res = [0]*num_tests 
+		for i in xrange(num_tests) :
+			
+			self.brain.import_genes(map(lambda x: random.random()*x*2-1, [1]*BrainRBF.G_TOTAL_CONNECTIONS))
+			res[i] = self.brain.think(map(lambda x: random.random()*x, [1]*ins))
+			
+		#print 'random weights, random input %d vs %d' % (len([ds for (ds,dr) in res if ds > 0]) , num_tests - len([ds for (ds,dr) in res if ds > 0]))
+		self.assertTrue(len([ds for (ds,dr) in res if ds > 0]) / float(num_tests) > 0.45 and len([ds for (ds,dr) in res if ds > 0]) / float(num_tests) < 0.55, "fuzz testing gave abnormal distribution of results")
 
 	def tearDown(self):
 		pass
