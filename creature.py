@@ -1,10 +1,11 @@
-from brain import Brain
+from brain_rbf import BrainRBF
+from brain_linear import BrainLinear
 from inhabitant import Inhabitant
 import math, random, funcs
 
 class Creature(Inhabitant):
 	"""docstring for ClassName"""
-	G_MAX_ROTATION = 0.05
+	G_MAX_ROTATION = 1.5
 	antennae = 2
 	antennae_angles = [math.pi/6.0, -1.0 * math.pi/6.0]
 
@@ -23,7 +24,7 @@ class Creature(Inhabitant):
 		super(Creature, self).__init__([x,y], 
 			radius_multiplier=0.5, 
 			color=(R,G,B),
-			energy=500)
+			energy=Creature.health)
 			
 		self.rotation = random.random()
 		self.speed = 0.0
@@ -32,19 +33,33 @@ class Creature(Inhabitant):
 		self.rotated = 0.0
 		self.consumed_energy = 1
 		self.antennae_length = self.radius_multiplier * self.G_MAXIMUM_RADIUS * 5
-		self.brain = Brain(genes)
+		self.brain = eval(Creature.brain_type)(genes)
 
 	def gather_input(self, data):
 		self.data = data
 
 	def think(self):
 		[d_s, d_r] = self.brain.think(self.data)
-		self.rotation = funcs.sign(self.rotation + d_r * Creature.G_MAX_ROTATION) * (abs(self.rotation + d_r * Creature.G_MAX_ROTATION) % 1.0)
+
+		#if d_r != 0:
+			#print "Before: %f, d_r: %f" % (self.rotation, d_r)
+
+		self.rotation = (self.rotation + d_r * Creature.G_MAX_ROTATION)
+
+		if self.rotation < 0:
+			self.rotation = 1 - (abs(self.rotation) % 1.0)
+		if self.rotation > 1:
+			self.rotation = self.rotation % 1.0
+
+		#if d_r != 0:
+			#print "After: %f" % self.rotation
+
+		# self.rotation = funcs.sign(self.rotation + d_r * Creature.G_MAX_ROTATION) * (abs(self.rotation + d_r * Creature.G_MAX_ROTATION) % 1.0)
 		self.speed += d_s
-		if self.speed > 1:
-			self.speed = 1
-		if self.speed < -1:
-			self.speed = -1
+		if self.speed > 1.0:
+			self.speed = 1.0
+		if self.speed < -1.0:
+			self.speed = -1.0
 
 	# def think(self):
 	# 	if self.data[2] > 0.6 and self.data[1] < 0.4 or self.data[6] > 0.6 and self.data[5] < 0.4 and self.speed > 0:

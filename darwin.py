@@ -5,7 +5,8 @@ import itertools
 import time
 
 from deap import base,creator,tools
-from brain import Brain
+from brain_rbf import BrainRBF
+from brain_linear import BrainLinear
 from world import World
 from creature import Creature
 from cPickle import Pickler, Unpickler
@@ -17,8 +18,7 @@ if platform.python_implementation() != 'PyPy':
 else:
 	renderer_available = False
 
-try:
-	# Note, cTools are not compatible with PyPy
+try: # Note: cTools are not compatible with PyPy
 	from deap import cTools 
 	cTools_available = True
 except ImportError:
@@ -32,24 +32,51 @@ def simulate(creatures, nticks=None, max_bush_count=None):
 
 class Darwin(object):
 	"""docstring for Darwin"""
-	def __init__(self):
+	def check_bounds(self, min, max):
+	    def decorator(func):
+	        def wrapper(*args, **kargs):
+	            offspring = func(*args, **kargs)
+	            for child in offspring:
+	                for i in xrange(len(child)):
+	                    if child[i] > max:
+	                        child[i] = max
+	                    elif child[i] < min:
+	                        child[i] = min
+	            return offspring
+	        return wrapper
+	    return decorator
 
+	def cross_over(self, child1, child2, indpb):
+		genes1 = child1[0:-3]
+		genes2 = child2[0:-3]
+
+		for i in xrange(len(genes1), self.Brain.G_REGION_SIZE):
+			if random.random() < indpb:
+				genes1[i:i+self.Brain.G_REGION_SIZE], genes2[i:i+self.Brain.G_REGION_SIZE] = genes2[i:i+self.Brain.G_REGION_SIZE], genes1[i:i+self.Brain.G_REGION_SIZE]
+
+		return genes1, genes2
+
+	def __init__(self):
 		if Darwin.graphics and renderer_available:
 			self.renderer = Renderer(700,700)
 
 		self.toolbox = base.Toolbox()
 		self.gen_start_number = 1
+		self.Brain = eval(Darwin.brain_type)
 
 		creator.create("FitnessMax", base.Fitness, weights=(1.0,))
 		creator.create("Individual", list, fitness=creator.FitnessMax)
 
 		self.toolbox.register("attr_float", random.uniform, -1, 1)
-		self.toolbox.register("individual", tools.initRepeat, creator.Individual, self.toolbox.attr_float, Brain.G_TOTAL_CONNECTIONS + 3)
+		self.toolbox.register("individual", tools.initRepeat, creator.Individual, self.toolbox.attr_float, self.Brain.G_TOTAL_CONNECTIONS + 3)
 		self.toolbox.register("population", tools.initRepeat, list, self.toolbox.individual)
 
-		self.toolbox.register("mate", tools.cxUniform, indpb=0.5)
-		self.toolbox.register("mutate", tools.mutGaussian, mu=0, sigma=0.3, indpb=2.0/Brain.G_TOTAL_CONNECTIONS)
+		self.toolbox.register("mate", self.cross_over, indpb=0.5)
+		self.toolbox.register("mutate", tools.mutGaussian, mu=0, sigma=0.3, indpb=2.0/self.Brain.G_TOTAL_CONNECTIONS)
 		
+		self.toolbox.decorate("mate", self.check_bounds(-1,1))
+		self.toolbox.decorate("mutate", self.check_bounds(-1,1))
+
 		self.toolbox.register("selectBest", tools.selBest)
 		self.toolbox.register("simulate", simulate, nticks=Darwin.NTICKS, max_bush_count=Darwin.max_bush_count)
 
@@ -108,28 +135,17 @@ class Darwin(object):
 		self.gen_start_number = g
 		f = open('save.txt','w')
 		self.save_population(f)
-
-	def printTimeStats(self,start_time,gen):
-		time_spent = time.time() - start_time
-		avg = time_spent / (gen + 1 - self.gen_start_number)
-		generations_left = (self.gen_start_number + Darwin.NGEN - gen)
-		print '\033[95m' + "# Time stats: Spent: %2.2f s, Avg/gen: %2.2f s" % (time_spent, avg)
-		print "# Time to run %i gens: %2.2f s" % (generations_left, generations_left * avg), '\033[0m'
-
-	def printStats(self,pop,gen):
-		fits = [ind.fitness.values[0] for ind in pop]
-		mean = sum(fits) / len(pop)
-		print ("(%3i): Max: %6.2f, Avg: %6.2f, Min: %5.2f" % (gen, max(fits), mean, min(fits)))
-
+	
 	def simulate(self):
 		res = []
 		if len(self.pop) > Darwin.num_per_sim:
 			inputs = [self.pop[i*Darwin.num_per_sim:(i+1)*Darwin.num_per_sim] for i in xrange(0,len(self.pop)/Darwin.num_per_sim)]
+			
 			if Darwin.graphics and renderer_available:
-				res += list(itertools.chain(*self.toolbox.map(self.toolbox.simulate, inputs[1:])))
-				res += self.renderer.play_epoch(World(gene_pool=inputs[0], nticks=Darwin.NTICKS, max_bush_count=Darwin.max_bush_count))
+				res += self.renderer.play_epoch(World(gene_pool=inputs[0], nticks=Darwin.NTICKS, max_bush_count=Darwin.max_bush_count)) + list(itertools.chain(*self.toolbox.map(self.toolbox.simulate, inputs[1:])))
 			else:
 				res = list(itertools.chain(*self.toolbox.map(self.toolbox.simulate, inputs)))
+		
 		else:
 			if Darwin.graphics and renderer_available:
 				res = self.renderer.play_epoch(World(gene_pool=self.pop, nticks=Darwin.NTICKS, max_bush_count=Darwin.max_bush_count))
@@ -148,3 +164,15 @@ class Darwin(object):
 		unpickler = Unpickler(load_file)
 		self.pop, self.gen_start_number = unpickler.load()
 		load_file.close()
+
+	def printTimeStats(self,start_time,gen):
+		time_spent = time.time() - start_time
+		avg = time_spent / (gen + 1 - self.gen_start_number)
+		generations_left = (self.gen_start_number + Darwin.NGEN - gen)
+		print '\033[95m' + "# Time stats: Spent: %2.2f s, Avg/gen: %2.2f s" % (time_spent, avg)
+		print "# Time to run %i gens: %2.2f s" % (generations_left, generations_left * avg), '\033[0m'
+
+	def printStats(self,pop,gen):
+		fits = [ind.fitness.values[0] for ind in pop]
+		mean = sum(fits) / len(pop)
+		print ("(%3i): Max: %6.2f, Avg: %6.2f, Min: %5.2f" % (gen, max(fits), mean, min(fits)))

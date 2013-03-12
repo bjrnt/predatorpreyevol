@@ -1,12 +1,14 @@
 import random, funcs, math
-from brain import Brain
 from creature import Creature
 from bush import Bush
 from numpy import array
+from brain_rbf import BrainRBF
+from brain_linear import BrainLinear
 
 class World(object):
 	"""docstring for ClassName"""
 	def __init__(self, gene_pool=None, max_bush_count=0, nticks=10000):
+		self.Brain = eval(World.brain_type)
 		self.creatures = []
 		self.dead_creatures = []
 		self.bushes = []
@@ -29,8 +31,8 @@ class World(object):
 
 			for creature in self.creatures:
 				creature_got_input = False
-				left = [0] * (Brain.G_INPUTNODES/2)
-				right = [0] * (Brain.G_INPUTNODES/2)
+				left = [0] * (self.Brain.G_INPUTNODES/2)
+				right = [0] * (self.Brain.G_INPUTNODES/2)
 
 				if len(positions) > 0:
 					diffs = positions - creature.get_pos()
@@ -46,7 +48,7 @@ class World(object):
 				if creature.get_x() - creature.antennae_length < 0 or creature.get_x() + creature.antennae_length > 1 or creature.get_y() - creature.antennae_length < 0 or creature.get_y() + creature.antennae_length > 1:
 					[left, right] = self.detect_walls(creature, left, right)
 
-				if left != [0] * (Brain.G_INPUTNODES/2) or right != [0] * (Brain.G_INPUTNODES/2):
+				if left != [0] * (self.Brain.G_INPUTNODES/2) or right != [0] * (self.Brain.G_INPUTNODES/2):
 					creature_got_input = True
 					creature.gather_input(left + right)
 
@@ -77,7 +79,7 @@ class World(object):
 
 	def detect_walls(self, looker, left, right):
 		angle = looker.rotation * 2 * math.pi
-		if left == [0] * (Brain.G_INPUTNODES/2):
+		if left == [0] * (self.Brain.G_INPUTNODES/2):
 			v_an1 = [looker.antennae_length * math.cos(angle + looker.antennae_angles[0]),
 			-1 * looker.antennae_length * math.sin(angle + looker.antennae_angles[0])]
 
@@ -87,7 +89,7 @@ class World(object):
 				left[0] = 1
 				left[1], left[2], left[3] = [0,0,1]
 
-		if right == [0] * (Brain.G_INPUTNODES/2):
+		if right == [0] * (self.Brain.G_INPUTNODES/2):
 			v_an2 = [looker.antennae_length * math.cos(angle + looker.antennae_angles[1]),
 			-1 * looker.antennae_length * math.sin(angle + looker.antennae_angles[1])]
 
@@ -103,7 +105,7 @@ class World(object):
 		invalid1 = False
 		invalid2 = False
 
-		inputs = Brain.G_INPUTNODES/2
+		inputs = self.Brain.G_INPUTNODES/2
 		left = [0] * inputs
 		right = [0] * inputs
 
