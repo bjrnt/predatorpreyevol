@@ -24,15 +24,15 @@ def default():
 		('Creature','Bush','use_energy'):True,
 		('Creature','World','Darwin','brain_type'):'BrainLinear',
 
-		('Darwin','NGEN'):100,
+		('Darwin','NGEN'):200,
 		('Darwin','CXPB'):0.3,
 		('Darwin','MUTPB'):0.4,
 		
-		('Creature','G_MAX_SPEED'):0.005,
-		('Creature','health'):1500,
-		('Darwin','NTICKS'):3000,
+		('Creature','G_MAX_SPEED'):0.015,
+		('Creature','health'):500,
+		('Darwin','NTICKS'):1000,
 
-		('Darwin','NINDS'):60, # Must be a number divisible by 10 and by num_per_sim
+		('Darwin','NINDS'):120, # Must be a number divisible by 10 and by num_per_sim
 		('Darwin','num_per_sim'):20,
 
 		('Darwin','max_bush_count'):26,

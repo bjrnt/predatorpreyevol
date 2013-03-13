@@ -29,7 +29,7 @@ class BrainLinear(object):
 				left = (f(data[1]) + f(data[2]) + f(data[3]),
 					f(data[1]) + f(data[2]) + f(data[3]))
 			else:
-				self.gene_index += 6
+				self.gene_index += self.G_TOTAL_CONNECTIONS / 2
 				left = (0,0)
 
 			if data[4] != 0:

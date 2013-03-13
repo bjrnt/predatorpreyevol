@@ -5,40 +5,43 @@
 # 2: G 0 - 1
 # 3: B 0 - 1
 # 4: Object detection 2...
+from funcs import gaussian as gauss
+import itertools
 
-class Brain(object):
+class BrainRBF(object):
 	"""docstring for Brain"""
 	G_INPUTNODES = 8
-	G_TOTAL_CONNECTIONS = 12
+	G_TOTAL_CONNECTIONS = 24
 
 	def __init__(self, genes=None):
 		if genes != None:
 			self.import_genes(genes)
 
 	def think(self, data):
-		genes = self.genes
+		self.gene_index = 0
+		rbf = self.rbf
 
 		if data[0] == 0 and data[4] == 0:
 			return (0.005, 0)
 		
 		else:
-			if data[0] == 1 and data[4] == 1:
-				
-				left = (data[1] * genes[0] + data[2] * genes[1] + data[3] * genes[2],
-					data[1] * genes[3] + data[2] * genes[4] + data[3] * genes[5])
-				
-				right = (data[5] * genes[6] + data[6] * genes[7] + data[7] * genes[8],
-					data[5] * genes[9] + data[6] * genes[10] + data[7] * genes[11])
-				
-				return (left[0] + right[0], left[1] + right[1])
-
-			elif data[0] == 1:
-				return (data[1] * genes[0] + data[2] * genes[1] + data[3] * genes[2],
-					data[1] * genes[3] + data[2] * genes[4] + data[3] * genes[5])
-
+			if data[0] == 1:
+				left = (rbf(data[1]) + rbf(data[2]) + rbf(data[3]),
+					rbf(data[1]) + rbf(data[2]) + rbf(data[3]))
 			else:
-				return (data[5] * genes[6] + data[6] * genes[7] + data[7] * genes[8],
-					data[5] * genes[9] + data[6] * genes[10] + data[7] * genes[11])
-				
+				left = (0,0)
+
+			if data[4] == 1:
+				right = (rbf(data[5]) + rbf(data[6]) + rbf(data[7]),
+					rbf(data[5]) + rbf(data[6]) + rbf(data[7]))
+			else:
+				right = (0,0)
+
+			return ((left[0] + right[0]) / 6, (left[1] + right[1]) / 6)
+			
+	def rbf(self, data):
+		self.gene_index += 2
+		return (gauss(data, (self.genes[self.gene_index - 2] + 1) / 2, (self.genes[self.gene_index - 1] + 1) / 2) - 0.5) * 2
+
 	def import_genes(self, genes):
-		self.genes = genes		
+		self.genes = genes[0:-3]

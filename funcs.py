@@ -1,3 +1,4 @@
+import math
 import numpy as np
 from numpy import array
 
@@ -17,3 +18,17 @@ def sign(f):
 	if f < 0:
 		return -1
 	return 1
+
+def gaussian(x, mu, sigma):
+	""" definition of the guassian function"""
+	y = math.exp( -1.0/2 * ((x - mu + 0.0) / (sigma + 0.000001))**2 )
+	return y
+
+def fetch_one(enumerable):
+	def next_val():
+		for e in enumerable:
+			yield e
+		raise Exception('Too many elements retrieved')
+
+	return next_val().next
+

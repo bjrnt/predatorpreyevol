@@ -30,7 +30,7 @@ class BrainRBF(object):
 				left = (rbf(data[1]) + rbf(data[2]) + rbf(data[3]),
 					rbf(data[1]) + rbf(data[2]) + rbf(data[3]))
 			else:
-				self.gene_index += 12
+				self.gene_index += self.G_TOTAL_CONNECTIONS / 2
 				left = (0,0)
 
 			if data[4] == 1:
