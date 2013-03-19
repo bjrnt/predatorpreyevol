@@ -64,7 +64,7 @@ class BrainLinearTest(unittest.TestCase):
 		res = [0]*num_tests 
 		for i in xrange(num_tests) :
 			
-			self.brain.import_genes(map(lambda x: random.random()*x*2-1, [1]*BrainLinear.G_TOTAL_CONNECTIONS))
+			self.brain.import_genes(map(lambda x: random.random()*x*2-1, [1]*(BrainLinear.G_TOTAL_CONNECTIONS+3)))
 			res[i] = self.brain.think(map(lambda x: random.random()*x, [1]*ins))
 			
 		#print 'random weights, random input %d vs %d' % (len([ds for (ds,dr) in res if ds > 0]) , num_tests - len([ds for (ds,dr) in res if ds > 0]))
@@ -80,14 +80,20 @@ class BrainRBFTest(unittest.TestCase):
 	def test_fuzz(self):
 		num_tests = 10000
 		ins = BrainRBF.G_INPUTNODES
-		res = [0]*num_tests 
-		for i in xrange(num_tests) :
-			
-			self.brain.import_genes(map(lambda x: random.random()*x*2-1, [1]*BrainRBF.G_TOTAL_CONNECTIONS))
-			res[i] = self.brain.think(map(lambda x: random.random()*x, [1]*ins))
-			
+		res = [0]*num_tests
+		i = 0 
+		while i < num_tests:
+			self.brain.import_genes(map(lambda x: random.random()*x*2-1, [1] * (BrainRBF.G_GENES_NEEDED)))
+			inputData = map(lambda x: random.random()*x, [1]*ins)			
+			inputData[0] = round(inputData[0]) # should be 1 or 0
+			inputData[4] = round(inputData[4]) # should be 1 or 0
+			if inputData[0] == 0 and inputData[4] == 0 :
+				i = i-1
+				continue # no need to test on zero input, has default behaviour 
+			res[i] = self.brain.think(inputData)
+			i = i+1
 		#print 'random weights, random input %d vs %d' % (len([ds for (ds,dr) in res if ds > 0]) , num_tests - len([ds for (ds,dr) in res if ds > 0]))
-		self.assertTrue(len([ds for (ds,dr) in res if ds > 0]) / float(num_tests) > 0.45 and len([ds for (ds,dr) in res if ds > 0]) / float(num_tests) < 0.55, "fuzz testing gave abnormal distribution of results")
+		self.assertTrue(len([ds for (ds,dr) in res if ds > 0]) / float(num_tests) > 0.45 and len([ds for (ds,dr) in res if ds > 0]) / float(num_tests) < 0.55, "fuzz testing gave abnormal distribution of results %f vs %f" %(len([ds for (ds,dr) in res if ds > 0]) / float(num_tests),len([ds for (ds,dr) in res if ds < 0]) / float(num_tests)))
 
 	def tearDown(self):
 		pass
