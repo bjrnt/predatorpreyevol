@@ -6,17 +6,17 @@
 # 3: B 0 - 1
 # 4: Object detection 2...
 from funcs import gaussian as gauss
-import itertools
+from funcs import transfer
 
 class BrainRBF(object):
 	"""docstring for Brain"""
 	G_INPUTNODES = 8
 	G_TOTAL_CONNECTIONS = 36 # 12 calls * 3 genes
 	G_GENES_NEEDED = G_TOTAL_CONNECTIONS + 3
-	G_REGION_SIZE = 6
+	G_REGION_SIZE = 9
 
 	def __init__(self, genes=None):
-		if genes != None:
+		if genes is not None:
 			self.import_genes(genes)
 
 	def think(self, data):
@@ -40,12 +40,12 @@ class BrainRBF(object):
 			else:
 				right = (0,0)
 
-			return ((left[0] + right[0]) / 6, (left[1] + right[1]) / 6)
-# should have 3D gaussian instead
+			return (transfer(left[0] + right[0]), transfer(left[1] + right[1]))
+
 	def rbf(self, data):
 		self.gene_index += 3
-#		return (gauss(data, (self.genes[self.gene_index - 2] + 1) / 2, (self.genes[self.gene_index - 1] + 1) / 2) - 0.5) * 2 
 		return self.genes[self.gene_index-3] * gauss(data, (self.genes[self.gene_index - 2] + 1) / 2, (self.genes[self.gene_index - 1] + 1) / 2)
+	
 	# assuming that the last three genes are not used
 	def import_genes(self, genes):
 		self.genes = genes[0:-3]

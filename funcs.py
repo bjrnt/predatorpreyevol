@@ -24,6 +24,9 @@ def gaussian(x, mu, sigma):
 	y = math.exp( -1.0/2 * ((x - mu + 0.0) / (sigma + 0.000001))**2 )
 	return y
 
+def transfer(val):
+	return 1.0 / (1.0 + math.exp(-1.0 * val)) * 2 - 1
+
 def fetch_one(enumerable):
 	def next_val():
 		for e in enumerable:

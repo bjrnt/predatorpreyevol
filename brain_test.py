@@ -66,6 +66,9 @@ class BrainLinearTest(unittest.TestCase):
 			
 			self.brain.import_genes(map(lambda x: random.random()*x*2-1, [1]*(BrainLinear.G_TOTAL_CONNECTIONS+3)))
 			res[i] = self.brain.think(map(lambda x: random.random()*x, [1]*ins))
+			a = res[i]
+			self.assertTrue(res[i][0] >= -1 and res[i][0] <= 1, "Value range invalid: %f" % (res[i][0]))
+			self.assertTrue(res[i][1] >= -1 and res[i][1] <= 1, "Value range invalid: %f" % (res[i][1]))
 			
 		#print 'random weights, random input %d vs %d' % (len([ds for (ds,dr) in res if ds > 0]) , num_tests - len([ds for (ds,dr) in res if ds > 0]))
 		self.assertTrue(len([ds for (ds,dr) in res if ds > 0]) / float(num_tests) > 0.45 and len([ds for (ds,dr) in res if ds > 0]) / float(num_tests) < 0.55, "fuzz testing gave abnormal distribution of results")
@@ -91,6 +94,8 @@ class BrainRBFTest(unittest.TestCase):
 				i = i-1
 				continue # no need to test on zero input, has default behaviour 
 			res[i] = self.brain.think(inputData)
+			self.assertTrue(res[i][0] >= -1 and res[i][0] <= 1, "Value range invalid: %f" % (res[i][0]))
+			self.assertTrue(res[i][1] >= -1 and res[i][1] <= 1, "Value range invalid: %f" % (res[i][1]))
 			i = i+1
 		#print 'random weights, random input %d vs %d' % (len([ds for (ds,dr) in res if ds > 0]) , num_tests - len([ds for (ds,dr) in res if ds > 0]))
 		self.assertTrue(len([ds for (ds,dr) in res if ds > 0]) / float(num_tests) > 0.45 and len([ds for (ds,dr) in res if ds > 0]) / float(num_tests) < 0.55, "fuzz testing gave abnormal distribution of results %f vs %f" %(len([ds for (ds,dr) in res if ds > 0]) / float(num_tests),len([ds for (ds,dr) in res if ds < 0]) / float(num_tests)))
