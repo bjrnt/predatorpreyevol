@@ -1,5 +1,6 @@
 from brain_rbf import BrainRBF
 from brain_linear import BrainLinear
+from brain_random import BrainRandom
 from inhabitant import Inhabitant
 import math, random, funcs
 
@@ -79,10 +80,9 @@ class Creature(Inhabitant):
 	# 		self.speed = -1
 
 	def move(self):
-		if Creature.use_energy:
-			self.energy -= 1
-			if self.energy == 0:
-				self.alive = False
+		self.energy -= 1
+		if self.energy <= 0:
+			self.alive = False
 
 		angle = self.rotation * 2.0 * math.pi
 		d_x = math.cos(angle) * self.speed * self.G_MAX_SPEED

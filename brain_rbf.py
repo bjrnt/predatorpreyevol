@@ -13,7 +13,7 @@ class BrainRBF(object):
 	G_INPUTNODES = 8
 	G_TOTAL_CONNECTIONS = 36 # 12 calls * 3 genes
 	G_GENES_NEEDED = G_TOTAL_CONNECTIONS + 3
-	G_REGION_SIZE = 9
+	G_REGION_SIZE = 3
 
 	def __init__(self, genes=None):
 		if genes is not None:

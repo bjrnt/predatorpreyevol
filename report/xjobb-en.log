@@ -1,4 +1,4 @@
-This is pdfTeX, Version 3.1415926-2.4-1.40.13 (TeX Live 2012) (format=pdflatex 2012.6.30)  6 MAR 2013 16:38
+This is pdfTeX, Version 3.1415926-2.4-1.40.13 (TeX Live 2012) (format=pdflatex 2012.6.30)  19 MAR 2013 11:27
 entering extended mode
  restricted \write18 enabled.
  file:line:error style messages enabled.
@@ -976,78 +976,69 @@ LaTeX Font Info:    External font `lmex10' loaded for size
  [4
 
 ]
-(./xjobb-en.toc) [5
+(./xjobb-en.toc [5
 
-] [6
-
-]
+]) [6]
 LaTeX Font Info:    External font `lmex10' loaded for size
 (Font)              <9> on input line 46.
 
-Underfull \hbox (badness 10000) in paragraph at lines 55--58
-
- []
-
-
-Underfull \hbox (badness 10000) in paragraph at lines 59--64
+Underfull \hbox (badness 10000) in paragraph at lines 59--62
 
  []
 
 [1
 
-] [2
 
 ]
-Underfull \hbox (badness 10000) in paragraph at lines 74--78
+Underfull \hbox (badness 10000) in paragraph at lines 63--68
 
  []
 
-<rbf_1d.png, id=43, 825.3234pt x 433.62pt>
-File: rbf_1d.png Graphic file (type png)
- <use rbf_1d.png>
-Package pdftex.def Info: rbf_1d.png used on input line 88.
-(pdftex.def)             Requested size: 412.66069pt x 216.80946pt.
+[2]
+Underfull \hbox (badness 10000) in paragraph at lines 78--82
 
-Overfull \hbox (16.66069pt too wide) in paragraph at lines 88--89
- [][] 
  []
 
-[3] [4 <./rbf_1d.png>]
-Underfull \hbox (badness 10000) in paragraph at lines 106--112
+[3
+
+] [4]
+Underfull \hbox (badness 10000) in paragraph at lines 110--116
 
  []
 
 
-Underfull \hbox (badness 10000) in paragraph at lines 114--120
+Underfull \hbox (badness 10000) in paragraph at lines 118--124
 
  []
 
 [5
 
 ]
-Underfull \hbox (badness 10000) in paragraph at lines 137--141
+Underfull \hbox (badness 10000) in paragraph at lines 141--145
 
  []
 
 
-Underfull \hbox (badness 10000) in paragraph at lines 143--148
+Underfull \hbox (badness 10000) in paragraph at lines 147--152
 
  []
 
-LaTeX Font Info:    Try loading font information for TS1+lmr on input line 148.
+LaTeX Font Info:    Try loading font information for TS1+lmr on input line 152.
 
 (/usr/local/texlive/2012/texmf-dist/tex/latex/lm/ts1lmr.fd
 File: ts1lmr.fd 2009/10/30 v1.6 Font defs for Latin Modern
 ) [6] [7] [8
 
 ]
-Underfull \hbox (badness 10000) in paragraph at lines 163--165
+Underfull \hbox (badness 10000) in paragraph at lines 167--169
 
  []
 
 [9] [10
 
-] [11] [12
+]
+bibitemlist
+[11] [12
 
 ] [13]
 \tf@toc=\write4
@@ -1055,10 +1046,10 @@ Underfull \hbox (badness 10000) in paragraph at lines 163--165
 
  (./xjobb-en.aux) ) 
 Here is how much of TeX's memory you used:
- 6465 strings out of 493488
- 88515 string characters out of 3141326
- 168021 words of memory out of 3000000
- 9657 multiletter control sequences out of 15000+200000
+ 6462 strings out of 493488
+ 88468 string characters out of 3141326
+ 169159 words of memory out of 3000000
+ 9655 multiletter control sequences out of 15000+200000
  107089 words of font info for 66 fonts, out of 3000000 for 9000
  957 hyphenation exceptions out of 8191
  42i,11n,27p,731b,344s stack positions out of 5000i,500n,10000p,200000b,50000s
@@ -1082,10 +1073,10 @@ xmf-dist/fonts/type1/public/lm/lmss12.pfb></usr/local/texlive/2012/texmf-dist/f
 onts/type1/public/lm/lmssbx10.pfb></usr/local/texlive/2012/texmf-dist/fonts/typ
 e1/public/lm/lmssdc10.pfb></usr/local/texlive/2012/texmf-dist/fonts/type1/publi
 c/lm/lmsy10.pfb>
-Output written on xjobb-en.pdf (19 pages, 377988 bytes).
+Output written on xjobb-en.pdf (19 pages, 333467 bytes).
 PDF statistics:
- 160 PDF objects out of 1000 (max. 8388607)
- 117 compressed objects within 2 object streams
+ 157 PDF objects out of 1000 (max. 8388607)
+ 116 compressed objects within 2 object streams
  0 named destinations out of 1000 (max. 500000)
- 11 words of extra memory for PDF output out of 10000 (max. 10000000)
+ 6 words of extra memory for PDF output out of 10000 (max. 10000000)
 

@@ -21,8 +21,7 @@ def default():
         ('World','collision'):True,
         ('World','remove_dead'):True,
 
-        ('Creature','Bush','use_energy'):True,
-        ('Creature','World','Darwin','brain_type'):'BrainLinear',
+        ('Creature','World','Darwin','brain_type'):'BrainRBF',
 
         ('Darwin','NGEN'):2,
         ('Darwin','CXPB'):0.3,
@@ -32,13 +31,14 @@ def default():
         ('Creature','health'):500,
         ('Darwin','NTICKS'):1000,
 
-        ('Darwin','NINDS'):120, # Must be a number divisible by 10 and by num_per_sim
+        ('Darwin','NINDS'):60, # Must be a number divisible by 10 and by num_per_sim
         ('Darwin','num_per_sim'):20,
 
-        ('Darwin','max_bush_count'):26,
+        ('Darwin','max_bush_count'):18,
+        ('Darwin','max_red_bush_count'):10,
 
         ('Renderer','disp_freq'):4,
-        ('Darwin','enable_multiprocessing'):False,
+        ('Darwin','enable_multiprocessing'):True,
         ('Darwin','graphics'):False,
     }
 
@@ -47,7 +47,8 @@ def default():
     darwin = Darwin()
     
     if load_file:
-        darwin.load_population(load_file)
+        darwin.load_population(open(load_file,'r'))
+        darwin.load_stats(open('stats_' + load_file,'r'))
 
     darwin.begin_evolution()
 
@@ -56,7 +57,7 @@ def profile():
 
 def main():
     parser = argparse.ArgumentParser(description='Run the simulation.')
-    parser.add_argument('-l',dest='load_file', metavar='file', type=file, help="Path to file with saved state, used to resume simulations.")
+    parser.add_argument('-l',dest='load_file', metavar='file', type=str, help="Path to file with saved state, used to resume simulations.")
     parser.add_argument('--profile',dest='profiling_enabled', help="Use to enable or disable generation of profiling information.", required=False, action='store_const', const=True)
     args = parser.parse_args(sys.argv[1:])
 

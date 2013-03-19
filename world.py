@@ -4,28 +4,36 @@ from bush import Bush
 from numpy import array
 from brain_rbf import BrainRBF
 from brain_linear import BrainLinear
+from brain_random import BrainRandom
 
 class World(object):
 	"""docstring for ClassName"""
-	def __init__(self, gene_pool=None, max_bush_count=0, nticks=10000):
+	def __init__(self, gene_pool=None, max_bush_count=0, max_red_bush_count=0, nticks=10000):
 		self.Brain = eval(World.brain_type)
 		self.creatures = []
 		self.dead_creatures = []
 		self.bushes = []
+		self.red_bushes = []
 		self.nticks = nticks
 		if gene_pool != None:
 			for gene in gene_pool:
-				self.creatures += [Creature(gene, x=random.random(), y=random.random())]
+				if False:
+					self.creatures += [Creature(gene, x=0.05, y=(0.1 + 0.1 * len(self.creatures)))]
+					self.creatures[-1].rotation = 0
+				else:
+					self.creatures += [Creature(gene, x=random.uniform(0.05,0.95), y=random.uniform(0.05,0.95))]
 		
 		self.max_bush_count = max_bush_count
+		self.max_red_bush_count = max_red_bush_count
 		#self.spawn_bushes_grid()
+		#self.spawn_bushes_line()
 
 	def run_tick(self):
 		self.spawn_bushes()
 
 		# Get data for creatures to process
 		if World.detection:
-			inhabitants = self.bushes # Only detecting/colliding with bushes
+			inhabitants = self.bushes + self.red_bushes # Only detecting/colliding with bushes
 			positions = array([inh.get_pos() for inh in inhabitants])
 			radii = array([inh.get_radius() for inh in inhabitants])
 
@@ -67,11 +75,14 @@ class World(object):
 		if World.remove_dead:
 			for inhabitant in self.get_inhabitants():
 				if inhabitant.alive == False:
-					if inhabitant.__class__ == Creature:
+					if isinstance(inhabitant,Creature):
 						self.creatures.remove(inhabitant)
 						self.dead_creatures += [inhabitant]
-					if inhabitant.__class__ == Bush:
-						self.bushes.remove(inhabitant)
+					if isinstance(inhabitant,Bush):
+						if inhabitant.poisonous:
+							self.red_bushes.remove(inhabitant)
+						else:
+							self.bushes.remove(inhabitant)
 
 	def run_ticks(self):
 		for tick in xrange(self.nticks):
@@ -148,10 +159,23 @@ class World(object):
 		return left, right
 
 	def spawn_bushes(self):
-		if len(self.get_bushes()) < self.max_bush_count:
-			for i in xrange(self.max_bush_count - len(self.get_bushes())):
+		if len(self.bushes) < self.max_bush_count:
+			for i in xrange(self.max_bush_count - len(self.bushes)):
 				if random.random() < 0.05:
-					self.add_bush(Bush(random.uniform(0.05,0.95), random.uniform(0.05,0.95)))
+					self.bushes += [Bush(random.uniform(0.05,0.95), random.uniform(0.05,0.95))]
+
+		if len(self.red_bushes) < self.max_red_bush_count:
+
+			for i in xrange(self.max_red_bush_count - len(self.red_bushes)):
+				if random.random() < 0.01:
+					self.red_bushes += [Bush(random.uniform(0.05,0.95), random.uniform(0.05,0.95), poisonous=True)]
+
+	def spawn_bushes_line(self):
+		for i in xrange(16):
+			if i % 2 == 0:
+				self.bushes += [Bush(x=0.85,y=(0.07 + i * 0.05))]
+			else:
+				self.red_bushes += [Bush(x=0.85,y=(0.07 + i * 0.05),poisonous=True)]
 
 	def spawn_bushes_grid(self):
 		for i in xrange(1,5):
@@ -165,7 +189,7 @@ class World(object):
 		self.creatures += [creature]
 
 	def get_inhabitants(self):
-		return self.creatures + self.bushes
+		return self.creatures + self.bushes + self.red_bushes
 
 	def get_positions(self):
 		return [creature.get_pos() for creature in self.creatures]
@@ -177,4 +201,4 @@ class World(object):
 		return self.creatures
 
 	def get_bushes(self):
-		return self.bushes
+		return self.bushes + self.red_bushes

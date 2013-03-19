@@ -1,12 +1,9 @@
-import multiprocessing
-import platform
-import random
-import itertools
-import time
+import multiprocessing, platform, random, itertools, time, stats
 
 from deap import base,creator,tools
 from brain_rbf import BrainRBF
 from brain_linear import BrainLinear
+from brain_random import BrainRandom
 from world import World
 from creature import Creature
 from cPickle import Pickler, Unpickler
@@ -24,9 +21,9 @@ try: # Note: cTools are not compatible with PyPy
 except ImportError:
 	cTools_available = False
 
-def simulate(creatures, nticks=None, max_bush_count=None):
+def simulate(creatures, nticks=None, max_bush_count=None, max_red_bush_count=None):
 	"""Used to run a simulation, placed outside of class to enable multiprocessing"""
-	w = World(gene_pool=creatures,nticks=nticks,max_bush_count=max_bush_count)
+	w = World(gene_pool=creatures,nticks=nticks,max_bush_count=max_bush_count,max_red_bush_count=max_red_bush_count)
 	w.run_ticks()
 	return w.get_creatures()
 
@@ -71,19 +68,19 @@ class Darwin(object):
 		self.toolbox.register("individual", tools.initRepeat, creator.Individual, self.toolbox.attr_float, self.Brain.G_TOTAL_CONNECTIONS + 3)
 		self.toolbox.register("population", tools.initRepeat, list, self.toolbox.individual)
 
-		self.toolbox.register("mate", self.cross_over, indpb=0.5)
-		self.toolbox.register("mutate", tools.mutGaussian, mu=0, sigma=0.3, indpb=2.0/self.Brain.G_TOTAL_CONNECTIONS)
+		self.toolbox.register("mate", self.cross_over, indpb=0.3)
+		self.toolbox.register("mutate", tools.mutGaussian, mu=0, sigma=0.3, indpb=1.0/self.Brain.G_TOTAL_CONNECTIONS)
 		
 		self.toolbox.decorate("mate", self.check_bounds(-1,1))
 		self.toolbox.decorate("mutate", self.check_bounds(-1,1))
 
 		self.toolbox.register("selectBest", tools.selBest)
-		self.toolbox.register("simulate", simulate, nticks=Darwin.NTICKS, max_bush_count=Darwin.max_bush_count)
+		self.toolbox.register("simulate", simulate, nticks=Darwin.NTICKS, max_bush_count=Darwin.max_bush_count, max_red_bush_count=Darwin.max_red_bush_count)
 
-		if cTools_available:
-			self.toolbox.register("select", cTools.selNSGA2)
-		else:
-			self.toolbox.register("select", tools.selNSGA2)
+		#if cTools_available:
+		#	self.toolbox.register("select", cTools.selNSGA2)
+		#else:
+		self.toolbox.register("select", tools.selRoulette)
 
 		self.pop = self.toolbox.population(n=Darwin.NINDS)
 
@@ -135,6 +132,9 @@ class Darwin(object):
 		self.gen_start_number = g
 		f = open('save.txt','w')
 		self.save_population(f)
+		stats.save_stats(open('stats_save.txt','w'))
+
+		stats.plot_all()
 	
 	def simulate(self):
 		res = []
@@ -142,13 +142,13 @@ class Darwin(object):
 			inputs = [self.pop[i*Darwin.num_per_sim:(i+1)*Darwin.num_per_sim] for i in xrange(0,len(self.pop)/Darwin.num_per_sim)]
 			
 			if Darwin.graphics and renderer_available:
-				res += self.renderer.play_epoch(World(gene_pool=inputs[0], nticks=Darwin.NTICKS, max_bush_count=Darwin.max_bush_count)) + list(itertools.chain(*self.toolbox.map(self.toolbox.simulate, inputs[1:])))
+				res += self.renderer.play_epoch(World(gene_pool=inputs[0], nticks=Darwin.NTICKS, max_bush_count=Darwin.max_bush_count, max_red_bush_count=Darwin.max_red_bush_count)) + list(itertools.chain(*self.toolbox.map(self.toolbox.simulate, inputs[1:])))
 			else:
 				res = list(itertools.chain(*self.toolbox.map(self.toolbox.simulate, inputs)))
 		
 		else:
 			if Darwin.graphics and renderer_available:
-				res = self.renderer.play_epoch(World(gene_pool=self.pop, nticks=Darwin.NTICKS, max_bush_count=Darwin.max_bush_count))
+				res = self.renderer.play_epoch(World(gene_pool=self.pop, nticks=Darwin.NTICKS, max_bush_count=Darwin.max_bush_count, max_red_bush_count=Darwin.max_red_bush_count))
 			else:
 				res = self.toolbox.simulate(self.pop)
 
@@ -165,6 +165,9 @@ class Darwin(object):
 		self.pop, self.gen_start_number = unpickler.load()
 		load_file.close()
 
+	def load_stats(self,load_stats_file):
+		stats.load_stats(load_stats_file)
+
 	def printTimeStats(self,start_time,gen):
 		time_spent = time.time() - start_time
 		avg = time_spent / (gen + 1 - self.gen_start_number)
@@ -175,4 +178,7 @@ class Darwin(object):
 	def printStats(self,pop,gen):
 		fits = [ind.fitness.values[0] for ind in pop]
 		mean = sum(fits) / len(pop)
+		stats.add("avg_fitness",mean)
+		stats.add("min_fitness",min(fits))
+		stats.add("max_fitness",max(fits))
 		print ("(%3i): Max: %6.2f, Avg: %6.2f, Min: %5.2f" % (gen, max(fits), mean, min(fits)))

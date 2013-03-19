@@ -10,7 +10,7 @@ class BrainLinear(object):
 	"""docstring for Brain"""
 	G_INPUTNODES = 8
 	G_TOTAL_CONNECTIONS = 12
-	G_REGION_SIZE = 3
+	G_REGION_SIZE = 1
 
 	def __init__(self, genes=None):
 		if genes != None:

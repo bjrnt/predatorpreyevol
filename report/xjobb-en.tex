@@ -9,9 +9,9 @@
 
 % http://library.uwl.ac.uk/find/guides/general/harvard_reference.html
 
-\title{Title}
-\subtitle{Subtitle}
-\foreigntitle{Titel på svenska}
+\title{Comparison of Artificial Brains in Simulating Animal Behaviour}
+\subtitle{Comparing radial basis, linear and random functions for decision-making}
+\foreigntitle{Titel pa svenska}
 \author{Björn Tegelund\\Johan Wikström}
 \date{November 2003}
 \blurb{Bachelor's Thesis at CSC\\Supervisor: Petter Ögren\\Examiner: Mårten Björkman}
@@ -52,17 +52,12 @@ at all.
 
 \section{Scope and Objectives}
 
-Main objective:\\
-Compare RBF-based and "linear" brains.\\
-By: Forcing them to adapt certain genetic phenomena such as adaptation (learning), co-evolution and extinction, mimicry, group forming and co-operation prioritised in the order presented (as increasingly complex behaviour and difficulty to simulate).\\
+Our main objective is to compare brains for simulating animal behaviour using radial-basis functions and linear functions. As a baseline we will also use brains which make random decisions. To train our animals we use genetic algorithms. The genetic algorithms provide the genes which will then be used in their brains to make decisions. We will look at statistics such as learning speed, execution speed and how well they can adapt to their surroundings.
 
-Questions:\\
-How quickly do they learn?\\
-Can both kinds of brains do the same things?\\
-Pros and cons for each brain architecture\\
-RBF-based predators vs linear prey, vice versa.\\
+The animals will be given different tasks to do in each experiment, ranging from simply gathering food to avoiding predators to mimicking things in the world to survive. In each experiment the three brain architectures are compared and contrasted. By doing these simulations we wish to find the pros and cons for both brains using radial-basis functions and linear functions, when used for artificial intelligence in this way. We also wish to find how complex of a task a brain using linear functions is able to solve, and in the cases where it is not able to solve the problem completely we wish to know how much better is it than the random brain.
 
-Evolution of brains using RBF functions and evolutionary algorithms.
+% TODO: What did we manage to simulate?
+%  Forcing them to adapt certain genetic phenomena such as adaptation (learning), co-evolution and extinction, mimicry, group forming and co-operation prioritised in the order presented (as increasingly complex behaviour and difficulty to simulate).
 
 \section{Achievements}
 
@@ -117,7 +112,7 @@ Adding predators\\
 More kinds of food\\
 Being able to see more things in the world\\
 Placing objects into the world\\
-
+\subsection{Linear Decision Making}
 \subsection{RBF-Based Decision Making}
 
 When input is received by a creature, it is in form of eight numbers, four for each antenna. Three of the inputs for each antenna are the red-, green- and blue components of the currently detected object's colour. The fourth input is zero when no object is detected and one when an object is. The three colour-based inputs are then used in several three-dimensional radial basis functions. For each antenna a $\Delta r$ (change in rotation) and $\Delta s$ (change in speed) is computed by summing the function values and normalising them. The $\Delta r$ and $\Delta s$ for each antenna are then grouped and used by the creature to change it's rotation and speed. See equation \ref{RBF_decide}.
@@ -132,12 +127,13 @@ When input is received by a creature, it is in form of eight numbers, four for e
 Each radial basis function also has a $\sigma$ and $\mu$ which are decided by the creature's genes. $\sigma$ and $\mu$ are in the ranges of $[0,1]$ and $[-1,1]$ respectively. In practice this means that the creatures' change in speed and rotation, when detecting an object in each antenna, depend on their genetic makeup.
 
 The difference between using radial basis functions and linear functions is that you have a much larger possibility to approximate any decision-making strategy. For example an RBF-based brain could make the distinction between different shades of green and thus react differently to them, while a linear function could only decide if more green is better or worse.
-
+\subsection{Random Decision Making}
 \subsection{Genetic Algorithm}
 What kind of genetic algorithm do we plan to use?\\
 Fitness, crossover, mutation, selection, which ones?\\
 Flow chart of our algorithm\\
 NSGA-II\\
+Roulette selection\\
 
 \subsection{Experiments}
 (In every experiment linear and RBF are compared, eventually mixed)\\
