@@ -6,7 +6,7 @@ import math, random, funcs
 
 class Creature(Inhabitant):
 	"""docstring for ClassName"""
-	G_MAX_ROTATION = 1.5
+	G_MAX_ROTATION = 0.5
 	antennae = 2
 	antennae_angles = [math.pi/6.0, -1.0 * math.pi/6.0]
 
@@ -27,12 +27,14 @@ class Creature(Inhabitant):
 			color=(R,G,B),
 			energy=Creature.health)
 			
+		self.cod = None
 		self.rotation = random.random()
 		self.speed = 0.0
 		self.num_detections = 1
 		self.distance = 0.0
 		self.rotated = 0.0
 		self.consumed_energy = 1
+		self.life_length = 1
 		self.antennae_length = self.radius_multiplier * self.G_MAXIMUM_RADIUS * 5
 		self.brain = eval(Creature.brain_type)(genes)
 
@@ -81,8 +83,10 @@ class Creature(Inhabitant):
 
 	def move(self):
 		self.energy -= 1
-		if self.energy <= 0:
+		self.life_length += 1
+		if self.energy <= 0 and self.alive == True:
 			self.alive = False
+			self.cod = 'age'
 
 		angle = self.rotation * 2.0 * math.pi
 		d_x = math.cos(angle) * self.speed * self.G_MAX_SPEED

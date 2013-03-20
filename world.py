@@ -22,6 +22,7 @@ class World(object):
 					self.creatures[-1].rotation = 0
 				else:
 					self.creatures += [Creature(gene, x=random.uniform(0.05,0.95), y=random.uniform(0.05,0.95))]
+					self.creatures[-1].speed = 0.4
 		
 		self.max_bush_count = max_bush_count
 		self.max_red_bush_count = max_red_bush_count

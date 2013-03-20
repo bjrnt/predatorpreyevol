@@ -1,5 +1,6 @@
 import multiprocessing, platform, random, itertools, time, stats
 
+import numpy as np
 from deap import base,creator,tools
 from brain_rbf import BrainRBF
 from brain_linear import BrainLinear
@@ -69,9 +70,8 @@ class Darwin(object):
 		self.toolbox.register("population", tools.initRepeat, list, self.toolbox.individual)
 
 		self.toolbox.register("mate", self.cross_over, indpb=0.3)
-		self.toolbox.register("mutate", tools.mutGaussian, mu=0, sigma=0.3, indpb=1.0/self.Brain.G_TOTAL_CONNECTIONS)
+		self.toolbox.register("mutate", tools.mutGaussian, mu=0, sigma=0.1, indpb=1.0/self.Brain.G_TOTAL_CONNECTIONS)
 		
-		self.toolbox.decorate("mate", self.check_bounds(-1,1))
 		self.toolbox.decorate("mutate", self.check_bounds(-1,1))
 
 		self.toolbox.register("selectBest", tools.selBest)
@@ -80,7 +80,7 @@ class Darwin(object):
 		#if cTools_available:
 		#	self.toolbox.register("select", cTools.selNSGA2)
 		#else:
-		self.toolbox.register("select", tools.selRoulette)
+		self.toolbox.register("select", tools.selNSGA2)
 
 		self.pop = self.toolbox.population(n=Darwin.NINDS)
 
@@ -91,29 +91,36 @@ class Darwin(object):
 			self.toolbox.register("map",map)
 
 	def evaluate(self, ind):
-		return ind.consumed_energy / 5.0
+		return ind.life_length / 5
 
 	def begin_evolution(self):
 
 		# Begin actual evolution
 		start_time = time.time()
-		for g in xrange(self.gen_start_number,self.gen_start_number+Darwin.NGEN+1):
+		for g in xrange(self.gen_start_number,self.gen_start_number+Darwin.NGEN):
 			pop = self.pop
 
 			creatures = self.simulate()
+			deaths_by_age = len([creature.cod for creature in creatures if creature.cod == 'age'])
+			deaths_by_bush = len([creature.cod for creature in creatures if creature.cod == 'bush'])
 
 			fitnesses = [self.evaluate(creature) for creature in creatures]
 			for ind,fit in zip(pop, fitnesses):
 				ind.fitness.values = fit,
 
-			self.printStats(pop,g)
-			if g % 20 == 0:
-				self.printTimeStats(start_time,g)
-
+			self.printStats(pop,g,deaths_by_age,deaths_by_bush)
+			
 			bestInds = self.toolbox.selectBest(pop, len(pop)/10)
 			bestInds = list(self.toolbox.map(self.toolbox.clone, bestInds))
 			offspring = self.toolbox.select(pop, len(pop)/10 * 9)
 			offspring = list(self.toolbox.map(self.toolbox.clone, offspring))
+
+			if g % 10 == 0 or g == self.gen_start_number:
+				self.printGeneStats(pop)
+				self.printBrainStats(self.toolbox.selectBest(pop,1))
+			if g % 20 == 0:
+				self.printTimeStats(start_time,g)
+				
 
 			for child1,child2 in zip(offspring[::2],offspring[1::2]):
 				if random.random() < Darwin.CXPB:
@@ -130,9 +137,9 @@ class Darwin(object):
 				del ind.fitness.values
 
 		self.gen_start_number = g
-		f = open('save.txt','w')
+		f = open(Darwin.save_file,'w')
 		self.save_population(f)
-		stats.save_stats(open('stats_save.txt','w'))
+		stats.save_stats(open('stats_' + Darwin.save_file,'w'))
 
 		stats.plot_all()
 	
@@ -142,7 +149,11 @@ class Darwin(object):
 			inputs = [self.pop[i*Darwin.num_per_sim:(i+1)*Darwin.num_per_sim] for i in xrange(0,len(self.pop)/Darwin.num_per_sim)]
 			
 			if Darwin.graphics and renderer_available:
-				res += self.renderer.play_epoch(World(gene_pool=inputs[0], nticks=Darwin.NTICKS, max_bush_count=Darwin.max_bush_count, max_red_bush_count=Darwin.max_red_bush_count)) + list(itertools.chain(*self.toolbox.map(self.toolbox.simulate, inputs[1:])))
+				if Darwin.enable_multiprocessing:
+					res += self.renderer.play_epoch(World(gene_pool=inputs[0], nticks=Darwin.NTICKS, max_bush_count=Darwin.max_bush_count, max_red_bush_count=Darwin.max_red_bush_count)) + list(itertools.chain(*self.toolbox.map(self.toolbox.simulate, inputs[1:])))
+				else:
+					for i in inputs:
+						res += self.renderer.play_epoch(World(gene_pool=i, nticks=Darwin.NTICKS, max_bush_count=Darwin.max_bush_count, max_red_bush_count=Darwin.max_red_bush_count))
 			else:
 				res = list(itertools.chain(*self.toolbox.map(self.toolbox.simulate, inputs)))
 		
@@ -168,6 +179,17 @@ class Darwin(object):
 	def load_stats(self,load_stats_file):
 		stats.load_stats(load_stats_file)
 
+	def printGeneStats(self,pop):
+		genes = np.array(pop)
+		stds = np.std(genes,0)
+		print "# Gene stats"
+		print "Avg std: %5.2f" % (np.mean(stds))
+
+	def printBrainStats(self,bestInd):
+		print "# Brain diagnosis of best individuals rotation:"
+		b = self.Brain(bestInd[0])
+		b.diagnose()
+
 	def printTimeStats(self,start_time,gen):
 		time_spent = time.time() - start_time
 		avg = time_spent / (gen + 1 - self.gen_start_number)
@@ -175,10 +197,11 @@ class Darwin(object):
 		print '\033[95m' + "# Time stats: Spent: %2.2f s, Avg/gen: %2.2f s" % (time_spent, avg)
 		print "# Time to run %i gens: %2.2f s" % (generations_left, generations_left * avg), '\033[0m'
 
-	def printStats(self,pop,gen):
+	def printStats(self,pop,gen,dba,dbb):
 		fits = [ind.fitness.values[0] for ind in pop]
 		mean = sum(fits) / len(pop)
-		stats.add("avg_fitness",mean)
-		stats.add("min_fitness",min(fits))
-		stats.add("max_fitness",max(fits))
-		print ("(%3i): Max: %6.2f, Avg: %6.2f, Min: %5.2f" % (gen, max(fits), mean, min(fits)))
+		stats.add("fitness.avg",mean)
+		stats.add("fitness.min",min(fits))
+		stats.add("fitness.max",max(fits))
+		stats.add('death_by_bush_procent',dbb*1.0/(dbb+dba))
+		print ("(%3i): Max: %6.2f, Avg: %6.2f, Min: %5.2f, DBBP: %.2f" % (gen, max(fits), mean, min(fits),dbb*1.0/(dbb+dba)))

@@ -5,6 +5,7 @@
 # 2: G 0 - 1
 # 3: B 0 - 1
 # 4: Object detection 2...
+from funcs import transfer
 
 class BrainLinear(object):
 	"""docstring for Brain"""
@@ -21,8 +22,7 @@ class BrainLinear(object):
 		f = self.apply_genes
 
 		if data[0] == 0 and data[4] == 0:
-			left = (0.0025 * 6, 0)
-			right = (0.0025 * 6, 0)
+			return (0.0,0)
 		
 		else:
 			if data[0] != 0:
@@ -40,7 +40,7 @@ class BrainLinear(object):
 			
 		#print "# Input: %s" % data
 		#print "# Output: (%s,%s)" % ((left[0] + right[0]) / 6, (left[1] + right[1]) / 6)
-		return ((left[0] + right[0]) / 6, (left[1] + right[1]) / 6)
+		return (transfer(left[0] + right[0]), transfer(left[1] + right[1]))
 
 	def import_genes(self, genes):
 		self.genes = genes		
@@ -48,3 +48,7 @@ class BrainLinear(object):
 	def apply_genes(self, data):
 		self.gene_index += 1
 		return (0.0 + self.genes[self.gene_index - 1] * data)
+
+	def diagnose(self):
+		print "Left:\t\033[01;31m%5.2f\033[00m, \033[92m%5.2f\033[00m, \033[94m%5.2f\033[00m" % (self.genes[3],self.genes[4],self.genes[5])
+		print "Right:\t\033[01;31m%5.2f\033[00m, \033[92m%5.2f\033[00m, \033[94m%5.2f\033[00m" % (self.genes[9],self.genes[10],self.genes[11])

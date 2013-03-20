@@ -24,7 +24,7 @@ class BrainRBF(object):
 		rbf = self.rbf
 
 		if data[0] == 0 and data[4] == 0:
-			return (0.005, 0)
+			return (0.0, 0)
 		
 		else:
 			if data[0] == 1:
@@ -49,3 +49,6 @@ class BrainRBF(object):
 	# assuming that the last three genes are not used
 	def import_genes(self, genes):
 		self.genes = genes[0:-3]
+
+	def diagnose(self):
+		print "No diagnosis for RBF yet"

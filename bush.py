@@ -6,9 +6,9 @@ class Bush(Inhabitant):
 	def __init__(self, x=0, y=0, poisonous=False):
 		self.poisonous = poisonous
 		if poisonous:
-			super(Bush, self).__init__([x,y], radius_multiplier=0.1, color=(1.0,0.0,0.0), energy=0)
+			super(Bush, self).__init__([x,y], radius_multiplier=0.55, color=(1.0,0.0,0.0), energy=0)
 		else:
-			super(Bush, self).__init__([x,y], radius_multiplier=0.1, color=(0.0,1.0,0.0), energy=100)
+			super(Bush, self).__init__([x,y], radius_multiplier=0.1, color=(0.0,1.0,0.0), energy=50)
 
 	def think(self):
 		if self.radius_multiplier < 0.4:
@@ -20,8 +20,8 @@ class Bush(Inhabitant):
 	def on_collision(self, target):
 		if target.__class__ == Creature:
 			if self.poisonous:
-				target.energy = 0
-				target.consumed_energy /= 10.0
+				target.alive = False
+				target.cod = 'bush'
 				self.alive = 0
 			else:
 				target.energy += self.energy
