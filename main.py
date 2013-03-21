@@ -30,18 +30,18 @@ def default():
         ('Darwin','MUTPB'):0.4,
         
         ('Creature','G_MAX_SPEED'):0.01,
-        ('Creature','health'):1200,
-        ('Darwin','NTICKS'):2000,
+        ('Creature','health'):1000,
+        ('Darwin','NTICKS'):2500,
 
-        ('Darwin','NINDS'): num_inds or 120, # Must be a number divisible by 10 and by num_per_sim
+        ('Darwin','NINDS'): num_inds or 60, # Must be a number divisible by 10 and by num_per_sim
         ('Darwin','num_per_sim'):20,
 
-        ('Darwin','max_bush_count'):18,
-        ('Darwin','max_red_bush_count'):10,
+        ('Darwin','max_bush_count'): bushes_green or 18,
+        ('Darwin','max_red_bush_count'): bushes_red or 0,
 
         ('Renderer','disp_freq'):2,
         ('Darwin','enable_multiprocessing'):True,
-        ('Darwin','graphics'):False,
+        ('Darwin','graphics'):True,
     }
 
     apply_config(options)
@@ -64,6 +64,8 @@ def main():
     parser.add_argument('-g',dest='num_gens', metavar='int', type=int, help="Number of generations to run the simulation.")
     parser.add_argument('-b',dest='brain_type', metavar='str', type=str, help="The kind of brain to use in this simulation.")
     parser.add_argument('-i',dest='num_inds',metavar='int',type=int,help="Number of individuals")
+    parser.add_argument('-bg',dest='bushes_green',metavar='int',type=int,help="Number of green bushes")
+    parser.add_argument('-br',dest='bushes_red',metavar='int',type=int,help="Number of red bushes")
     parser.add_argument('--profile',dest='profiling_enabled', help="Use to enable or disable generation of profiling information.", required=False, action='store_const', const=True)
     args = parser.parse_args(sys.argv[1:])
 
@@ -72,12 +74,16 @@ def main():
     global num_gens
     global brain_type
     global num_inds
+    global bushes_green
+    global bushes_red
 
     load_file = None or args.load_file
     save_file = None or args.save_file
     num_gens = None or args.num_gens
     brain_type = None or args.brain_type
     num_inds = None or args.num_inds
+    bushes_green = None or args.bushes_green
+    bushes_red = None or args.bushes_red
 
     if args.profiling_enabled:
         profile()
@@ -85,10 +91,9 @@ def main():
         start = time.time()
         default()
         end = time.time()   
-        print "Run-time %f" % (0.0 + end - start)
+        print "Run-time: %f" % (0.0 + end - start)
 
     print "Done!"
-    dontexit = raw_input()
 
 def apply_config(config):
     for key in config.keys():

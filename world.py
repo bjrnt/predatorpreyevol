@@ -15,14 +15,13 @@ class World(object):
 		self.bushes = []
 		self.red_bushes = []
 		self.nticks = nticks
-		if gene_pool != None:
+		if gene_pool is not None:
 			for gene in gene_pool:
 				if False:
 					self.creatures += [Creature(gene, x=0.05, y=(0.1 + 0.1 * len(self.creatures)))]
 					self.creatures[-1].rotation = 0
 				else:
 					self.creatures += [Creature(gene, x=random.uniform(0.05,0.95), y=random.uniform(0.05,0.95))]
-					self.creatures[-1].speed = 0.4
 		
 		self.max_bush_count = max_bush_count
 		self.max_red_bush_count = max_red_bush_count
@@ -39,13 +38,15 @@ class World(object):
 			radii = array([inh.get_radius() for inh in inhabitants])
 
 			for creature in self.creatures:
+				creature_pos = creature.get_pos()
+
 				creature_got_input = False
 				left = [0] * (self.Brain.G_INPUTNODES/2)
 				right = [0] * (self.Brain.G_INPUTNODES/2)
 
 				if len(positions) > 0:
-					diffs = positions - creature.get_pos()
-					distances = array([funcs.vlen(diff) for diff in diffs]) - radii
+					diffs = positions - creature_pos
+					distances = array([funcs.special_vlen(diff) for diff in diffs]) - radii
 					for index, val in enumerate(distances):
 						if val <= creature.antennae_length and creature != inhabitants[index]:
 							[left, right] = self.check_detection(creature,inhabitants[index])
@@ -54,7 +55,7 @@ class World(object):
 							creature.on_collision(inhabitants[index])
 							inhabitants[index].on_collision(creature)
 					
-				if creature.get_x() - creature.antennae_length < 0 or creature.get_x() + creature.antennae_length > 1 or creature.get_y() - creature.antennae_length < 0 or creature.get_y() + creature.antennae_length > 1:
+				if creature_pos[0] - creature.antennae_length < 0 or creature_pos[0] + creature.antennae_length > 1 or creature_pos[1] - creature.antennae_length < 0 or creature_pos[1] + creature.antennae_length > 1:
 					[left, right] = self.detect_walls(creature, left, right)
 
 				if left != [0] * (self.Brain.G_INPUTNODES/2) or right != [0] * (self.Brain.G_INPUTNODES/2):
@@ -90,14 +91,17 @@ class World(object):
 			self.run_tick()
 
 	def detect_walls(self, looker, left, right):
+		looker_pos = looker.get_pos()
+
 		angle = looker.rotation * 2 * math.pi
 		if left == [0] * (self.Brain.G_INPUTNODES/2):
 			v_an1 = [looker.antennae_length * math.cos(angle + looker.antennae_angles[0]),
 			-1 * looker.antennae_length * math.sin(angle + looker.antennae_angles[0])]
 
-			antennae_point1 = funcs.vplus(looker.get_pos(), v_an1)
+			antennae_point1 = funcs.vplus(looker_pos, v_an1)
 
 			if antennae_point1[0] < 0 or antennae_point1[0] > 1 or antennae_point1[1] < 0 or antennae_point1[1] > 1:
+				looker.energy -= 20
 				left[0] = 1
 				left[1], left[2], left[3] = [0,0,1]
 
@@ -105,9 +109,10 @@ class World(object):
 			v_an2 = [looker.antennae_length * math.cos(angle + looker.antennae_angles[1]),
 			-1 * looker.antennae_length * math.sin(angle + looker.antennae_angles[1])]
 
-			antennae_point2 = funcs.vplus(looker.get_pos(), v_an2)
+			antennae_point2 = funcs.vplus(looker_pos, v_an2)
 
 			if antennae_point2[0] < 0 or antennae_point2[0] > 1 or antennae_point2[1] < 0 or antennae_point2[1] > 1:
+				looker.energy -= 20
 				right[0] = 1
 				right[1], right[2], right[3] = [0,0,1]
 

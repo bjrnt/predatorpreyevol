@@ -43,6 +43,7 @@ def plot_all():
 	for stat in stats:
 		fig = create_figure(stat)
 		fig.show()
+		dontexit = raw_input()
 
 def save_all(save_prefix):
 	for stat in stats:
@@ -75,9 +76,11 @@ def main():
 	if args.mode == 'plot':
 		load_stats(open(args.load_file))
 		plot_all()
+		dontexit = raw_input()
 	if args.mode == 'disk':
 		load_stats(open(args.load_file))
 		save_all(args.save_prefix)
+
 
 
 if __name__ == '__main__':

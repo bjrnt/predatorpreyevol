@@ -24,7 +24,7 @@ class BrainRBF(object):
 		rbf = self.rbf
 
 		if data[0] == 0 and data[4] == 0:
-			return (0.0, 0)
+			return (0.005, 0)
 		
 		else:
 			if data[0] == 1:
