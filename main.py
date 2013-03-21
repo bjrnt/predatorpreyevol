@@ -40,8 +40,8 @@ def default():
         ('Darwin','max_red_bush_count'): bushes_red or 0,
 
         ('Renderer','disp_freq'):2,
-        ('Darwin','enable_multiprocessing'):True,
-        ('Darwin','graphics'):True,
+        ('Darwin','enable_multiprocessing'): not gfx or True,
+        ('Darwin','graphics'):False or gfx,
     }
 
     apply_config(options)
@@ -67,6 +67,7 @@ def main():
     parser.add_argument('-bg',dest='bushes_green',metavar='int',type=int,help="Number of green bushes")
     parser.add_argument('-br',dest='bushes_red',metavar='int',type=int,help="Number of red bushes")
     parser.add_argument('--profile',dest='profiling_enabled', help="Use to enable or disable generation of profiling information.", required=False, action='store_const', const=True)
+    parser.add_argument('--gfx',dest='gfx', help="Used to disable multiprocessing and enable graphics", required=False, action='store_const', const=True)
     args = parser.parse_args(sys.argv[1:])
 
     global load_file
@@ -76,6 +77,7 @@ def main():
     global num_inds
     global bushes_green
     global bushes_red
+    global gfx
 
     load_file = None or args.load_file
     save_file = None or args.save_file
@@ -84,6 +86,7 @@ def main():
     num_inds = None or args.num_inds
     bushes_green = None or args.bushes_green
     bushes_red = None or args.bushes_red
+    gfx = None or args.gfx
 
     if args.profiling_enabled:
         profile()
