@@ -8,21 +8,26 @@ from brain_random import BrainRandom
 
 class World(object):
 	"""docstring for ClassName"""
-	def __init__(self, gene_pool=None, max_bush_count=0, max_red_bush_count=0, nticks=10000):
+	def __init__(self, gene_pool_creatures=None, gene_pool_predators=None, max_bush_count=0, max_red_bush_count=0, nticks=10000):
 		self.Brain = eval(World.brain_type)
 		self.creatures = []
 		self.dead_creatures = []
+		self.predators = []
+		self.dead_predators = []
 		self.bushes = []
 		self.red_bushes = []
 		self.nticks = nticks
-		if gene_pool is not None:
-			for gene in gene_pool:
+		if gene_pool_creatures is not None:
+			for gene in gene_pool_creatures:
 				if False:
 					self.creatures += [Creature(gene, x=0.05, y=(0.1 + 0.1 * len(self.creatures)))]
 					self.creatures[-1].rotation = 0
 				else:
 					self.creatures += [Creature(gene, x=random.uniform(0.05,0.95), y=random.uniform(0.05,0.95))]
-		
+		if gene_pool_predators is not None and gene_pool_predators != []:
+			for gene in gene_pool_predators:
+				self.predators += [Creature(gene, x=random.uniform(0.05,0.95), y=random.uniform(0.05,0.95),predator=True)]
+
 		self.max_bush_count = max_bush_count
 		self.max_red_bush_count = max_red_bush_count
 		#self.spawn_bushes_grid()
@@ -32,39 +37,46 @@ class World(object):
 		self.spawn_bushes()
 
 		# Get data for creatures to process
-		if World.detection:
-			inhabitants = self.bushes + self.red_bushes # Only detecting/colliding with bushes
-			positions = array([inh.get_pos() for inh in inhabitants])
-			radii = array([inh.get_radius() for inh in inhabitants])
+		inhabitants = []
 
-			for creature in self.creatures:
-				creature_pos = creature.get_pos()
+		if World.detect_creatures:
+			inhabitants += self.get_living()
 
-				creature_got_input = False
-				left = [0] * (self.Brain.G_INPUTNODES/2)
-				right = [0] * (self.Brain.G_INPUTNODES/2)
+		if World.detect_bushes:
+			inhabitants += self.get_bushes()
 
-				if len(positions) > 0:
-					diffs = positions - creature_pos
-					distances = array([funcs.special_vlen(diff) for diff in diffs]) - radii
-					for index, val in enumerate(distances):
-						if val <= creature.antennae_length and creature != inhabitants[index]:
-							[left, right] = self.check_detection(creature,inhabitants[index])
+		#inhabitants = self.bushes + self.red_bushes # Only detecting/colliding with bushes
+		positions = array([inh.get_pos() for inh in inhabitants])
+		radii = array([inh.get_radius() for inh in inhabitants])
 
-						if val <= creature.get_radius() and creature != inhabitants[index]:
-							creature.on_collision(inhabitants[index])
-							inhabitants[index].on_collision(creature)
-					
-				if creature_pos[0] - creature.antennae_length < 0 or creature_pos[0] + creature.antennae_length > 1 or creature_pos[1] - creature.antennae_length < 0 or creature_pos[1] + creature.antennae_length > 1:
-					[left, right] = self.detect_walls(creature, left, right)
+		for creature in self.get_living():
+			creature_pos = creature.get_pos()
 
-				if left != [0] * (self.Brain.G_INPUTNODES/2) or right != [0] * (self.Brain.G_INPUTNODES/2):
-					creature_got_input = True
+			creature_got_input = False
+			left = [0] * (self.Brain.G_INPUTNODES/2)
+			right = [0] * (self.Brain.G_INPUTNODES/2)
+
+			if len(positions) > 0:
+				diffs = positions - creature_pos
+				distances = array([funcs.special_vlen(diff) for diff in diffs]) - radii
+				for index, val in enumerate(distances):
+					if val <= creature.antennae_length and creature != inhabitants[index]:
+						[left, right] = self.check_detection(creature,inhabitants[index])
+
+					if val <= creature.get_radius() and creature != inhabitants[index]:
+						creature.on_collision(inhabitants[index])
+						inhabitants[index].on_collision(creature)
+				
+			if creature_pos[0] - creature.antennae_length < 0 or creature_pos[0] + creature.antennae_length > 1 or creature_pos[1] - creature.antennae_length < 0 or creature_pos[1] + creature.antennae_length > 1:
+				[left, right] = self.detect_walls(creature, left, right)
+
+			if left != [0] * (self.Brain.G_INPUTNODES/2) or right != [0] * (self.Brain.G_INPUTNODES/2):
+				creature_got_input = True
+				creature.gather_input(left + right)
+
+			if World.default_input:
+				if not creature_got_input:
 					creature.gather_input(left + right)
-
-				if World.default_input:
-					if not creature_got_input:
-						creature.gather_input(left + right)
 
 		if World.think:
 			for inhabitant in self.get_inhabitants():
@@ -77,9 +89,13 @@ class World(object):
 		if World.remove_dead:
 			for inhabitant in self.get_inhabitants():
 				if inhabitant.alive == False:
-					if isinstance(inhabitant,Creature):
+					if inhabitant in self.creatures:
 						self.creatures.remove(inhabitant)
 						self.dead_creatures += [inhabitant]
+					if inhabitant in self.predators:
+						self.predators.remove(inhabitant)
+						self.dead_predators += [inhabitant]
+
 					if isinstance(inhabitant,Bush):
 						if inhabitant.poisonous:
 							self.red_bushes.remove(inhabitant)
@@ -191,11 +207,14 @@ class World(object):
 	def add_bush(self, bush):
 		self.bushes += [bush]
 
-	def add_creature(self,creature):
+	def add_creature(self, creature):
 		self.creatures += [creature]
 
+	def get_living(self):
+		return self.creatures + self.predators
+
 	def get_inhabitants(self):
-		return self.creatures + self.bushes + self.red_bushes
+		return self.creatures + self.predators + self.bushes + self.red_bushes
 
 	def get_positions(self):
 		return [creature.get_pos() for creature in self.creatures]
@@ -203,8 +222,8 @@ class World(object):
 	def get_creatures(self):
 		return self.creatures + self.dead_creatures
 
-	def get_living_creatures(self):
-		return self.creatures
+	def get_predators(self):
+		return self.predators + self.dead_predators
 
 	def get_bushes(self):
 		return self.bushes + self.red_bushes

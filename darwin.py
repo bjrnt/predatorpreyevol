@@ -22,11 +22,14 @@ try: # Note: cTools are not compatible with PyPy
 except ImportError:
 	cTools_available = False
 
-def simulate(creatures, nticks=None, max_bush_count=None, max_red_bush_count=None):
+def simulate(living,nticks=None, max_bush_count=None, max_red_bush_count=None):
 	"""Used to run a simulation, placed outside of class to enable multiprocessing"""
-	w = World(gene_pool=creatures,nticks=nticks,max_bush_count=max_bush_count,max_red_bush_count=max_red_bush_count)
+	creatures = living[0]
+	predators = living[1]
+
+	w = World(gene_pool_creatures=creatures, gene_pool_predators=predators, nticks=nticks,max_bush_count=max_bush_count,max_red_bush_count=max_red_bush_count)
 	w.run_ticks()
-	return w.get_creatures()
+	return (w.get_creatures(), w.get_predators())
 
 class Darwin(object):
 	"""docstring for Darwin"""
@@ -56,7 +59,7 @@ class Darwin(object):
 
 	def __init__(self):
 		if Darwin.graphics and renderer_available:
-			self.renderer = Renderer(700,700)
+			self.renderer = Renderer()
 
 		self.toolbox = base.Toolbox()
 		self.gen_start_number = 1
@@ -83,6 +86,7 @@ class Darwin(object):
 		self.toolbox.register("select", tools.selNSGA2)
 
 		self.pop = self.toolbox.population(n=Darwin.NINDS)
+		self.pred_pop = self.toolbox.population(n=Darwin.NPRED)
 
 		if Darwin.enable_multiprocessing:
 			self.pool = multiprocessing.Pool(processes=3)
@@ -93,48 +97,67 @@ class Darwin(object):
 	def evaluate(self, ind):
 		return ind.life_length / 5
 
+	def evolve_population(self, creatures, g):
+		fitnesses = [self.evaluate(creature) for creature in creatures]
+		pop = [creature.brain.genes for creature in creatures]
+
+		for ind,fit in zip(pop, fitnesses):
+			ind.fitness.values = fit,
+		
+		if creatures[0].predator == True:
+			print "Predators: %s " % (self.printStatsPredators(pop,g))
+		else:
+			deaths_by_age = len([creature.cod for creature in creatures if creature.cod == 'age'])
+			deaths_by_bush = len([creature.cod for creature in creatures if creature.cod == 'bush'])
+			deaths_by_predator = len([creature.cod for creature in creatures if creature.cod == 'predator'])
+			print "Creatures: %s " % (self.printStatsCreatures(pop,g,deaths_by_age,deaths_by_bush,deaths_by_predator))
+		
+		#if g % 10 == 0 or g == self.gen_start_number:
+		#		self.printGeneStats(pop)
+		#		self.printBrainStats(self.toolbox.selectBest(pop,1))
+
+		bestInds = self.toolbox.selectBest(pop, len(pop) / 10)
+		bestInds = list(self.toolbox.map(self.toolbox.clone, bestInds))
+		offspring = self.toolbox.select(pop, len(pop) * 9 / 10)
+		offspring = list(self.toolbox.map(self.toolbox.clone, offspring))			
+
+		for child1,child2 in zip(offspring[::2],offspring[1::2]):
+			if random.random() < Darwin.CXPB:
+				self.toolbox.mate(child1,child2)
+
+		for mutant in offspring:
+			if random.random() < Darwin.MUTPB:
+				self.toolbox.mutate(mutant)
+
+		pop = bestInds + offspring
+
+		for ind in pop:
+			del ind.fitness.values
+
+		return pop
+
 	def begin_evolution(self):
 
 		# Begin actual evolution
 		start_time = time.time()
+		
+		pop = self.pop
+		pred_pop = self.pred_pop
+
 		for g in xrange(self.gen_start_number,self.gen_start_number+Darwin.NGEN):
-			pop = self.pop
 
-			creatures = self.simulate()
-			deaths_by_age = len([creature.cod for creature in creatures if creature.cod == 'age'])
-			deaths_by_bush = len([creature.cod for creature in creatures if creature.cod == 'bush'])
+			creatures, predators = self.simulate(pop, pred_pop)
 
-			fitnesses = [self.evaluate(creature) for creature in creatures]
-			for ind,fit in zip(pop, fitnesses):
-				ind.fitness.values = fit,
-
-			self.printStats(pop,g,deaths_by_age,deaths_by_bush)
+			pop = self.evolve_population(creatures, g)
 			
-			bestInds = self.toolbox.selectBest(pop, len(pop)/10)
-			bestInds = list(self.toolbox.map(self.toolbox.clone, bestInds))
-			offspring = self.toolbox.select(pop, len(pop)/10 * 9)
-			offspring = list(self.toolbox.map(self.toolbox.clone, offspring))
+			if len(pred_pop) > 0:
+				pred_pop = self.evolve_population(predators, g)
 
-			if g % 10 == 0 or g == self.gen_start_number:
-				self.printGeneStats(pop)
-				self.printBrainStats(self.toolbox.selectBest(pop,1))
 			if g % 20 == 0:
-				self.printTimeStats(start_time,g)
-				
-
-			for child1,child2 in zip(offspring[::2],offspring[1::2]):
-				if random.random() < Darwin.CXPB:
-					self.toolbox.mate(child1,child2)
-					del child1.fitness.values
-					del child2.fitness.values
-
-			for mutant in offspring:
-				if random.random() < Darwin.MUTPB:
-					self.toolbox.mutate(mutant)
-
-			self.pop[:] = bestInds + offspring
-			for ind in self.pop:
-				del ind.fitness.values
+				self.printTimeStats(start_time, g)
+			
+		self.pop = pop
+		self.pred_pop = pred_pop
 
 		self.gen_start_number = g
 		f = open(Darwin.save_file,'w')
@@ -143,37 +166,50 @@ class Darwin(object):
 
 		stats.plot_all()
 	
-	def simulate(self):
+	def simulate(self, creature_pop, predator_pop):
 		res = []
-		if len(self.pop) > Darwin.num_per_sim:
-			inputs = [self.pop[i*Darwin.num_per_sim:(i+1)*Darwin.num_per_sim] for i in xrange(0,len(self.pop)/Darwin.num_per_sim)]
-			
+		ips = Darwin.num_inds_per_sim
+		pps = Darwin.NPRED * ips / Darwin.NINDS
+
+		if len(creature_pop) > Darwin.num_inds_per_sim:
+			inputs = [(creature_pop[i * ips:(i+1) * ips], predator_pop[i * pps:(i+1) * pps]) for i in xrange(0,len(creature_pop)/ips)]
+
 			if Darwin.graphics and renderer_available:
 				if Darwin.enable_multiprocessing:
-					res += self.renderer.play_epoch(World(gene_pool=inputs[0], nticks=Darwin.NTICKS, max_bush_count=Darwin.max_bush_count, max_red_bush_count=Darwin.max_red_bush_count)) + list(itertools.chain(*self.toolbox.map(self.toolbox.simulate, inputs[1:])))
+					res += self.renderer.play_epoch(World(gene_pool_creatures=inputs[0][0], gene_pool_predators=inputs[0][1], nticks=Darwin.NTICKS, max_bush_count=Darwin.max_bush_count, max_red_bush_count=Darwin.max_red_bush_count))
+					res += list(itertools.chain(*self.toolbox.map(self.toolbox.simulate, inputs[1:])))
 				else:
 					for i in inputs:
-						res += self.renderer.play_epoch(World(gene_pool=i, nticks=Darwin.NTICKS, max_bush_count=Darwin.max_bush_count, max_red_bush_count=Darwin.max_red_bush_count))
+						res += self.renderer.play_epoch(World(gene_pool_creatures=i[0], gene_pool_predators=i[1], nticks=Darwin.NTICKS, max_bush_count=Darwin.max_bush_count, max_red_bush_count=Darwin.max_red_bush_count))
 			else:
 				res = list(itertools.chain(*self.toolbox.map(self.toolbox.simulate, inputs)))
-		
+			
+			c_res = []
+			r_res = []
+			#Fulhack!
+			for i in xrange(0,len(res),2):
+				c_res += res[i]
+				r_res += res[i+1]
+			
+			res = (c_res, r_res)
+
 		else:
 			if Darwin.graphics and renderer_available:
-				res = self.renderer.play_epoch(World(gene_pool=self.pop, nticks=Darwin.NTICKS, max_bush_count=Darwin.max_bush_count, max_red_bush_count=Darwin.max_red_bush_count))
+				res = self.renderer.play_epoch(World(gene_pool_creatures=creature_pop, gene_pool_predators=predator_pop, nticks=Darwin.NTICKS, max_bush_count=Darwin.max_bush_count, max_red_bush_count=Darwin.max_red_bush_count))
 			else:
-				res = self.toolbox.simulate(self.pop)
+				res = self.toolbox.simulate((creature_pop,predator_pop))
 
 		return res
 
 	def save_population(self,save_file):
 		pickler = Pickler(save_file)
-		data = (self.pop, self.gen_start_number + 1)
+		data = (self.pop, self.pred_pop, self.gen_start_number + 1)
 		pickler.dump(data)
 		save_file.close()
 
 	def load_population(self,load_file):
 		unpickler = Unpickler(load_file)
-		self.pop, self.gen_start_number = unpickler.load()
+		self.pop, self.pred_pop, self.gen_start_number = unpickler.load()
 		load_file.close()
 
 	def load_stats(self,load_stats_file):
@@ -197,11 +233,20 @@ class Darwin(object):
 		print '\033[95m' + "# Time stats: Spent: %2.2f s, Avg/gen: %2.2f s" % (time_spent, avg)
 		print "# Time to run %i gens: %2.2f s" % (generations_left, generations_left * avg), '\033[0m'
 
-	def printStats(self,pop,gen,dba,dbb):
+	def printStatsPredators(self,pop,gen):
 		fits = [ind.fitness.values[0] for ind in pop]
 		mean = sum(fits) / len(pop)
-		stats.add("fitness.avg",mean)
-		stats.add("fitness.min",min(fits))
-		stats.add("fitness.max",max(fits))
-		stats.add('death_by_bush_procent',dbb*1.0/(dbb+dba))
-		print ("(%3i): Max: %6.2f, Avg: %6.2f, Min: %5.2f, DBBP: %.2f" % (gen, max(fits), mean, min(fits),dbb*1.0/(dbb+dba)))
+		stats.add("predator_fitness.avg",mean)
+		stats.add("predator_fitness.min",min(fits))
+		stats.add("predator_fitness.max",max(fits))
+		return ("(%3i): Max: %6.2f, Avg: %6.2f, Min: %5.2f" % (gen, max(fits), mean, min(fits)))
+
+	def printStatsCreatures(self,pop,gen,dba,dbb,dbp):
+		fits = [ind.fitness.values[0] for ind in pop]
+		mean = sum(fits) / len(pop)
+		stats.add("creature_fitness.avg",mean)
+		stats.add("creature_fitness.min",min(fits))
+		stats.add("creature_fitness.max",max(fits))
+		stats.add("creature.death_by_bush_procent",dbb*1.0/(dbb+dba+dbp))
+		stats.add("creature.death_by_predator_procent",dbp*1.0/(dbb+dba+dbp))
+		return ("(%3i): Max: %6.2f, Avg: %6.2f, Min: %5.2f, DBBP: %.2f" % (gen, max(fits), mean, min(fits),dbb*1.0/(dbb+dba)))

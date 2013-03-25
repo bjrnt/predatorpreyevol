@@ -35,33 +35,67 @@ def load_stats(load_file):
 	import_stats(stats_to_import)
 	load_file.close()
 
+def group_stats():
+	grouped_stats = {}
+	for stat in stats:
+		parts = stat.split('.',1)
+		if len(parts) == 2:
+			if parts[0] not in grouped_stats.keys():
+				grouped_stats[parts[0]] = {}
+
+			grouped_stats[parts[0]][parts[1]] = stats[stat]
+
+		else:
+			grouped_stats[stat] = { stat: stats[stat]}
+
+	return grouped_stats
+
 def plot_all():
 	if platform.python_implementation() == 'PyPy':
 		print "Running pypy, cannot plot"
 		return
 
-	for stat in stats:
-		fig = create_figure(stat)
+	grouped_stats = group_stats()
+
+	for stat_group in grouped_stats:
+		fig = create_figure(stat_group,grouped_stats[stat_group])
 		fig.show()
 		dontexit = raw_input()
 
 def save_all(save_prefix):
-	for stat in stats:
-		fig = create_figure(stat)
-		fig.savefig(save_prefix + "_" + stat + '.png',bbox_inches=0)
+	grouped_stats = group_stats()
 
-def create_figure(stat):
+	for stat_group in grouped_stats:
+		fig = create_figure(stat_group,grouped_stats[stat_group])
+		fig.savefig(save_prefix + "_" + stat_group + '.png',bbox_inches=0)
+
+def create_figure(name,stat_group):
 	if platform.python_implementation() == 'PyPy':
 		print "Running pypy, cannot plot"
 		return
 
-	y_vals = stats[stat]
-	x_vals = xrange(1,len(y_vals)+1)
+	plt.clf()
 
-	p1, = plt.plot(x_vals, y_vals, linewidth=2.0)
-	plt.legend([p1],[stat])
-	plt.axis([1, len(y_vals), min(y_vals)*0.90, max(y_vals)*1.1])
-	plt.title(stat)
+	min_y = -0.2
+	max_y = 0.2
+
+	lines = []
+
+	for stat in stat_group:
+		y_vals = stat_group[stat]
+		x_vals = xrange(1,len(y_vals)+1)
+		
+		line, = plt.plot(x_vals, y_vals, linewidth=2.0)
+		lines += [line]
+
+		if min_y > min(y_vals)*0.90:
+			min_y = min(y_vals)*0.90
+		if max_y < max(y_vals)*1.1:
+			max_y = max(y_vals)*1.1
+
+	plt.axis([1, len(y_vals), min_y, max_y])
+	plt.title(name)
+	plt.legend(lines,stat_group.keys())
 	plt.ylabel('Value')
 	plt.xlabel('Generation #')
 	return plt.gcf()

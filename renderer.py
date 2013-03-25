@@ -3,11 +3,11 @@ from pygame.locals import *
 
 class Renderer(object):
 	"""docstring for Renderer"""
-	def __init__(self, width=700, height=700):
+	def __init__(self, width=850, height=850):
 		pygame.init()
 
-		self.width = 700
-		self.height = 700
+		self.width = width
+		self.height = height
 		self.disp_freq = Renderer.disp_freq
 		self.screen = pygame.display.set_mode((self.width,self.height), DOUBLEBUF)
 		pygame.display.set_caption('Our kex')
@@ -28,7 +28,7 @@ class Renderer(object):
 		self.screen.blit(self.background,(0,0))
 		pygame.display.flip()
 
-		return world.get_creatures()
+		return (world.get_creatures(), world.get_predators())
 
 	def render(self, world):
 		self.screen.blit(self.background,(0,0))
@@ -48,7 +48,7 @@ class Renderer(object):
 				0)
 
 	def render_creatures(self, world):	
-		for creature in world.get_living_creatures():
+		for creature in world.get_living():
 			pygame.draw.line(self.screen,
 				(255,255,255),
 				(int(self.width * creature.pos[0]), int(self.height * creature.pos[1])),
@@ -66,3 +66,9 @@ class Renderer(object):
 				(int(self.width * creature.pos[0]), int(self.height * creature.pos[1])),
 				1 + int(creature.get_radius() * self.height),
 				0)
+			if creature.predator:
+			 	pygame.draw.circle(self.screen, 
+			 	[255,255,255], 
+			 	(int(self.width * creature.pos[0]), int(self.height * creature.pos[1])),
+			 	1 + int(creature.get_radius() / 3 * self.height),
+			 	0)

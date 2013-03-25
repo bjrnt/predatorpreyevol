@@ -10,7 +10,7 @@ class Creature(Inhabitant):
 	antennae = 2
 	antennae_angles = [math.pi/6.0, -1.0 * math.pi/6.0]
 
-	def __init__(self, genes=None, x=0.0, y=0.0):
+	def __init__(self, genes=None, x=0.0, y=0.0, predator=False):
 		
 		R = 0.1 + (genes[-1] + 1) * 0.5 
 		G = 0.1 + (genes[-2] + 1) * 0.5
@@ -22,11 +22,15 @@ class Creature(Inhabitant):
 		B = B if B < 1 else 1
 		B = B if B > 0 else 0
 
+		if predator:
+			R,G,B = 0.9, 0.1, 0.1
+
 		super(Creature, self).__init__([x,y], 
 			radius_multiplier=0.5, 
 			color=(R,G,B),
 			energy=Creature.health)
 			
+		self.predator = predator
 		self.cod = None
 		self.rotation = random.random()
 		self.speed = 0.0
@@ -80,6 +84,12 @@ class Creature(Inhabitant):
 	# 		self.speed = 1
 	# 	if self.speed < -1:
 	# 		self.speed = -1
+
+	def on_collision(self, target):
+		if self.predator and isinstance(target,Creature) and not target.predator:
+			self.energy += 100
+			target.cod = 'predator'
+			target.alive = False
 
 	def move(self):
 		self.energy -= 1

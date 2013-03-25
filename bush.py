@@ -8,7 +8,7 @@ class Bush(Inhabitant):
 		if poisonous:
 			super(Bush, self).__init__([x,y], radius_multiplier=0.55, color=(1.0,0.0,0.0), energy=0)
 		else:
-			super(Bush, self).__init__([x,y], radius_multiplier=0.1, color=(0.0,1.0,0.0), energy=100)
+			super(Bush, self).__init__([x,y], radius_multiplier=0.1, color=(0.0,1.0,0.0), energy=50)
 
 	def think(self):
 		if self.radius_multiplier < 0.4:
@@ -18,7 +18,7 @@ class Bush(Inhabitant):
 		#	self.color = (0.1,self.color[1] + 0.01, 0.1)
 
 	def on_collision(self, target):
-		if target.__class__ == Creature:
+		if target.__class__ == Creature and not target.predator:
 			if self.poisonous:
 				target.alive = False
 				target.cod = 'bush'
