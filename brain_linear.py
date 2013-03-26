@@ -14,7 +14,7 @@ class BrainLinear(object):
 	G_REGION_SIZE = 1
 
 	def __init__(self, genes=None):
-		if genes != None:
+		if genes is not None:
 			self.import_genes(genes)
 
 	def think(self, data):
