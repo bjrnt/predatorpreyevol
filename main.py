@@ -34,7 +34,7 @@ def default():
         ('Creature','health'):1000,
         ('Darwin','NTICKS'):2500,
 
-        ('Darwin','NPRED'): num_preds or 12, # Must be divisible by NINDS / num_inds_per_sim and 10
+        ('Darwin','NPRED'): num_preds or 0, # Must be divisible by NINDS / num_inds_per_sim and 10
         ('Darwin','NINDS'): num_inds or 120, # Must be a number divisible by 10 and by num_inds_per_sim
         ('Darwin','num_inds_per_sim'):20,
 
