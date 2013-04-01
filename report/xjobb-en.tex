@@ -106,10 +106,18 @@ A better approach is the so called roulette wheel selection where each individua
 Undrar om vi ska skriva något om NSGA II...
  
 \subsection{Mutation}
-Mutation is a random, usually small, change of an individuals genome. In genetic algorithms it is usually implemented as a small probability for each gene to mutate. When the genome consists of a series of 0:s and 1:s, the mutation operator is simply a flip of that bit and when the genes consist of floating point values, the mutation can be an addition or multiplication of a random value. If the mutation rate is too high, it becomes very hard to reach convergence since the good solutions are mutated into averaged solutions.
+Mutation is a random, usually small, change of an individuals genome. In nature In genetic algorithms it is usually implemented as a small probability for each gene to mutate. When the genome consists of a series of 0:s and 1:s, the mutation operator is simply a flip of that bit and when the genes consist of floating point values, the mutation can be an addition or multiplication of a random value. If the mutation rate is too high, it becomes very hard to reach convergence since the good solutions are mutated into averaged solutions.
+
+\begin{figure}
+\centering\includegraphics[scale=0.5]{crossover}
+\caption{A schematic drawing showing crossover of two genomes.}
+\label{crossover-figure}
+\end{figure}
 
 \subsection{Crossover}
-Crossover is the operation of combining two genomes into two new genomes. One common crossover operator is known as  single point crossover and it consists of splitting two genomes at the same position and merging the splitted parts into two new genomes. The split position is chosen randomly and the two new genomes share no genes with each other.
+Crossover is the operation of combining two genomes into two new genomes. One common crossover operator is known as  single point crossover and it consists of splitting two genomes at the same position and merging the splitted parts into two new genomes. The split position is chosen randomly and the two new genomes share no genes with each other. This process is displayed in Figure \ref{crossover-figure} There is also multiple point crossover where there are multiple splitting positions as well as uniform crossover where each gene can be exchanged with a certain probability.
+
+
 
 
 \section{Radial Basis Functions}
@@ -120,15 +128,15 @@ Crossover is the operation of combining two genomes into two new genomes. One co
 \caption{Three one-dimensional RBFs with varying $\mu$ and $\sigma$ values.}
 \end{figure}
 
-A radial basis function (RBF) is a bell-shaped function which value depends on the distance from some origin, denoted $\mu$ in the formula.  Radial basis functions are commonly used in neural networks as a way to encode input information. They are favourable to use as they have locality, something which linear functions do not. In particular they are used for function approximation, as any function can be approximated as the sum of a number of weighted radial basis functions. A property of radial basis functions which can both be interpreted as an advantage and disadvantage is that their value never exceeds 1, compared to a linear function which can grow to infinitely high or low numbers.
+A radial basis function (RBF) is a bell-shaped function whose value depends on the distance from some origin, denoted $\mu$ in the formula.  Radial basis functions are commonly used in neural networks as a way to encode input information. They are favourable to use as they have locality, something which linear functions do not. In particular they are used for function approximation, as any function can be approximated as the sum of a number of weighted radial basis functions. A property of radial basis functions which can both be interpreted as an advantage and disadvantage is that their value never exceeds a given constant, compared to a linear function which can grow to infinitely high or low numbers.
 
 Radial basis functions are commonly implemented using a formula such as \ref{RBF_1}, which is a three-dimensional function centred around $(\mu _{x}$, $\mu _{y}$, $\mu _{z})$. The width of the bell-curve in each dimension is determined by $\sigma _{x}$, $\sigma _{y}$ and $\sigma _{z}$ respectively.
 
 \begin{figure}
 \begin{equation}
-f(x,y,z) = \exp(-(\frac{(x-\mu_{x})^{2}}{2 \sigma _{x}^{2}} + \frac{(y-\mu_{y})^{2}}{2 \sigma _{y}^{2}} + \frac{(z-\mu_{z})^{2}}{2 \sigma _{z}^{2}}))
+f(x,y,z) = \exp(-(\frac{(x-\mu_{x})^{2}}{2 \sigma _{x}^{2}})) + \exp(-(\frac{(y-\mu_{y})^{2}}{2 \sigma _{y}^{2}})) + \exp(-(\frac{(z-\mu_{z})^{2}}{2 \sigma _{z}^{2}}))
 \end{equation}
-\caption{A three-dimensional radial basis function.\label{RBF_1}}
+\caption{A sum of three radial basis functions, corresponding to three input values.\label{RBF_1}}
 \end{figure}
 
 \chapter{Implementation}
