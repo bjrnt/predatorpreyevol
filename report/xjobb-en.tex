@@ -7,13 +7,18 @@
 \usepackage[swedish,english]{babel}
 \usepackage{modifications}
 \usepackage{algorithmicx}
+
+\usepackage{amsmath}
+\usepackage{amssymb}
 \usepackage{algpseudocode}
+
+\usepackage{hyperref}
 
 % http://library.uwl.ac.uk/find/guides/general/harvard_reference.html
 
-\title{Comparison of Artificial Brains in Simulating Animal Behaviour}
+\title{Evolution of Artificial Brains in Simulating Animal Behaviour}
 \subtitle{Comparing radial basis, linear and random functions for decision-making}
-\foreigntitle{Titel pa svenska}
+\foreigntitle{Evolution av artificiella hjärnor vid simulering av djurs beteende}
 \author{Björn Tegelund\\Johan Wikström}
 \date{November 2003}
 \blurb{Bachelor's Thesis at CSC\\Supervisor: Petter Ögren\\Examiner: Mårten Björkman}
@@ -32,7 +37,7 @@
 \end{abstract}
 \clearpage
 \begin{foreignabstract}{swedish}
-  Denna fil gfwfqwfwqfqer ett avhandlingsskelett.
+  Denna fil qer ett avhandlingsskelett.
   Mer information om \LaTeX-mallen finns i
   dokumentationen till paketet.
 
@@ -110,7 +115,7 @@ Mutation is a random, usually small, change of an individuals genome. In nature 
 
 \begin{figure}
 \centering\includegraphics[scale=0.5]{crossover}
-\caption{A schematic drawing showing crossover of two genomes.}
+\caption{A schematic drawing showing single point crossover of two genomes.}
 \label{crossover-figure}
 \end{figure}
 
@@ -142,6 +147,11 @@ f(x,y,z) = \exp(-(\frac{(x-\mu_{x})^{2}}{2 \sigma _{x}^{2}})) + \exp(-(\frac{(y-
 \chapter{Implementation}
 \section{Model}
 \subsection{Simulation in Python}
+
+We chose python as implementation language mainly because it is easy to build prototypes quickliy in that language. Python also has an abundance of third party libraries which helps reduce implementation cost significantly. We chose to use a third party library called DEAP (Distributed Evolutionary Algorithms in Python) for the evolutionary algorithms. DEAP proved to be flexible enough for the task since it allowed us to define our own selection, mutation and crossover algorithms as well as using default versions. Apart from DEAP we have also used pygame and matplotlib for graphical rendering as well as pypy, numpy and python's built in support for multiprocessing to decrease running times. For a comprehensive list of tools used, please see Appendix \ref{list-of-third-party-tools}.
+
+
+
 Square world with walls, circular inhabitants with antennae\\
 Good and bad food sources\\
 Predators?\\
@@ -156,21 +166,46 @@ Adding predators\\
 More kinds of food\\
 Being able to see more things in the world\\
 Placing objects into the world\\
-\subsection{Linear Decision Making}
-\subsection{RBF-Based Decision Making}
+\subsection{Decision making}
+All brains in our simulation have a similar structure, they are functions with eight inputs and two outputs. When input is received by a creature, it is in form of eight numbers, four for each antenna. Three of the inputs for each antenna are the red-, green- and blue components of the currently detected object's colour. These inputs are normalized to the interval $[0,1]$. The fourth input is zero when no object is detected and one when an object is. 
 
-When input is received by a creature, it is in form of eight numbers, four for each antenna. Three of the inputs for each antenna are the red-, green- and blue components of the currently detected object's colour. The fourth input is zero when no object is detected and one when an object is. The three colour-based inputs are then used in several three-dimensional radial basis functions. For each antenna a $\Delta r$ (change in rotation) and $\Delta s$ (change in speed) is computed by summing the function values and normalising them. The $\Delta r$ and $\Delta s$ for each antenna are then grouped and used by the creature to change it's rotation and speed. See equation \ref{RBF_decide}.
+The outputs consists of the values $\Delta r$ and $\Delta s$ which denotes change of rotation and change of speed. Both output values are normalized to $[-1,1]$ to account for the possibilities of negative rotation and negative acceleration. These values are then translated into reasonable values in the simulation. The maximum acceleration is determined by the size of the creatures, the size of the world, the maximum speed of the creatures and so on. The maxumum allowed change in rotation is 180$^\circ$ or $\pi$ since the interval $[-\pi,\pi]$ covers the entire circle. A larger allowed change in rotation would have made learning harder since there would be multiple correct responses to a situation, e.g $\Delta r = v, \Delta r = v+ 2\pi, \Delta r = v+ 4\pi \dots $.
+
+\subsection{Linear Decision Making}
+In the linear brain we have the simplest possible artificial intelligence. We have twelve genes in total in the interval $[-1,1]$ These genes correspond to three colors per antenna times two antennae times two outputs from the brain. Both $\Delta r$ and $\Delta s$ are calculated using the same method. In equation \ref{linear-decide}, the first three components of the left and right antennae vectors, the ones containing color data, are called $\mathbf{x_{l}}$ and $\mathbf{x_{r}}$ respectively. The fourth components are called $l_4$ and $r_4$. There are twelve genes involved in total in the linear brain, six of them applies to this equation and they are divided into two vectors $\mathbf{g_{1-3}}$ and $\mathbf{g_{4-6}}$ using genes 1-3 and 4-6. The change in speed $\Delta s$ is calculated in the exact same way using the same inputs but genes 7-12 instead.
+
 
 \begin{figure}
 \begin{equation}
-\Delta s _{left} = f(\mathbf{x} _{left})
+\Delta r
+\begin{cases}
+	0 & \text{if $l_4 = 0$ and $r_4 = 0$},\\
+	S(\mathbf{g_{1-3}} \circ \mathbf{x_l}) & \text{if $l_4 \neq 0$ and $r_4 = 0$}\\
+	S(\mathbf{g_{4-6}} \circ \mathbf{x_r}) & \text{if $r_4 \neq 0$ and $l_4 = 0$}\\
+	S(\mathbf{g_{1-3}} \circ \mathbf{x_l} + \mathbf{g_{4-6}} \circ \mathbf{x_r} ) & \text{if $r_4 \neq 0$ and $l_4 \neq 0$}\\
+\end{cases}	
 \end{equation}
-\caption{Calculating the $\Delta s$ for the left eye, using the input vector $\mathbf{x} _{left}$ corresponding to the colours of the object detected using the left antenna.\label{RBF_decide}}
+\caption{The linear brain's decision formula for change of rotation $\Delta r$. Essentially a modified perceptron.}
+\label{linear-decide}
+\end{figure}
+
+In the equation we are using a sigmoid function $\mathcal{S}$ to limit the outputs to $[-1,1]$. We used $\frac{1}{1+e^{-x}} * 2 -1$ as sigmoid but any function $f:x\rightarrow y, x\in [-6,6], y \in [-1,1]$ would have worked since the only concern was to limit the output range to $[-1,1]$. We chose the sigmoid however since we wanted linear behaviour with a high steepness near $x=0$ since that gives the best learning rate and a flatter curve at the extremes. An x value near the extremes of $[-6,6]$ corresponds to radical behaviour such as turning 180$^\circ$ or accelerating very rapidly, an x value near 0 corresponds to making minor adjustments of speed and angle when encountering an object. A high x value also corresponds to a very rare event occuring, namely that both antennae detect objects with very high color values. Since we wanted to train our creatures to behave rationally on the common events, we chose the sigmoid function which slows down learning of rare, extreme events and behavoiurs, far from 0, and accelerates learning of common, rational events and behaviours, close to zero. In this way, the creatures still have the ability to react strongly, e g turning 180$^\circ$ when seeing an predator, but learning focuses on the most interesting behavoiurs namely which way to turn or which way to accelerate. We could just as easily have used $f(x) = x/6$ as a normalizing function, but that would probably have slowed down learning considerably.
+
+
+\subsection{RBF-Based Decision Making}
+
+When input is received by a creature, it is in form of eight numbers, four for each antenna. Three of the inputs for each antenna are the red-, green- and blue components of the currently detected object's colour. These inputs are normalized to the interval $[0,1]$. The fourth input is zero when no object is detected and one when an object is. The three colour-based inputs are then used in several three-dimensional radial basis functions. For each antenna, $\Delta r$ (change in rotation) and $\Delta s$ (change in speed) is computed by summing the function values and normalising them. The $\Delta r$ and $\Delta s$ for each antenna are then grouped and used by the creature to change it's rotation and speed. See equation \ref{RBF_decide}.
+
+\begin{figure}
+\begin{equation}
+\Delta s _{left} = f(\mathbf{x_{l}})
+\end{equation}
+\caption{Calculating the $\Delta s$ for the left eye, using the input vector $\mathbf{x_{l}}$ corresponding to the colours of the object detected using the left antenna.\label{RBF_decide}}
 \end{figure}
 
 Each radial basis function also has a $\sigma$ and $\mu$ which are decided by the creature's genes. $\sigma$ and $\mu$ are in the ranges of $[0,1]$ and $[-1,1]$ respectively. In practice this means that the creatures' change in speed and rotation, when detecting an object in each antenna, depend on their genetic makeup.
 
-The difference between using radial basis functions and linear functions is that you have a much larger possibility to approximate any decision-making strategy. For example an RBF-based brain could make the distinction between different shades of green and thus react differently to them, while a linear function could only decide if more green is better or worse.
+The difference between using radial basis functions and linear functions is that you have a larger possibility to approximate any decision-making strategy. For example an RBF-based brain could make the distinction between different shades of green and thus react differently to them, while a linear function could only decide if more green is better or worse.
 \subsection{Random Decision Making}
 \subsection{Genetic Algorithm}
 What kind of genetic algorithm do we plan to use?\\
@@ -206,6 +241,8 @@ Other unexpected problems?\\
 \section{Conclusions and Future Work}
 
 \begin{thebibliography}{9}
+% We are using the APA style of referencing
+
 \bibitem{montana89} 
 Montana, D. J.,  and Davis, L. (1989, August). Training feedforward neural networks using genetic algorithms. In \emph{Proceedings of the eleventh international joint conference on artificial Intelligence} (Vol. 1, pp. 762-767).
 \bibitem{langton97}
@@ -216,18 +253,19 @@ Marsland, S. (2009). \emph{Machine Learning, an Algorithmic Perspective}. CSC-Pr
 Holland, J. H. (1992). Genetic algorithms. \emph{Scientific american, 267(1)}, 66-72.
 
 
+
 \end{thebibliography}
 
 \appendix
 \addappheadtotoc
-\chapter{RDF}\label{appA}
+\chapter{Third party libraries and tools used}
+\label{list-of-third-party-tools}
+\begin{itemize}
+\item DEAP - Distributed Evolutionary Algorithms in Python \url{http://deap.gel.ulaval.ca/doc/default/index.html}
+\item PyPy - A fast Just-in-Time compiler for Python. \url{http://pypy.org/}
+\item Pygame - A computer game and visualization package for python. \url{http://www.pygame.org/docs/}
+\item NumPy - A Python package for numerical calculations. \url{http://www.numpy.org/}
+\item matplotlib - A python package for rendering graphs. \url{http://matplotlib.org/}
+\end{itemize}
 
-\begin{figure}[ht]
-\begin{center}
-And here is a figure
-\caption{\small{Several statements describing the same resource.}}\label{RDF_4}
-\end{center}
-\end{figure}
-
-that we refer to here: \ref{RDF_4}
 \end{document}
