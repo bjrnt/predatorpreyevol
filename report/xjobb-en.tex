@@ -129,8 +129,9 @@ Crossover is the operation of combining two genomes into two new genomes. One co
 \subsection{Overview}
 
 \begin{figure}
-%\centering\includegraphics[scale=0.5]{rbf_1d.png}
+\centering\includegraphics[scale=0.5]{rbf_1d.png}
 \caption{Three one-dimensional RBFs with varying $\mu$ and $\sigma$ values.}
+\label{3-rbf-functions}
 \end{figure}
 
 A radial basis function (RBF) is a bell-shaped function whose value depends on the distance from some origin, denoted $\mu$ in the formula.  Radial basis functions are commonly used in neural networks as a way to encode input information. They are favourable to use as they have locality, something which linear functions do not. In particular they are used for function approximation, as any function can be approximated as the sum of a number of weighted radial basis functions. A property of radial basis functions which can both be interpreted as an advantage and disadvantage is that their value never exceeds a given constant, compared to a linear function which can grow to infinitely high or low numbers.
@@ -172,6 +173,7 @@ All brains in our simulation have a similar structure, they are functions with e
 The outputs consists of the values $\Delta r$ and $\Delta s$ which denotes change of rotation and change of speed. Both output values are normalized to $[-1,1]$ to account for the possibilities of negative rotation and negative acceleration. These values are then translated into reasonable values in the simulation. The maximum acceleration is determined by the size of the creatures, the size of the world, the maximum speed of the creatures and so on. The maxumum allowed change in rotation is 180$^\circ$ or $\pi$ since the interval $[-\pi,\pi]$ covers the entire circle. A larger allowed change in rotation would have made learning harder since there would be multiple correct responses to a situation, e.g $\Delta r = v, \Delta r = v+ 2\pi, \Delta r = v+ 4\pi \dots $.
 
 \subsection{Linear Decision Making}
+\label{linear-decision-making}
 In the linear brain we have the simplest possible artificial intelligence. We have twelve genes in total in the interval $[-1,1]$ These genes correspond to three colors per antenna times two antennae times two outputs from the brain. Both $\Delta r$ and $\Delta s$ are calculated using the same method. In equation \ref{linear-decide}, the first three components of the left and right antennae vectors, the ones containing color data, are called $\mathbf{x_{l}}$ and $\mathbf{x_{r}}$ respectively. The fourth components are called $l_4$ and $r_4$. There are twelve genes involved in total in the linear brain, six of them applies to this equation and they are divided into two vectors $\mathbf{g_{1-3}}$ and $\mathbf{g_{4-6}}$ using genes 1-3 and 4-6. The change in speed $\Delta s$ is calculated in the exact same way using the same inputs but genes 7-12 instead.
 
 
@@ -185,28 +187,31 @@ In the linear brain we have the simplest possible artificial intelligence. We ha
 	S(\mathbf{g_{1-3}} \circ \mathbf{x_l} + \mathbf{g_{4-6}} \circ \mathbf{x_r} ) & \text{if $r_4 \neq 0$ and $l_4 \neq 0$}\\
 \end{cases}	
 \end{equation}
-\caption{The linear brain's decision formula for change of rotation $\Delta r$. Essentially a modified perceptron.}
+\caption{The linear brain's decision formula for change of rotation $\Delta r$. S corresponds to a sigmoid function described in chapter \ref{linear-decision-making}.}
 \label{linear-decide}
 \end{figure}
 
-In the equation we are using a sigmoid function $\mathcal{S}$ to limit the outputs to $[-1,1]$. We used $\frac{1}{1+e^{-x}} * 2 -1$ as sigmoid but any function $f:x\rightarrow y, x\in [-6,6], y \in [-1,1]$ would have worked since the only concern was to limit the output range to $[-1,1]$. We chose the sigmoid however since we wanted linear behaviour with a high steepness near $x=0$ since that gives the best learning rate and a flatter curve at the extremes. An x value near the extremes of $[-6,6]$ corresponds to radical behaviour such as turning 180$^\circ$ or accelerating very rapidly, an x value near 0 corresponds to making minor adjustments of speed and angle when encountering an object. A high x value also corresponds to a very rare event occuring, namely that both antennae detect objects with very high color values. Since we wanted to train our creatures to behave rationally on the common events, we chose the sigmoid function which slows down learning of rare, extreme events and behavoiurs, far from 0, and accelerates learning of common, rational events and behaviours, close to zero. In this way, the creatures still have the ability to react strongly, e g turning 180$^\circ$ when seeing an predator, but learning focuses on the most interesting behavoiurs namely which way to turn or which way to accelerate. We could just as easily have used $f(x) = x/6$ as a normalizing function, but that would probably have slowed down learning considerably.
+In the equation we are using a sigmoid function $S$ to limit the outputs to $[-1,1]$. We used $\frac{1}{1+e^{-x}} * 2 -1$ as sigmoid but any function $f:x\rightarrow y, x\in [-6,6], y \in [-1,1]$ would have worked since the only concern was to limit the output range to $[-1,1]$. We chose the sigmoid however since we wanted linear behaviour with a high steepness near $x=0$ since that gives the best learning rate and a flatter curve at the extremes. An x value near the extremes of $[-6,6]$ corresponds to radical behaviour such as turning 180$^\circ$ or accelerating very rapidly, an x value near 0 corresponds to making minor adjustments of speed and angle when encountering an object. A high x value also corresponds to a very rare event occuring, namely that both antennae detect objects with very high color values. Since we wanted to train our creatures to behave rationally on the common events, we chose the sigmoid function which slows down learning of rare, extreme events and behavoiurs, far from 0, and accelerates learning of common, rational events and behaviours, close to zero. In this way, the creatures still have the ability to react strongly, e g turning 180$^\circ$ when seeing an predator, but learning focuses on the most interesting behavoiurs namely which way to turn or which way to accelerate. We could just as easily have used $f(x) = x/6$ as a normalizing function, but that would probably have slowed down learning considerably.
 
 
 \subsection{RBF-Based Decision Making}
 
-When input is received by a creature, it is in form of eight numbers, four for each antenna. Three of the inputs for each antenna are the red-, green- and blue components of the currently detected object's colour. These inputs are normalized to the interval $[0,1]$. The fourth input is zero when no object is detected and one when an object is. The three colour-based inputs are then used in several three-dimensional radial basis functions. For each antenna, $\Delta r$ (change in rotation) and $\Delta s$ (change in speed) is computed by summing the function values and normalising them. The $\Delta r$ and $\Delta s$ for each antenna are then grouped and used by the creature to change it's rotation and speed. See equation \ref{RBF_decide}.
+In RBF-based decision making, the three inputs to each antenna are used in the function displayed in Figure \ref{3-RBF-functions}. For each antenna, $\Delta r$  and $\Delta s$ are computed by summing RBF function values and normalising them using the same function $S$ as in chapter \ref{linear-decision-making}. And as in chapter \ref{linear-decision-making} $\Delta r$ and $\Delta s$ are calculated separately using the same function and inputs but using different genes.
 
 \begin{figure}
 \begin{equation}
-\Delta s _{left} = f(\mathbf{x_{l}})
+\Delta r = S(f(\mathbf{x_{l}}))
 \end{equation}
-\caption{Calculating the $\Delta s$ for the left eye, using the input vector $\mathbf{x_{l}}$ corresponding to the colours of the object detected using the left antenna.\label{RBF_decide}}
+\caption{Calculating the $\Delta r$ using RBF functions, using the input vector $\mathbf{x_{l}}$ corresponding to the colours of the object detected using the left antenna.\label{RBF-decide}}
 \end{figure}
 
-Each radial basis function also has a $\sigma$ and $\mu$ which are decided by the creature's genes. $\sigma$ and $\mu$ are in the ranges of $[0,1]$ and $[-1,1]$ respectively. In practice this means that the creatures' change in speed and rotation, when detecting an object in each antenna, depend on their genetic makeup.
+Each radial basis function has a $\sigma$ and $\mu$ which are decided by the creature's genes. $\sigma$ and $\mu$ are in the ranges of $[0,1]$ and $[-1,1]$ respectively and this means that the RBF brain needs twice as many genes. The formula for RBF decision making is shown in Figure \ref{RBF-decide}
 
 The difference between using radial basis functions and linear functions is that you have a larger possibility to approximate any decision-making strategy. For example an RBF-based brain could make the distinction between different shades of green and thus react differently to them, while a linear function could only decide if more green is better or worse.
 \subsection{Random Decision Making}
+The random decision making brain is very easy. When it receives an input 
+
+
 \subsection{Genetic Algorithm}
 What kind of genetic algorithm do we plan to use?\\
 Fitness, crossover, mutation, selection, which ones?\\
