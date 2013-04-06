@@ -26,7 +26,7 @@ def default():
 
         ('Creature','World','Darwin','brain_type'): brain_type or 'BrainLinear',
 
-        ('Darwin','NGEN'): num_gens or 20,
+        ('Darwin','NGEN'): num_gens or 0,
         ('Darwin','CXPB'):0.3,
         ('Darwin','MUTPB'):0.4,
         
@@ -38,8 +38,8 @@ def default():
         ('Darwin','NINDS'): num_inds or 120, # Must be a number divisible by 10 and by num_inds_per_sim
         ('Darwin','num_inds_per_sim'):20,
 
-        ('Darwin','max_bush_count'): bushes_green or 18,
-        ('Darwin','max_red_bush_count'): bushes_red or 5,
+        ('Darwin','max_bush_count'): bushes_green or 0,
+        ('Darwin','max_red_bush_count'): bushes_red or 0,
 
         ('Renderer','disp_freq'):2,
         ('Darwin','enable_multiprocessing'):True,
