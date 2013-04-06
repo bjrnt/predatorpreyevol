@@ -145,15 +145,12 @@ Crossover is the operation of combining two genomes into two new genomes. One co
 
 A radial basis function (RBF) is a bell-shaped function whose value depends on the distance from some origin, denoted $\mu$ in the formula.  Radial basis functions are commonly used in neural networks as a way to encode input information. They are favourable to use as they have locality, something which linear functions do not. In particular they are used for function approximation, as any function can be approximated as the sum of a number of weighted radial basis functions. A property of radial basis functions which can both be interpreted as an advantage and disadvantage is that their value never exceeds a given constant, compared to a linear function which can grow to infinitely high or low numbers.
 
-Radial basis functions are commonly implemented using a formula such as \ref{RBF_1}, which is a three-dimensional function centred around $(\mu _{x}$, $\mu _{y}$, $\mu _{z})$. The width of the bell-curve in each dimension is determined by $\sigma _{x}$, $\sigma _{y}$ and $\sigma _{z}$ respectively.
+Radial basis functions are commonly implemented using a formula such as Equation \ref{RBF_1}, which is a three-dimensional function centred around $(\mu _{x}$, $\mu _{y}$, $\mu _{z})$. The width of the bell-curve in each dimension is determined by $\sigma _{x}$, $\sigma _{y}$ and $\sigma _{z}$ respectively.
 
-\begin{figure}
 \begin{equation}
 f(x,y,z) = \exp(-(\frac{(x-\mu_{x})^{2}}{2 \sigma _{x}^{2}})) + \exp(-(\frac{(y-\mu_{y})^{2}}{2 \sigma _{y}^{2}})) + \exp(-(\frac{(z-\mu_{z})^{2}}{2 \sigma _{z}^{2}}))
+\label{RBF_1}
 \end{equation}
-\caption{A sum of three radial basis functions, corresponding to three input values.}
-\label{RBF-1}
-\end{figure}
 
 \chapter{Implementation}
 \section{Model}
@@ -161,7 +158,7 @@ f(x,y,z) = \exp(-(\frac{(x-\mu_{x})^{2}}{2 \sigma _{x}^{2}})) + \exp(-(\frac{(y-
 
 Python was chosen as the language to implement our simulation in as it is a high-level language suited for quickly building prototypes. It also has an abundance of third-party libraries which helps reduce implementation time significantly. A third-party library called DEAP (Distributed Evolutionary Algorithms in Python) was used for the evolutionary algorithms. DEAP proved to be flexible enough for the task as it allows the user to define their own selection, mutation and crossover algorithms as well as mixing them with the accompanying built-in algorithms. Pygame and Matplotlib were used for graphical rendering, Pygame for rendering the actual simulation and Matplotlib for producing graphs from the extracted data. To increase performance Pypy, Numpy and Python's built-in support for multiprocessing were used to decrease runtime significantly. For a comprehensive list of the tools used, please see Appendix \ref{list-of-third-party-tools}.
 
-These libraries were combined to create a model of the world in which the creatures will be simulated. The word contains creatures, which are spheres with two antennae protruding from their bodies at angles $\pi /6$ and $-\pi / 6$. There may also be predators in the world that are similar to creatures apart from that they consume different food and always have a strong red color. While creatures eat green plants, which are green circles placed randomly within the world, predators instead eat creatures. To make things more difficult creatures also have to avoid red plants, which are red circles. These represent "bad" or poisonous food. As predators have no interest in eating plants they do not detect or have any consequences from colliding with plants. There are also walls around the border of the world which the creatures cannot pass through. They are coloured blue in order for the creatures to be able to make a clear distinction between walls, plants, predators and other creatures. Collision and detection, which are the only ways of interaction between two objects, are governed by the following rules:
+These libraries were combined to create a model of the world in which the creatures will be simulated. The word contains creatures, which are spheres with two antennae protruding from their bodies at angles $\pi /6$ and $-\pi / 6$. The creatures' colours are decided by their genes. There may also be predators in the world that are similar to creatures apart from that they consume different food and always have a strong red colour. While creatures eat green plants, which are green circles placed randomly within the world, predators instead eat creatures. To make things more difficult creatures also have to avoid red plants, which are red circles. These represent "bad" or poisonous food. After a plant is eaten there is a small probability each tick that a new one will be placed into the world at a random location. As predators have no interest in eating plants they do not detect or have any consequences from colliding with plants. There are also walls around the border of the world which the creatures cannot pass through. They are coloured blue in order for the creatures to be able to make a clear distinction between walls, plants, predators and other creatures. Collision and detection, which are the only ways of interaction between two objects, are governed by the following rules:
 
 \begin{enumerate}
 \item Interaction between two objects occur when they collide. Exactly what happens depends on the type of objects.
@@ -172,15 +169,17 @@ At first each possible collision is checked and if one has occurred its effect i
 
 Due to performance issues all the predators and creatures are not present in the one and same simulation. Instead parts of the populations are broken off and simulated separately and the results were then gathered and used to create the next generation. The reason behind this is due to the fact that the detection and collision algorithms have a time-complexity of $O({n}^{2})$ and therefore scale poorly. In practice this means that each simulation takes four times as long if the number of predators and creatures per simulation is doubled. By doing this trade-off where a lower number per simulation was used it was possible to run a higher number of iterations of the genetic algorithm in the same amount of time.
 
-% This section is a bit messy. It's difficult to describe all the mechanics of the world using small steps.
+% This section is a bit messy. It's difficult to describe all the mechanics of the world using small steps. 
 
 \subsection{Methods of Enforcing Behaviour}
-Adding input\\
-Additional terms in brain calculations\\
-Adding predators\\
-More kinds of food\\
-Being able to see more things in the world\\
-Placing objects into the world\\
+
+In order to investigate which natural evolutionary mechanisms could be observed when using genetic algorithms in this way it was necessary to find methods to enforce behaviour in the animals. It is also interesting to see which evolutionary strategies are favoured by the different brains when placed in particular situations. Methods of doing this could be adding additional inputs to the brains or adding extra terms in the calculations to allow the approximation of more complex functions and thus more complex behaviour. This approach does however come at the cost of computing power. For each gene added the expected time for convergence is increased. %Ref? 
+
+To focus more on the which natural evolution mechanisms occur an approach was instead chosen which focused more on changing the animal's environment instead of the animals themselves. An example of an approach used was to add red plants into the world. The task of eating green plants then became much more difficult as the animals also had to avoid mistakingly colliding with red plants. This caused an interesting different in strategies between the linear and RBF-based brains, which is discussed in Section 123123. % Should we refer to results at this point?
+Another addition which allowed for more dynamics in the world was the choice to allow the creatures to evolve which colour they were. By doing this it enabled the use of the evolutionary strategy known as mimicry, in which an animal camouflages itself to look more similar to its environment and therefore be more likely to be overlooked by potential predators. % Could also refer to results here.
+
+Adding predators\\ % Not really mentioned
+Placing objects into the world\\ % Should we mention this as we didn't implement it?
 \subsection{Decision making}
 All brains in our simulation have a similar structure, they are functions with eight inputs and two outputs. When input is received by a creature, it is in the form of eight numbers, four for each antenna. Three of the inputs for each antenna are the red-, green- and blue components of the currently detected object's colour. These inputs are normalised within the interval $[0,1]$. The fourth input is zero when no object is detected and one when an object is. It was deemed necessary to include the fourth input saying if an object is detected or not to avoid certain edge-cases, namely should the creature detect a black object.
 
@@ -202,16 +201,16 @@ In equation \ref{linear-decide}, the first three components of the left and righ
 	S(\mathbf{g_{1-3}} \circ \mathbf{x_l} + \mathbf{g_{4-6}} \circ \mathbf{x_r} ) 	& \text{if $r_4 \neq 0$ and $l_4 \neq 0$}\\
 \end{cases}	
 \end{equation}
-\caption{The linear brain's decision formula for change of rotation $\Delta r$. S corresponds to a sigmoid function described in chapter \ref{linear-decision-making}.}
+\caption{The linear brain's decision formula for change of rotation $\Delta r$. $S$ corresponds to a sigmoid function described in Chapter \ref{linear-decision-making}.}
 \label{linear-decide}
 \end{figure}
 
-In the equation a sigmoid function $S$ is used to limit the the outputs to be within $[-1,1]$. The function $\frac{1}{1+e^{-x}} * 2 -1$ as sigmoid but any function $f:x\rightarrow y, x\in [-6,6], y \in [-1,1]$ would have worked as the only concern was to limit the output range to $[-1,1]$. The sigmoid function was however used as linear behaviour, with a relatively high steepness, near $x=0$ was desired. That gives the best learning rate and a flatter curve at the extremes. An $x$ value near the extremes of $[-6,6]$ corresponds to radical behaviour such as turning 180$^\circ$ or accelerating very rapidly and an x value near 0 corresponds to making minor adjustments of speed and angle when encountering an object. A high $x$ value also corresponds to a very rare event occurring, namely that both antennae detect objects with high colour values, meaning that they are all near 1. As the objective was to train the creatures to behave as rationally as possible to common events, the sigmoid function was chosen to slow down the learning rate of rare, extreme events and behaviours, which are far from zero, and accelerate the learning of commonly occurring events and behaviours, near zero.
+In the equation a sigmoid function $S$ is used to limit the the outputs to be within $[-1,1]$. The function $\frac{1}{1+e^{-x}} * 2 -1$ as sigmoid but any function $f:x\rightarrow y, x\in [-6,6], y \in [-1,1]$ would have worked as the only concern was to limit the output range to $[-1,1]$. The sigmoid function was however used as linear behaviour, with a relatively high steepness, near $x=0$ was desired. That gives the best learning rate and a flatter curve at the extremes. An $x$ value near the extremes of $[-6,6]$ corresponds to radical behaviour such as turning 180$^\circ$ or accelerating very rapidly and an $x$ value near 0 corresponds to making minor adjustments of speed and angle when encountering an object. A high $x$ value also corresponds to a very rare event occurring, namely that both antennae detect objects with high colour values, meaning that they are all near 1. As the objective was to train the creatures to behave as rationally as possible to common events, the sigmoid function was chosen to slow down the learning rate of rare, extreme events and behaviours, which are far from zero, and accelerate the learning of commonly occurring events and behaviours, near zero.
 In this way, the creatures still have the ability to make strong reactions, e.g. turning 180$^\circ$ when seeing a predator, but learning focuses more on the interesting behaviours, namely in which direction to turn or in which direction to accelerate. The reason a more simple function, such as $f(x) = x/6$ was not used as a normalising function was that it would have slowed down learning considerably as the more extreme cases have a larger effect than desired.
 
 \subsection{RBF-Based Decision Making}
 
-In RBF-based decision making, the three inputs to each antenna are used in the function displayed in Figure \ref{3-RBF-functions}. For each antenna, $\Delta r$  and $\Delta s$ are computed by summing RBF function values and normalising them using the same function $S$ as in chapter \ref{linear-decision-making}. And as in chapter \ref{linear-decision-making} $\Delta r$ and $\Delta s$ are calculated separately using the same function and inputs but using different genes.
+In RBF-based decision making, the three inputs to each antenna are used in the function displayed in Figure \ref{3-rbf-functions}. For each antenna, $\Delta r$  and $\Delta s$ are computed by summing RBF function values and normalising them using the same function $S$ as in chapter \ref{linear-decision-making}. And as in chapter \ref{linear-decision-making} $\Delta r$ and $\Delta s$ are calculated separately using the same function and inputs but using different genes.
 
 \begin{figure}
 \begin{equation}
