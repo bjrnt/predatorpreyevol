@@ -1,0 +1,32 @@
+\BOOKMARK [0][-]{chapter.1}{Introduction}{}% 1
+\BOOKMARK [1][-]{section.1.1}{Background}{chapter.1}% 2
+\BOOKMARK [1][-]{section.1.2}{Scope and Objectives}{chapter.1}% 3
+\BOOKMARK [1][-]{section.1.3}{Achievements}{chapter.1}% 4
+\BOOKMARK [0][-]{chapter.2}{Technical Overview}{}% 5
+\BOOKMARK [1][-]{section.2.1}{Genetic Algorithms}{chapter.2}% 6
+\BOOKMARK [2][-]{subsection.2.1.1}{Overview}{section.2.1}% 7
+\BOOKMARK [2][-]{subsection.2.1.2}{Fitness}{section.2.1}% 8
+\BOOKMARK [2][-]{subsection.2.1.3}{Selection}{section.2.1}% 9
+\BOOKMARK [2][-]{subsection.2.1.4}{Mutation}{section.2.1}% 10
+\BOOKMARK [2][-]{subsection.2.1.5}{Crossover}{section.2.1}% 11
+\BOOKMARK [1][-]{section.2.2}{Radial Basis Functions}{chapter.2}% 12
+\BOOKMARK [2][-]{subsection.2.2.1}{Overview}{section.2.2}% 13
+\BOOKMARK [0][-]{chapter.3}{Implementation}{}% 14
+\BOOKMARK [1][-]{section.3.1}{Model}{chapter.3}% 15
+\BOOKMARK [2][-]{subsection.3.1.1}{Simulation in Python}{section.3.1}% 16
+\BOOKMARK [2][-]{subsection.3.1.2}{Methods of Enforcing Behaviour}{section.3.1}% 17
+\BOOKMARK [2][-]{subsection.3.1.3}{Decision making}{section.3.1}% 18
+\BOOKMARK [2][-]{subsection.3.1.4}{Linear Decision Making}{section.3.1}% 19
+\BOOKMARK [2][-]{subsection.3.1.5}{RBF-Based Decision Making}{section.3.1}% 20
+\BOOKMARK [2][-]{subsection.3.1.6}{Random Decision Making}{section.3.1}% 21
+\BOOKMARK [2][-]{subsection.3.1.7}{Genetic Algorithm}{section.3.1}% 22
+\BOOKMARK [2][-]{subsection.3.1.8}{Experiments}{section.3.1}% 23
+\BOOKMARK [0][-]{chapter.4}{Results}{}% 24
+\BOOKMARK [1][-]{section.4.1}{Simulation results}{chapter.4}% 25
+\BOOKMARK [2][-]{subsection.4.1.1}{Observed Behaviours}{section.4.1}% 26
+\BOOKMARK [1][-]{section.4.2}{Discussion}{chapter.4}% 27
+\BOOKMARK [2][-]{subsection.4.2.1}{Constraints and problems}{section.4.2}% 28
+\BOOKMARK [1][-]{section.4.3}{Conclusions and Future Work}{chapter.4}% 29
+\BOOKMARK [0][-]{section*.2}{Bibliography}{}% 30
+\BOOKMARK [0][-]{section*.3}{Appendices}{}% 31
+\BOOKMARK [0][-]{appendix.A}{Third party libraries and tools used}{}% 32
