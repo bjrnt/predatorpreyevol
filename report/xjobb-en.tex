@@ -16,12 +16,12 @@
 
 % http://library.uwl.ac.uk/find/guides/general/harvard_reference.html
 
-\title{Evolution of Artificial Brains in Simulating Animal Behaviour}
+\title{Evolution of Artificial Brains in Simulating Animal Behaviour - TODO: fix hyphenations}
 \subtitle{Comparing radial basis, linear and random functions for decision-making}
 \foreigntitle{Evolution av artificiella hjÃ¤rnor vid simulering av djurs beteende}
-\author{BjÃ¶rn Tegelund\\Johan WikstrÃ¶m}
+\author{Bjoern Tegelund\\Johan Wikstroem}
 \date{November 2003}
-\blurb{Bachelor's Thesis at CSC\\Supervisor: Petter Ãgren\\Examiner: MÃ¥rten BjÃ¶rkman}
+\blurb{Bachelor's Thesis at CSC\\Supervisor: Petter Oegren\\Examiner: Maerten Bjoerkman}
 \trita{TRITA xxx yyyy-nn}
 \begin{document}
 \frontmatter
@@ -106,7 +106,7 @@ Genetic algorithms are a way of approximating solutions to NP-hard problems, a g
 Fitness is the only means of measuring the success of the solution. In nature, fitness is simply determined by the number of offspring produced by the individual and the percentage of that offspring which survives long enough to generate new offspring. In genetic algorithms however, the fitness function can be any value that describes each individual's success at solving the problem at hand and genetic algorithms can get significant performance advantages by simply selecting the correct fitness function \cite{marsland}. The fitness function should be strictly positive for all inputs and preserve some form of relative internal ordering of the individuals. In most problems there are multiple choices of fitness functions and the best choice of fitness function is unique for every problem. For this reason, many different fitness functions were tried before settling for simply the life length of the individuals. Another reason for choosing this fitness function is that it is general, which allows the creatures to freely choose strategies.
 
 \subsection{Selection}
-Selection is the process of selecting which organisms that should be allowed to reproduce and in what proportions. In nature, selection is closely tied to fitness, the fittest individual is also "selected" most often, but in genetic algorithms there are several different ways to model this selection process. A good fitness function should strike a balance between favouring the fittest individuals and allowing less fit individuals to survive in a reduced number.  One trivial selection function could be to simply select all individuals that pass a certain fitness threshold \cite{marsland} [TROR DET STOD DÃR IAF]. This is a bad idea, however, since there are few ways to determine the correct threshold value. In the beginning of the evolution, a high threshold will exclude most of the genes due to low general fitness and this will lead to a fast reduction of genetic variation. In the later stages of the evolution all individuals will pass the threshold, rendering the selection function useless.
+Selection is the process of selecting which organisms that should be allowed to reproduce and in what proportions. In nature, selection is closely tied to fitness, the fittest individual is also "selected" most often, but in genetic algorithms there are several different ways to model this selection process. A good fitness function should strike a balance between favouring the fittest individuals and allowing less fit individuals to survive in a reduced number.  One trivial selection function could be to simply select all individuals that pass a certain fitness threshold \cite{marsland} [TROR DET STOD DAER IAF]. This is a bad idea, however, since there are few ways to determine the correct threshold value. In the beginning of the evolution, a high threshold will exclude most of the genes due to low general fitness and this will lead to a fast reduction of genetic variation. In the later stages of the evolution all individuals will pass the threshold, rendering the selection function useless.
 
 A better approach is the so called roulette wheel selection where each individual is mapped to an area of a "roulette wheel". A larger fitness value means a larger area on the roulette wheel and the selection function simply generates random values corresponding to the areas of this roulette wheel. In this way, the individuals are chosen based on a biased stochastic variable and there is room for individuals with high fitness to dominate as well as for individuals with low fitness to be included by chance. Figure \ref{roulettewheelpic} shows what this can look like, and how its similarities to a traditional roulette wheel.
 
@@ -140,18 +140,18 @@ Crossover is the operation of combining two genomes into two new genomes. One co
 \begin{figure}
 \centering\includegraphics[scale=0.5]{rbf_1d.png}
 \caption{Three one-dimensional RBFs with varying $\mu$ and $\sigma$ values.}
-\label{3-rbf-functions}
+\label{3-RBF-functions}
 \end{figure}
 
 A radial basis function (RBF) is a bell-shaped function whose value depends on the distance from some origin, denoted $\mu$ in the formula.  Radial basis functions are commonly used in neural networks as a way to encode input information. They are favourable to use as they have locality, something which linear functions do not. In particular they are used for function approximation, as any function can be approximated as the sum of a number of weighted radial basis functions. A property of radial basis functions which can both be interpreted as an advantage and disadvantage is that their value never exceeds a given constant, compared to a linear function which can grow to infinitely high or low numbers.
 
-Radial basis functions are commonly implemented using a formula such as \ref{RBF_1}, which is a three-dimensional function centred around $(\mu _{x}$, $\mu _{y}$, $\mu _{z})$. The width of the bell-curve in each dimension is determined by $\sigma _{x}$, $\sigma _{y}$ and $\sigma _{z}$ respectively.
+Radial basis functions are commonly implemented using a formula such as \ref{RBF-1}, which is a three-dimensional function centred around $(\mu _{x}$, $\mu _{y}$, $\mu _{z})$. The width of the bell-curve in each dimension is determined by $\sigma _{x}$, $\sigma _{y}$ and $\sigma _{z}$ respectively.
 
 \begin{figure}
 \begin{equation}
-f(x,y,z) = \exp(-(\frac{(x-\mu_{x})^{2}}{2 \sigma _{x}^{2}})) + \exp(-(\frac{(y-\mu_{y})^{2}}{2 \sigma _{y}^{2}})) + \exp(-(\frac{(z-\mu_{z})^{2}}{2 \sigma _{z}^{2}}))
+f(x,y,z) = A_x*\exp(-\frac{(x-\mu_{x})^{2}}{2 \sigma _{x}^{2}}) + A_y*\exp(-\frac{(y-\mu_{y})^{2}}{2 \sigma _{y}^{2}}) + A_z*\exp(-\frac{(z-\mu_{z})^{2}}{2 \sigma _{z}^{2}})
 \end{equation}
-\caption{A sum of three radial basis functions, corresponding to three input values.}
+\caption{A sum of three radial basis functions, corresponding to three input values.$A_x$, $A_y$ and $A_z$ lies within the interval $[-1,1]$ and ensures that $f(x,y,z)$ can be negative.}
 \label{RBF-1}
 \end{figure}
 
@@ -163,7 +163,7 @@ Python was chosen as the language to implement our simulation in as it is a high
 
 These libraries were combined to create a model of the world in which the creatures will be simulated. The world is square-shaped and surrounded with walls that the creatures cannot pass through. The walls are detectable objects and have a blue colour in order for the creatures to be able to respond correctly when bumping into one. The creatures themselves are circular with two antennae sticking out from their bodies at angles $\pi /6$ and $-\pi/6$ and they are able to detect each other. Depending on the current simulation, the world may or may not contain green and/or red plants in it as well. The green plants represent food and the red ones poisonous or "bad" food. The plants are also circular in shape and can be detected by creatures. Typically a creature will die if they eat a red plant and extend their life-length if they eat a green one. A plant is "eaten" when a creature collides with it.
 
-Predators are also sometimes present in the world. They are similar in appearance to creatures, but have different rules for what happens when they collide with objects in the world. Nothing happens when a predator collides with a plant, and plants are not detected by predators. This is due to the fact that predators are not interested in eating plants at all. Instead they can only see other predators and creatures. If they collide with another predator nothing happens, and if they collides with a creature the creature gets killed and the predator's life-length increased.
+Predators are also sometimes present in the world. They are similar in appearance to creatures, but have different rules for what happens when they collide with objects in the world. Nothing happens when a predator collides with a plant, and plants are not detected by predators. This is due to the fact that predators are not interested in eating plants at all. Instead they can only see other predators and creatures. If they collide with another predator nothing happens, and if they collide with a creature the creature gets killed and the predator's life-length increased.
 
 Due to performance issues all the predators and creatures are not present in the one and same simulation. Instead parts of the populations are broken off and simulated separately. This is due to the fact that the detection and collision algorithms have a time-complexity of $O({n}^{2})$ and therefore scale poorly. In practice this means that each simulation takes four times the time if the number of predators and creatures per simulation is doubled. A trade-off was chosen where a lower number per simulation was used which enabled a much higher number of iterations of the genetic algorithm to be run.
 
@@ -225,11 +225,11 @@ In RBF-based decision making, the three inputs to each antenna are used in the f
 	S(f(\mathbf{x_l}) + f(\mathbf{x_r})) 	&	\text{if $l_4 \neq 0$ and $r_4 \neq 0$}\\
 \end{cases}	
 \end{equation}
-\caption{Calculating the $\Delta r$ using RBF functions. Twelve genes are implicitly used, 6 genes for $\sigma$:s and $\mu$:s in $f$ (see Figure \ref{RBF-1}) using input $\mathbf{x_l}$ and 6 for $\mathbf{x_r}$ }
+\caption{Calculating the $\Delta r$ using RBF functions. 18 genes are implicitly used, nine genes for $A$:s, $\sigma$:s and $\mu$:s in $f$ (see Figure \ref{RBF-1}) using input $\mathbf{x_l}$ and nine for $\mathbf{x_r}$ }
 \label{RBF-decide}
 	\end{figure}
 
-Each radial basis function has a $\sigma$ and a $\mu$ which are decided by the creature's genes. $\sigma$ and $\mu$ are in the ranges of $[0,1]$ and $[-1,1]$ respectively and this means that the RBF brain needs twice as many genes. The formula for RBF decision making is shown in Figure \ref{RBF-decide}. An additional gene is also used to weight the output, that is scale the output value. This is required to allow the otherwise always positive RBF-functions to produce negative values as well.
+Each radial basis function has a $\sigma$ and a $\mu$ which are decided by the creature's genes. $\sigma$ and $\mu$ are in the ranges of $[0,1]$ and $[-1,1]$ respectively. An additional gene is also used to weight the output, which corresponds to $A$ in Figure \ref{3-RBF-functions}. This is required to allow the otherwise always positive RBF-functions to produce negative values as well. This means that the RBF brain has a total of 36 genes which needs to be trained as compared to the linear brain which only had twelve genes.
 
 The difference between using radial basis functions and linear functions is that there is a larger possibility to approximate any decision-making strategy. For example, an RBF-based brain could make the distinction between different shades of green and thus react differently to them while a linear function could only decide if more green is better or worse.
 
@@ -240,15 +240,20 @@ The difference between using radial basis functions and linear functions is that
 \Delta r = 
 \begin{cases}
 	0 		& 	\text{if $l_4 = 0$ and $r_4 = 0$},\\
+	r \in U([s-1,1])		&	\text{otherwise}
 \end{cases}
 \end{equation}
-\caption{Calculating $\Delta r$ using random brain and the same notation as in Figure \ref{linear-decide} and Figure \ref{RBF-decide}} 
+\caption{Calculating $\Delta r$ using random brain and the same notation as in Figure \ref{linear-decide} and Figure \ref{RBF-decide}. $r$ is a random number with uniform distribution.} 
 \label{random-decide}
 \end{figure}
 
-In random decision making only the fourth input, denoting if an object has been detected or not, is used. If an object has been detected a $\Delta r$ and a $\Delta s$ within $[-1,1]$ are selected randomly with uniform probability.  The sigmoid function $S$, which is used with both other brain architectures, is not used in the random brain, as the random values which are produced can easily be manipulated to be within the intended interval. 
+In random decision making, only the fourth input which denotes whether an object has been detected or not, is used. If an object has been detected a $\Delta r$ and a $\Delta s$ within $[-1,1]$ are selected randomly with uniform probability. The sigmoid function $S$, which is used with both other brain architectures, is not used in the random brain, as the random values which are produced can easily be manipulated to be within the intended interval. 
 
 \subsection{Genetic Algorithm}
+
+
+
+
 What kind of genetic algorithm do we plan to use?\\
 Fitness, crossover, mutation, selection, which ones?\\
 Flow chart of our algorithm\\
@@ -282,7 +287,7 @@ Other unexpected problems?\\
 \section{Conclusions and Future Work}
 
 \begin{thebibliography}{9}
-% We are using the APA style of referencing
+% We are using the AP	A style of referencing
 
 \bibitem{montana89} 
 Montana, D. J.,  and Davis, L. (1989, August). Training feedforward neural networks using genetic algorithms. In \emph{Proceedings of the eleventh international joint conference on artificial Intelligence} (Vol. 1, pp. 762-767).
