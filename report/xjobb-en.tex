@@ -74,6 +74,7 @@ It is also of interest to look closer at how complex of a task a brain using lin
 \section{Genetic Algorithms}
 
 \subsection{Overview}
+\label{ga_overview}
 What are genetic algorithms?\\
 How are they typically used?\\
 How do they relate to genetics and evolution?\\
@@ -120,6 +121,7 @@ A better approach is the so called roulette wheel selection where each individua
 Undrar om vi ska skriva naagot om NSGA II...
  
 \subsection{Mutation}
+\label{background_mutation}
 Mutation is a random, usually small, change of an individuals genome. In nature this typically occurs spontaneously when new cells are formed. In genetic algorithms it is usually implemented as a small probability for each gene to mutate. When the genome consists of a series of 0:s and 1:s, the mutation operator is simply a flip of that bit and when the genes consist of floating point values, the mutation can be an addition or multiplication of a random value. If the mutation rate is too high, it becomes very hard to reach convergence since the good solutions are mutated into averaged solutions.
 
 \begin{figure}
@@ -246,10 +248,48 @@ The difference between using radial basis functions and linear functions is that
 In random decision making only the fourth input, denoting if an object has been detected or not, is used. If an object has been detected a $\Delta r$ and a $\Delta s$ within $[-1,1]$ are selected randomly with uniform probability.  The sigmoid function $S$, which is used with both other brain architectures, is not used in the random brain, as the random values which are produced can easily be manipulated to be within the intended interval. 
 
 \subsection{Genetic Algorithm}
+
+The implemented genetic algorithm was similar to the one described in Section \ref{ga_overview}. The main difference is that a combination of selection methods are used. Instead of only applying roulette selection elitism is included as well. This means that 10\% of the next population are exact copies of this generation's population, selected as the individuals with highest fitness. The modified algorithm is depicted in Figure \ref{our_ga_overview}. 
+
+Elitism is used as roulette selection is a highly probabilistic algorithm, and it is then possible that some individuals with high fitnesses are not selected for the next generation. Elitism prevents these individuals from disappearing from the population by guaranteeing their genes will survive until the next generation. Typically these also provide a stable max fitness for the population, as they are expected to perform equally well in the next simulation. It should however be noted that this is  not the case with the simulations used in this report, as both creature, plant, and predator placement are random.
+
+% Should mention probabilities for each swap, and for applying crossover at all
+The crossover algorithm used for the experiments is a modified version of the uniform crossover algorithm mentioned in Section \ref{background_mutation}. The difference is that instead of probabilistically replacing each gene, a "region" of genes are replaced instead. The idea behind this is that when applying crossover to RBF-based brains and only $\mu$ or $\sigma$ are replaced for a certain RBF then the resulting fitness will likely be lower than any of the parents'. A region is therefore defined as a group of subsequent genes. For the RBF-based brains the size of these regions are three genes long as both a weight, $\mu$ and $\sigma$ are needed for each RBF, and only one gene long for the linear brains as they only require one gene per calculation. This results in that when a crossover is applied one calculation, i.e. RBF or linear unit, for either speed or rotation and for either the left or right antennae is switched. % Could mention that we had to be careful when choosing crossover operator as they could give quite crazy results. This seemed like a safe bet
+
+Mutator
+
+\begin{figure}
+\begin{algorithmic}
+\State $S \gets$ a random distribution of genomes
+\State $G \gets$ number of generations
+    \For{$g \gets 1; g < G; g++$}
+        \State $fitnesses \gets run\_simulations(S)$
+	\Comment Simulates parts of $S$, collects result
+	\State $couple\_fitnesses(S,fitnesses)$
+	\Comment Associates a fitness value with a creature
+	\State $B \gets select\_best(S, length(S)/10)$
+	\Comment Select 10\% best genomes
+	\State $R \gets select\_roulette(S, length(S) * 9/10)$
+	\Comment Selects rest using roulette
+	\For{$child1 \in R, child2 \in R$}
+		\State $crossover(child1,child2)$
+		\Comment Probabilistically applies crossover
+	\EndFor
+	\For{$mutant \in R$}
+		\State $mutate(mutant)$
+		\Comment Probabilistically mutates an individual
+	\EndFor
+	\State $S \gets B \cup N$
+	\Comment Restart with the new generation
+    \EndFor
+\end{algorithmic}
+\caption{An overview of the genetic algorithm used in the simulation}
+\label{our_ga_overview}
+\end{figure}
+
 What kind of genetic algorithm do we plan to use?\\
 Fitness, crossover, mutation, selection, which ones?\\
 Flow chart of our algorithm\\
-NSGA-II\\
 Roulette selection\\
 
 \subsection{Experiments}
