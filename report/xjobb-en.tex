@@ -1,10 +1,10 @@
 \documentclass[a4paper,11pt]{kth-mag}
-\usepackage[T1]{fontenc}
+\usepackage[swedish,english]{babel}
+%\usepackage[utf8]{inputenc} we already use babel so shouldn't use these two
+%\usepackage[T1]{fontenc}
 \usepackage{textcomp}
 \usepackage{lmodern}
-\usepackage{graphicx}
-\usepackage[utf8]{inputenc}
-\usepackage[swedish,english]{babel}
+\usepackage{graphicx}	
 \usepackage{modifications}
 \usepackage{algorithmicx}
 
@@ -18,10 +18,10 @@
 
 \title{Evolution of Artificial Brains in Simulating Animal Behaviour}
 \subtitle{Comparing radial basis, linear and random functions for decision-making}
-\foreigntitle{Evolution av artificiella hjÃ¤rnor vid simulering av djurs beteende}
-\author{BjÃ¶rn Tegelund\\Johan WikstrÃ¶m}
+\foreigntitle{Evolution av artificiella hj�rnor vid summering av djurs beteende}
+\author{Bj�rn Tegelund\\Johan Wikstr�m}
 \date{November 2003}
-\blurb{Bachelor's Thesis at CSC\\Supervisor: Petter Ãgren\\Examiner: MÃ¥rten BjÃ¶rkman}
+\blurb{Bachelor's Thesis at CSC\\Supervisor: Petter �gren\\Examiner: M�rten Bj�rkman}
 \trita{TRITA xxx yyyy-nn}
 \begin{document}
 \frontmatter
@@ -106,18 +106,18 @@ Genetic algorithms are a way of approximating solutions to NP-hard problems, a g
 Fitness is the only means of measuring the success of the solution. In nature, fitness is simply determined by the number of offspring produced by the individual and the percentage of that offspring which survives long enough to generate new offspring. In genetic algorithms however, the fitness function can be any value that describes each individual's success at solving the problem at hand and genetic algorithms can get significant performance advantages by simply selecting the correct fitness function \cite{marsland}. The fitness function should be strictly positive for all inputs and preserve some form of relative internal ordering of the individuals. In most problems there are multiple choices of fitness functions and the best choice of fitness function is unique for every problem. For this reason, many different fitness functions were tried before settling for simply the life length of the individuals. Another reason for choosing this fitness function is that it is general, which allows the creatures to freely choose strategies.
 
 \subsection{Selection}
-Selection is the process of selecting which organisms that should be allowed to reproduce and in what proportions. In nature, selection is closely tied to fitness, the fittest individual is also "selected" most often, but in genetic algorithms there are several different ways to model this selection process. A good fitness function should strike a balance between favouring the fittest individuals and allowing less fit individuals to survive in a reduced number.  One trivial selection function could be to simply select all individuals that pass a certain fitness threshold \cite{marsland} [TROR DET STOD DÃR IAF]. This is a bad idea, however, since there are few ways to determine the correct threshold value. In the beginning of the evolution, a high threshold will exclude most of the genes due to low general fitness and this will lead to a fast reduction of genetic variation. In the later stages of the evolution all individuals will pass the threshold, rendering the selection function useless.
+Selection is the process of selecting which organisms that should be allowed to reproduce and in what proportions. In nature, selection is closely tied to fitness, the fittest individual is also "selected" most often, but in genetic algorithms there are several different ways to model this selection process. A good fitness function should strike a balance between favouring the fittest individuals and allowing less fit individuals to survive in a reduced number.  One trivial selection function could be to simply select all individuals that pass a certain fitness threshold \cite{marsland}. This is a bad idea, however, since there are few ways to determine the correct threshold value. In the beginning of the evolution, a high threshold will exclude most of the genes due to low general fitness and this will lead to a fast reduction of genetic variation. In the later stages of the evolution all individuals will pass the threshold, rendering the selection function useless.
 
 A better approach is the so called roulette wheel selection where each individual is mapped to an area of a "roulette wheel". A larger fitness value means a larger area on the roulette wheel and the selection function simply generates random values corresponding to the areas of this roulette wheel. In this way, the individuals are chosen based on a biased stochastic variable and there is room for individuals with high fitness to dominate as well as for individuals with low fitness to be included by chance. Figure \ref{roulettewheelpic} shows what this can look like, and how its similarities to a traditional roulette wheel.
 
 \begin{figure}
 \centering\includegraphics[scale=0.9]{roulettewheel.png}
 \caption{A visual representation of how the roulette wheel selection algorithm works.}
-% Behöver vi source till detta? Hittades här: http://www.edc.ncl.ac.uk/highlight/rhjanuary2007g02.php/
+%Behoever vi source till detta? Hittades haer: http://www.edc.ncl.ac.uk/highlight/rhjanuary2007g02.php/
 \label{roulettewheelpic}
 \end{figure}
 
-Undrar om vi ska skriva nÃ¥got om NSGA II...
+Undrar om vi ska skriva naagot om NSGA II...
  
 \subsection{Mutation}
 Mutation is a random, usually small, change of an individuals genome. In nature this typically occurs spontaneously when new cells are formed. In genetic algorithms it is usually implemented as a small probability for each gene to mutate. When the genome consists of a series of 0:s and 1:s, the mutation operator is simply a flip of that bit and when the genes consist of floating point values, the mutation can be an addition or multiplication of a random value. If the mutation rate is too high, it becomes very hard to reach convergence since the good solutions are mutated into averaged solutions.
@@ -129,7 +129,7 @@ Mutation is a random, usually small, change of an individuals genome. In nature 
 \end{figure}
 
 \subsection{Crossover}
-Crossover is the operation of combining two genomes into two new genomes. One common crossover operator is known as  single point crossover and it consists of splitting two genomes at the same position and merging the splitted parts into two new genomes. The split position is chosen randomly and the two new genomes share no genes with each other. This process is displayed in Figure \ref{crossover-figure} There is also multiple point crossover where there are multiple splitting positions as well as uniform crossover where each gene can be exchanged with a certain probability.
+Crossover is the operation of combining two genomes into two new genomes. One common crossover operator is known as  single point crossover and it consists of splitting two genomes at the same position and merging the split parts into two new genomes. The split position is chosen randomly and the two new genomes share no genes with each other. This process is displayed in Figure \ref{crossover-figure} There is also multiple point crossover where there are multiple splitting positions as well as uniform crossover where each gene can be exchanged with a certain probability.
 
 
 
@@ -167,7 +167,7 @@ Predators are also sometimes present in the world. They are similar in appearanc
 
 Due to performance issues all the predators and creatures are not present in the one and same simulation. Instead parts of the populations are broken off and simulated separately. This is due to the fact that the detection and collision algorithms have a time-complexity of $O({n}^{2})$ and therefore scale poorly. In practice this means that each simulation takes four times the time if the number of predators and creatures per simulation is doubled. A trade-off was chosen where a lower number per simulation was used which enabled a much higher number of iterations of the genetic algorithm to be run.
 
-% Detta avsnitt är lite stökigt, men har åtminstone med alla delar som behövs
+% Detta avsnitt aer lite stoekigt , men har aatminstone med alla delar som behoevs
 
 Square world with walls, circular inhabitants with antennae\\
 Good and bad food sources\\
@@ -208,7 +208,7 @@ In equation \ref{linear-decide}, the first three components of the left and righ
 \label{linear-decide}
 \end{figure}
 
-In the equation a sigmoid function $S$ is used to limit the the outputs to be within $[-1,1]$. The function $\frac{1}{1+e^{-x}} * 2 -1$ as sigmoid but any function $f:x\rightarrow y, x\in [-6,6], y \in [-1,1]$ would have worked as the only concern was to limit the output range to $[-1,1]$. The sigmoid function was however used as linear behaviour, with a relatively high steepnes, near $x=0$ was desired. That gives the best learning rate and a flatter curve at the extremes. An $x$ value near the extremes of $[-6,6]$ corresponds to radical behaviour such as turning 180$^\circ$ or accelerating very rapidly and an x value near 0 corresponds to making minor adjustments of speed and angle when encountering an object. A high $x$ value also corresponds to a very rare event occurring, namely that both antennae detect objects with high colour values, meaning that they are all near 1. As the objective was to train the creatures to behave as rationally as possible to common events, the sigmoid function was chosen to slow down the learning rate of rare, extreme events and behaviours, which are far from zero, and accelerate the learning of commonly occurring events and behaviours, near zero.
+In the equation a sigmoid function $S$ is used to limit the the outputs to be within $[-1,1]$. The function $\frac{1}{1+e^{-x}} * 2 -1$ as sigmoid but any function $f:x\rightarrow y, x\in [-6,6], y \in [-1,1]$ would have worked as the only concern was to limit the output range to $[-1,1]$. The sigmoid function was however used as linear behaviour, with a relatively high steepness, near $x=0$ was desired. That gives the best learning rate and a flatter curve at the extremes. An $x$ value near the extremes of $[-6,6]$ corresponds to radical behaviour such as turning 180$^\circ$ or accelerating very rapidly and an x value near 0 corresponds to making minor adjustments of speed and angle when encountering an object. A high $x$ value also corresponds to a very rare event occurring, namely that both antennae detect objects with high colour values, meaning that they are all near 1. As the objective was to train the creatures to behave as rationally as possible to common events, the sigmoid function was chosen to slow down the learning rate of rare, extreme events and behaviours, which are far from zero, and accelerate the learning of commonly occurring events and behaviours, near zero.
 In this way, the creatures still have the ability to make strong reactions, e.g. turning 180$^\circ$ when seeing a predator, but learning focuses more on the interesting behaviours, namely in which direction to turn or in which direction to accelerate. The reason a more simple function, such as $f(x) = x/6$ was not used as a normalising function was that it would have slowed down learning considerably as the more extreme cases have a larger effect than desired.
 
 \subsection{RBF-Based Decision Making}
