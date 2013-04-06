@@ -58,7 +58,7 @@ at all.
 
 \section{Scope and Objectives}
 
-The main objective is to compare brains for simulating animal behaviour using radial-basis functions and linear functions. As a baseline a brain which makes random decisions will also be used. To train the animals genetic algorithms will be used. The genetic algorithms provide the genes which will then be used in their brains to make decisions. Statistics such as learning speed, choice of strategy and how well the creatures are able to adapt to their surroundings will then be analysed. 
+The main objective is to simulate animal behaviour using radial-basis functions and linear functions. As a baseline, a brain which makes random decisions will also be used. To train the animals, genetic algorithms will be used. The genetic algorithms provide the genes which will then be used in their brains to make decisions. Statistics such as learning speed, choice of strategy and how well the creatures are able to adapt to their surroundings will then be analysed. 
 
 The animals will be given different tasks to do in each experiment, ranging from simply gathering food to avoiding predators to mimicking things in the world to survive. In each experiment the three brain architectures are compared and contrasted. By doing these simulations the goal is to find out the pros and cons of both brains using radial-basis functions and linear functions, when used for simulating artificial intelligence in this way.
 
@@ -103,7 +103,7 @@ Genetic algorithms are a way of approximating solutions to NP-hard problems, a g
 \end{figure}
 
 \subsection{Fitness}
-Fitness is the only means of measuring the success of the solution. In nature, fitness is simply determined by the number of offspring produced by the individual and the percentage of that offspring which survives long enough to generate new offspring. In genetic algorithms however, the fitness function can be any value that describes each individual's success at solving the problem at hand and genetic algorithms can get significant performance advantages by simply selecting the correct fitness function \cite{marsland}. The fitness function should be strictly positive for all inputs and preserve some form of relative internal ordering of the individuals. In most problems there are multiple choices of fitness functions and the best choice of fitness function is unique for every problem. For this reason, many different fitness functions were tried before settling for simply the life length of the individuals. Another reason for choosing this fitness function is that it is general, which allows the creatures to freely choose strategies.
+Fitness is the only means of measuring the success of the solution. In nature, fitness is simply determined by the number of offspring produced by the individual and the percentage of that offspring which survives long enough to generate new offspring\cite[p.~117]{darwin}. In genetic algorithms however, the fitness function can be any value that describes each individual's success at solving the problem at hand and genetic algorithms can get significant performance advantages by simply selecting the correct fitness function \cite{marsland}. The fitness function should be strictly positive for all inputs and preserve some form of relative internal ordering of the individuals. In most problems there are multiple choices of fitness functions and the best choice of fitness function is unique for every problem\cite{marsland}. For this reason, many different fitness functions were tried before settling for simply the life length of the individuals. Another reason for choosing this fitness function is that it is general, which allows the creatures to freely choose strategies.
 
 \subsection{Selection}
 Selection is the process of selecting which organisms that should be allowed to reproduce and in what proportions. In nature, selection is closely tied to fitness, the fittest individual is also "selected" most often, but in genetic algorithms there are several different ways to model this selection process. A good fitness function should strike a balance between favouring the fittest individuals and allowing less fit individuals to survive in a reduced number.  One trivial selection function could be to simply select all individuals that pass a certain fitness threshold \cite{marsland}. This is a bad idea, however, since there are few ways to determine the correct threshold value. In the beginning of the evolution, a high threshold will exclude most of the genes due to low general fitness and this will lead to a fast reduction of genetic variation. In the later stages of the evolution all individuals will pass the threshold, rendering the selection function useless.
@@ -120,7 +120,7 @@ A better approach is the so called roulette wheel selection where each individua
 Undrar om vi ska skriva något om NSGA II...
  
 \subsection{Mutation}
-Mutation is a random, usually small, change of an individuals genome. In nature this typically occurs spontaneously when new cells are formed. In genetic algorithms it is usually implemented as a small probability for each gene to mutate. When the genome consists of a series of 0:s and 1:s, the mutation operator is simply a flip of that bit and when the genes consist of floating point values, the mutation can be an addition or multiplication of a random value. If the mutation rate is too high, it becomes very hard to reach convergence since the good solutions are mutated into averaged solutions.
+Mutation is a random, usually small, change of an individuals genome. In nature this typically occurs spontaneously when new cells are formed and there are hundreds of facors which can induce mutation \cite[p.~46]{vij}. In genetic algorithms it is usually implemented as a small probability for each gene to mutate. When the genome consists of a series of 0:s and 1:s, the mutation operator is simply a flip of that bit and when the genes consist of floating point values, the mutation can be an addition or multiplication of a random value. If the mutation rate is too high, it becomes very hard to reach convergence since the good solutions are mutated into averaged solutions.
 
 \begin{figure}
 \centering\includegraphics[scale=0.5]{crossover}
@@ -143,9 +143,9 @@ Crossover is the operation of combining two genomes into two new genomes. One co
 \label{3-RBF-functions}
 \end{figure}
 
-A radial basis function (RBF) is a bell-shaped function whose value depends on the distance from some origin, denoted $\mu$ in the formula.  Radial basis functions are commonly used in neural networks as a way to encode input information. They are favourable to use as they have locality, something which linear functions do not. In particular they are used for function approximation, as any function can be approximated as the sum of a number of weighted radial basis functions. A property of radial basis functions which can both be interpreted as an advantage and disadvantage is that their value never exceeds a given constant, compared to a linear function which can grow to infinitely high or low numbers.
+A radial basis function (RBF) is a bell-shaped function whose value depends on the distance from some origin\cite[p.~1-8]{buhmann}, denoted $\mu$ in Figure \ref{RBF-1}.  Radial basis functions are commonly used in neural networks as a way to encode input information. They are favourable to use as they have locality, something which linear functions do not. In particular they are used for function approximation, as any function can be approximated as the sum of a number of weighted radial basis functions. A property of radial basis functions which can both be interpreted as an advantage and disadvantage is that their value never exceeds a given constant, compared to a linear function which can grow to infinitely high or low numbers.
 
-Radial basis functions are commonly implemented using a formula such as \ref{RBF-1}, which is a three-dimensional function centred around $(\mu _{x}$, $\mu _{y}$, $\mu _{z})$. The width of the bell-curve in each dimension is determined by $\sigma _{x}$, $\sigma _{y}$ and $\sigma _{z}$ respectively.
+Radial basis functions are commonly implemented using a formula such as in Figure \ref{RBF-1}, which is a three-dimensional function centred around $(\mu _{x}$, $\mu _{y}$, $\mu _{z})$. The width of the bell-curve in each dimension is determined by $\sigma _{x}$, $\sigma _{y}$ and $\sigma _{z}$ respectively.
 
 \begin{figure}
 \begin{equation}
@@ -157,6 +157,10 @@ f(x,y,z) = A_x*\exp(-\frac{(x-\mu_{x})^{2}}{2 \sigma _{x}^{2}}) + A_y*\exp(-\fra
 
 \chapter{Implementation}
 \section{Model}
+\begin{figure}
+\centering\includegraphics[scale=0.5]{simulation.png}
+\caption{A screenshot of the simulation}
+\end{figure}
 \subsection{Simulation in Python}
 
 Python was chosen as the language to implement our simulation in as it is a high-level language suited for quickly building prototypes. It also has an abundance of third-party libraries which helps reduce implementation time significantly. A third-party library called DEAP (Distributed Evolutionary Algorithms in Python) was used for the evolutionary algorithms. DEAP proved to be flexible enough for the task as it allows the user to define their own selection, mutation and crossover algorithms as well as mixing them with the accompanying built-in algorithms. Pygame and Matplotlib were used for graphical rendering, Pygame for rendering the actual simulation and Matplotlib for producing graphs from the extracted data. To increase performance Pypy, Numpy and Python's built-in support for multiprocessing were used to decrease runtime significantly. For a comprehensive list of the tools used, please see Appendix \ref{list-of-third-party-tools}.
@@ -289,16 +293,20 @@ Other unexpected problems?\\
 \begin{thebibliography}{9}
 % We are using the APA style of referencing
 
-\bibitem{montana89} 
-Montana, D. J.,  and Davis, L. (1989, August). Training feedforward neural networks using genetic algorithms. In \emph{Proceedings of the eleventh international joint conference on artificial Intelligence} (Vol. 1, pp. 762-767).
-\bibitem{langton97}
-Langton, C. G., and Shimohara, T. (Eds.). (1997). \emph{Artificial Life V: Proceedings of the Fifth International Workshop on the Synthesis and Simulation of Living Systems} (Vol. 5). Mit Press.
+%\bibitem{montana89} 
+%Montana, D. J.,  and Davis, L. (1989, August). Training feedforward neural networks using genetic algorithms. In \emph{Proceedings of the eleventh international joint conference on artificial Intelligence} (Vol. 1, pp. 762-767).
+%\bibitem{langton97}
+%Langton, C. G., and Shimohara, T. (Eds.). (1997). \emph{Artificial Life V: Proceedings of the Fifth International Workshop on the Synthesis and Simulation of Living Systems} (Vol. 5). Mit Press.
 \bibitem{marsland}
 Marsland, S. (2009). \emph{Machine Learning, an Algorithmic Perspective}. CSC-Press
 \bibitem{holland}
 Holland, J. H. (1992). Genetic algorithms. \emph{Scientific american, 267(1)}, 66-72.
-
-
+\bibitem{buhmann}
+Buhmann, M. D. (2003) \emph{Radial Basis Functions: Theory and Implementations}. Cambridge University Press
+\bibitem{darwin}
+Darwin, C, (1861) \emph{On the origin of species by means of natural selection; or, The preservation of favoured races in the struggle for life}. D. Appleton and Company
+\bibitem{vij}
+Vij, K. and Biswas, R. (2004) \emph{Basics of DNA \& Evidentiary Issues}. Jaypee Brothers Publishers
 
 \end{thebibliography}
 
