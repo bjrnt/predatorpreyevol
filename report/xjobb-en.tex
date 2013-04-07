@@ -58,11 +58,11 @@ at all.
 
 \section{Scope and Objectives}
 
-The main objective is to simulate animal behaviour using radial-basis functions and linear functions. As a baseline, a brain which makes random decisions will also be used. To train the animals, genetic algorithms will be used. The genetic algorithms provide the genes which will then be used in their brains to make decisions. Statistics such as learning speed, choice of strategy and how well the creatures are able to adapt to their surroundings will then be analysed. 
+The main objective is to simulate animal behaviour using radial-basis functions and linear functions. As a baseline, a brain which makes random decisions will also be used. To train the animals, genetic algorithms are used. The genetic algorithms provide the genes which are then used in their brains to make decisions. Statistics such as learning speed, choice of strategy and how well the creatures are able to adapt to their surroundings will then be analysed. 
 
-The animals will be given different tasks to do in each experiment, ranging from simply gathering food to avoiding predators to mimicking things in the world to survive. In each experiment the three brain architectures are compared and contrasted. By doing these simulations the goal is to find out the pros and cons of both brains using radial-basis functions and linear functions, when used for simulating artificial intelligence in this way.
+The animals will be given different tasks to do in each experiment, ranging from simply gathering food to avoiding predators to mimicking things in the world to survive. In each experiment the three brain architectures are compared and contrasted. One goal of this project is to find out the pros and cons of both brains using radial-basis functions and linear functions, when used for simulating artificial intelligence in this way.
 
-It is also of interest to look closer at how complex of a task a brain using linear functions is able to solve, and in the cases where it is not able to solve the problem completely, compare its performance to the random brain.
+Genetic algorithms have been used successfully in the past in similar experiments. They have been used to train artificial neural networks \cite{montana}, for robot motion planning \cite{huijsmann} and for the evolution simulator Gaia \cite{gracias}. Gaia is a artificial life simulator using neural networks and gentic algorithms where several interesting behavoiurs where shown, the two most prominent ones being food seeking and obstacle avoidance. Gaia uses advanced neural networks for the behavoiur of its creatures and these netoworks are trained using a combination of genetic algorithms and Hebbian lerning. In the report, the authors acknowledge that many of the behaviours observed could be implemented using simple linear associations and one of this project's goals is to determine which behaviours that can be observed using the simpler brain types - linear and RBF functions. 
 
 % TODO: What did we manage to simulate?
 %  Forcing them to adapt certain genetic phenomena such as adaptation (learning), co-evolution and extinction, mimicry, group forming and co-operation prioritised in the order presented (as increasingly complex behaviour and difficulty to simulate).
@@ -132,10 +132,6 @@ Mutation is a random, usually small, change of an individuals genome. In nature 
 
 \subsection{Crossover}
 Crossover is the operation of combining two genomes into two new genomes. One common crossover operator is known as  single point crossover and it consists of splitting two genomes at the same position and merging the split parts into two new genomes. The split position is chosen randomly and the two new genomes share no genes with each other. This process is displayed in Figure \ref{crossover-figure} There is also multiple point crossover where there are multiple splitting positions as well as uniform crossover where each gene can be exchanged with a certain probability.
-
-\subsection{Elitism}
-
-
 
 \section{Radial Basis Functions}
 \subsection{Overview}
@@ -258,7 +254,7 @@ In random decision making, only the fourth input which denotes whether an object
 
 \subsection{Genetic Algorithm}
 
-The implemented genetic algorithm was similar to the one described in Section \ref{ga_overview}. The main difference is that a combination of selection methods are used. Instead of only applying roulette selection elitism is included as well. This means that 10\% of the next population are exact copies of this generation's population, selected as the individuals with highest fitness. The modified algorithm is depicted in Figure \ref{our_ga_overview}. 
+The implemented genetic algorithm was similar to the one described in Section \ref{ga_overview}. The main difference is that a combination of selection methods are used. Instead of only applying roulette selection elitism is included as well. This means that 10\% of the next population are exact copies from this generation's population, selecting the individuals with highest fitness. The modified algorithm is depicted in Figure \ref{our_ga_overview}. 
 
 Elitism is used as roulette selection is a highly probabilistic algorithm, and it is then possible that some individuals with high fitnesses are not selected for the next generation. Elitism prevents these individuals from disappearing from the population by guaranteeing their genes will survive until the next generation. Typically these also provide a stable max fitness for the population, as they are expected to perform equally well in the next simulation. It should however be noted that this is  not the case with the simulations used in this report, as both creature, plant, and predator placement are random.
 
@@ -302,6 +298,7 @@ Flow chart of our algorithm\\
 Roulette selection\\
 
 \subsection{Experiments}
+We mainly performed three kinds of experiments
 (In every experiment linear and RBF are compared, eventually mixed)\\
 Interested in:\\
 Time to maximal fitness\\
@@ -322,6 +319,8 @@ Highest possible fitness\\
 \subsection{Observed Behaviours}
 \section{Discussion}
 \subsection{Constraints and problems}
+One serious and unexpected constraint was the performance of our algorithm.
+
 Performance problems\\
 Other unexpected problems?\\
 
@@ -330,10 +329,10 @@ Other unexpected problems?\\
 \begin{thebibliography}{9}
 % We are using the APA style of referencing
 
-%\bibitem{montana89} 
-%Montana, D. J.,  and Davis, L. (1989, August). Training feedforward neural networks using genetic algorithms. In \emph{Proceedings of the eleventh international joint conference on artificial Intelligence} (Vol. 1, pp. 762-767).
-%\bibitem{langton97}
-%Langton, C. G., and Shimohara, T. (Eds.). (1997). \emph{Artificial Life V: Proceedings of the Fifth International Workshop on the Synthesis and Simulation of Living Systems} (Vol. 5). Mit Press.
+\bibitem{montana} 
+Montana, D. J.,  and Davis, L. (1989, August). Training feedforward neural networks using genetic algorithms. In \emph{Proceedings of the eleventh international joint conference on artificial Intelligence} (Vol. 1, pp. 762-767).
+\bibitem{gracias}
+Gracias N., Pereira H., Lima J.A., Rosa A. (1997). Gaia: An Artificial Life Environment for Ecological Systems Simulation \emph{Artificial Life V: Proceedings of the Fifth International Workshop on the Synthesis and Simulation of Living Systems} (Vol. 5). Mit Press.
 \bibitem{marsland}
 Marsland, S. (2009). \emph{Machine Learning, an Algorithmic Perspective}. CSC-Press
 \bibitem{holland}
@@ -344,7 +343,8 @@ Buhmann, M. D. (2003) \emph{Radial Basis Functions: Theory and Implementations}.
 Darwin, C, (1861) \emph{On the origin of species by means of natural selection; or, The preservation of favoured races in the struggle for life}. D. Appleton and Company
 \bibitem{vij}
 Vij, K. and Biswas, R. (2004) \emph{Basics of DNA \& Evidentiary Issues}. Jaypee Brothers Publishers
-
+\bibitem{huijsmann}
+Huijsmann, R., Haasdijk E., Eiben A. E. (2012) An On-line On-board Distributed Algorithm for Evolutionary Robotics. In \emph{Artificial Evolution} (pp. 73-84). Springer Berlin Heidelberg
 \end{thebibliography}
 
 \appendix
