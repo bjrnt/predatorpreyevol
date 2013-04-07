@@ -18,10 +18,10 @@
 
 \title{Evolution of Artificial Brains in Simulating Animal Behaviour}
 \subtitle{Comparing radial basis, linear and random functions for decision-making}
-\foreigntitle{Evolution av artificiella hjÃ¤rnor vid simulering av djurs beteende}
-\author{BjÃ¶rn Tegelund\\Johan WikstrÃ¶m}
+\foreigntitle{Evolution av artificiella hjärnor vid simulering av djurs beteende}
+\author{Björn Tegelund\\Johan Wikström}
 \date{November 2003}
-\blurb{Bachelor's Thesis at CSC\\Supervisor: Petter Ã–gren\\Examiner: MÃ¥rten BjÃ¶rkman}
+\blurb{Bachelor's Thesis at CSC\\Supervisor: Petter Ögren\\Examiner: Mårten Björkman}
 \trita{TRITA xxx yyyy-nn}
 \begin{document}
 \frontmatter
@@ -74,6 +74,7 @@ It is also of interest to look closer at how complex of a task a brain using lin
 \section{Genetic Algorithms}
 
 \subsection{Overview}
+\label{ga_overview}
 What are genetic algorithms?\\
 How are they typically used?\\
 How do they relate to genetics and evolution?\\
@@ -113,14 +114,15 @@ A better approach is the so called roulette wheel selection where each individua
 \begin{figure}
 \centering\includegraphics[scale=0.9]{roulettewheel.png}
 \caption{A visual representation of how the roulette wheel selection algorithm works.}
-% BehÃ¶ver vi source till detta? Hittades hÃ¤r: http://www.edc.ncl.ac.uk/highlight/rhjanuary2007g02.php/
+% Behöver vi source till detta? Hittades här: http://www.edc.ncl.ac.uk/highlight/rhjanuary2007g02.php/
 \label{roulettewheelpic}
 \end{figure}
 
-Undrar om vi ska skriva nÃ¥got om NSGA II...
+Undrar om vi ska skriva något om NSGA II...
  
 \subsection{Mutation}
-Mutation is a random, usually small, change of an individuals genome. In nature this typically occurs spontaneously when new cells are formed and there are hundreds of facors which can induce mutation \cite[p.~46]{vij}. In genetic algorithms it is usually implemented as a small probability for each gene to mutate. When the genome consists of a series of 0:s and 1:s, the mutation operator is simply a flip of that bit and when the genes consist of floating point values, the mutation can be an addition or multiplication of a random value. If the mutation rate is too high, it becomes very hard to reach convergence since the good solutions are mutated into averaged solutions.
+\label{background_mutation}
+Mutation is a random, usually small, change of an individuals genome. In nature this typically occurs spontaneously when new cells are formed and there are hundreds of factors which can induce mutation \cite[p.~46]{vij}. In genetic algorithms it is usually implemented as a small probability for each gene to mutate. When the genome consists of a series of 0:s and 1:s, the mutation operator is simply a flip of that bit and when the genes consist of floating point values, the mutation can be an addition or multiplication of a random value. If the mutation rate is too high, it becomes very hard to reach convergence since the good solutions are mutated into averaged solutions.
 
 \begin{figure}
 \centering\includegraphics[scale=0.5]{crossover}
@@ -129,8 +131,9 @@ Mutation is a random, usually small, change of an individuals genome. In nature 
 \end{figure}
 
 \subsection{Crossover}
-Crossover is the operation of combining two genomes into two new genomes. One common crossover operator is known as  single point crossover and it consists of splitting two genomes at the same position and merging the splitted parts into two new genomes. The split position is chosen randomly and the two new genomes share no genes with each other. This process is displayed in Figure \ref{crossover-figure} There is also multiple point crossover where there are multiple splitting positions as well as uniform crossover where each gene can be exchanged with a certain probability.
+Crossover is the operation of combining two genomes into two new genomes. One common crossover operator is known as  single point crossover and it consists of splitting two genomes at the same position and merging the split parts into two new genomes. The split position is chosen randomly and the two new genomes share no genes with each other. This process is displayed in Figure \ref{crossover-figure} There is also multiple point crossover where there are multiple splitting positions as well as uniform crossover where each gene can be exchanged with a certain probability.
 
+\subsection{Elitism}
 
 
 
@@ -165,28 +168,28 @@ f(x,y,z) = A_x*\exp(-\frac{(x-\mu_{x})^{2}}{2 \sigma _{x}^{2}}) + A_y*\exp(-\fra
 
 Python was chosen as the language to implement our simulation in as it is a high-level language suited for quickly building prototypes. It also has an abundance of third-party libraries which helps reduce implementation time significantly. A third-party library called DEAP (Distributed Evolutionary Algorithms in Python) was used for the evolutionary algorithms. DEAP proved to be flexible enough for the task as it allows the user to define their own selection, mutation and crossover algorithms as well as mixing them with the accompanying built-in algorithms. Pygame and Matplotlib were used for graphical rendering, Pygame for rendering the actual simulation and Matplotlib for producing graphs from the extracted data. To increase performance Pypy, Numpy and Python's built-in support for multiprocessing were used to decrease runtime significantly. For a comprehensive list of the tools used, please see Appendix \ref{list-of-third-party-tools}.
 
-These libraries were combined to create a model of the world in which the creatures will be simulated. The world is square-shaped and surrounded with walls that the creatures cannot pass through. The walls are detectable objects and have a blue colour in order for the creatures to be able to respond correctly when bumping into one. The creatures themselves are circular with two antennae sticking out from their bodies at angles $\pi /6$ and $-\pi/6$ and they are able to detect each other. Depending on the current simulation, the world may or may not contain green and/or red plants in it as well. The green plants represent food and the red ones poisonous or "bad" food. The plants are also circular in shape and can be detected by creatures. Typically a creature will die if they eat a red plant and extend their life-length if they eat a green one. A plant is "eaten" when a creature collides with it.
+These libraries were combined to create a model of the world in which the creatures will be simulated. The word contains creatures, which are spheres with two antennae protruding from their bodies at angles $\pi /6$ and $-\pi / 6$. The creatures' colours are decided by their genes. There may also be predators in the world that are similar to creatures apart from that they consume different food and always have a strong red colour. While creatures eat green plants, which are green circles placed randomly within the world, predators instead eat creatures. To make things more difficult creatures also have to avoid red plants, which are red circles. These represent "bad" or poisonous food. After a plant is eaten there is a small probability each tick that a new one will be placed into the world at a random location. As predators have no interest in eating plants they do not detect or have any consequences from colliding with plants. There are also walls around the border of the world which the creatures cannot pass through. They are coloured blue in order for the creatures to be able to make a clear distinction between walls, plants, predators and other creatures. Collision and detection, which are the only ways of interaction between two objects, are governed by the following rules:
 
-Predators are also sometimes present in the world. They are similar in appearance to creatures, but have different rules for what happens when they collide with objects in the world. Nothing happens when a predator collides with a plant, and plants are not detected by predators. This is due to the fact that predators are not interested in eating plants at all. Instead they can only see other predators and creatures. If they collide with another predator nothing happens, and if they collide with a creature the creature gets killed and the predator's life-length increased.
+\begin{enumerate}
+\item Interaction between two objects occur when they collide. Exactly what happens depends on the type of objects.
+\item Detection occurs when an object crosses the antennae of either a creature or predator.
+\end{enumerate}
 
-Due to performance issues all the predators and creatures are not present in the one and same simulation. Instead parts of the populations are broken off and simulated separately. This is due to the fact that the detection and collision algorithms have a time-complexity of $O({n}^{2})$ and therefore scale poorly. In practice this means that each simulation takes four times the time if the number of predators and creatures per simulation is doubled. A trade-off was chosen where a lower number per simulation was used which enabled a much higher number of iterations of the genetic algorithm to be run.
+At first each possible collision is checked and if one has occurred its effect is immediate. If a creature collides with a plant, that plant is eaten. If it is a green plant the creature's lifespan is increased slightly. If it is a red one the creature is killed. If a predator collides with a plant nothing happens and if it collides with a creature the creature is killed and the predator's lifespan is increased. After that a check for detection occurs and the creatures and/or predators which have detected objects are allowed to process the inputs and apply a $\Delta s$ and a $\Delta r$ (delta speed and rotation) to their current speed and rotation. Every creature and predator are then moved in accordance with their speed and rotation.
 
-% Detta avsnitt Ã¤r lite stÃ¶kigt, men har Ã¥tminstone med alla delar som behÃ¶vs
+Due to performance issues all the predators and creatures are not present in the one and same simulation. Instead parts of the populations are broken off and simulated separately and the results were then gathered and used to create the next generation. The reason behind this is due to the fact that the detection and collision algorithms have a time-complexity of $O({n}^{2})$ and therefore scale poorly. In practice this means that each simulation takes four times as long if the number of predators and creatures per simulation is doubled. By doing this trade-off where a lower number per simulation was used it was possible to run a higher number of iterations of the genetic algorithm in the same amount of time.
 
-Square world with walls, circular inhabitants with antennae\\
-Good and bad food sources\\
-Predators?\\
-Possible modifications to enforce different behaviour?\\
-What libraries will we use? Why?\\
-Optimisations?\\
+% This section is a bit messy. It's difficult to describe all the mechanics of the world using small steps. 
 
 \subsection{Methods of Enforcing Behaviour}
-Adding input\\
-Additional terms in brain calculations\\
-Adding predators\\
-More kinds of food\\
-Being able to see more things in the world\\
-Placing objects into the world\\
+
+In order to investigate which natural evolutionary mechanisms could be observed when using genetic algorithms in this way it was necessary to find methods to enforce behaviour in the animals. It is also interesting to see which evolutionary strategies are favoured by the different brains when placed in particular situations. Methods of doing this could be adding additional inputs to the brains or adding extra terms in the calculations to allow the approximation of more complex functions and thus more complex behaviour. This approach does however come at the cost of computing power. For each gene added the expected time for convergence is increased. %Ref? 
+
+To focus more on the which natural evolution mechanisms occur an approach was instead chosen which focused more on changing the animal's environment instead of the animals themselves. An example of an approach used was to add red plants into the world. The task of eating green plants then became much more difficult as the animals also had to avoid mistakingly colliding with red plants. This caused an interesting different in strategies between the linear and RBF-based brains, which is discussed in Section 123123. % Should we refer to results at this point?
+Another addition which allowed for more dynamics in the world was the choice to allow the creatures to evolve which colour they were. By doing this it enabled the use of the evolutionary strategy known as mimicry, in which an animal camouflages itself to look more similar to its environment and therefore be more likely to be overlooked by potential predators. % Could also refer to results here.
+
+Adding predators\\ % Not really mentioned
+Placing objects into the world\\ % Should we mention this as we didn't implement it?
 \subsection{Decision making}
 All brains in our simulation have a similar structure, they are functions with eight inputs and two outputs. When input is received by a creature, it is in the form of eight numbers, four for each antenna. Three of the inputs for each antenna are the red-, green- and blue components of the currently detected object's colour. These inputs are normalised within the interval $[0,1]$. The fourth input is zero when no object is detected and one when an object is. It was deemed necessary to include the fourth input saying if an object is detected or not to avoid certain edge-cases, namely should the creature detect a black object.
 
@@ -208,11 +211,11 @@ In equation \ref{linear-decide}, the first three components of the left and righ
 	S(\mathbf{g_{1-3}} \circ \mathbf{x_l} + \mathbf{g_{4-6}} \circ \mathbf{x_r} ) 	& \text{if $r_4 \neq 0$ and $l_4 \neq 0$}\\
 \end{cases}	
 \end{equation}
-\caption{The linear brain's decision formula for change of rotation $\Delta r$. S corresponds to a sigmoid function described in chapter \ref{linear-decision-making}.}
+\caption{The linear brain's decision formula for change of rotation $\Delta r$. $S$ corresponds to a sigmoid function described in Chapter \ref{linear-decision-making}.}
 \label{linear-decide}
 \end{figure}
 
-In the equation a sigmoid function $S$ is used to limit the the outputs to be within $[-1,1]$. The function $\frac{1}{1+e^{-x}} * 2 -1$ as sigmoid but any function $f:x\rightarrow y, x\in [-6,6], y \in [-1,1]$ would have worked as the only concern was to limit the output range to $[-1,1]$. The sigmoid function was however used as linear behaviour, with a relatively high steepness, near $x=0$ was desired. That gives the best learning rate and a flatter curve at the extremes. An $x$ value near the extremes of $[-6,6]$ corresponds to radical behaviour such as turning 180$^\circ$ or accelerating very rapidly and an x value near 0 corresponds to making minor adjustments of speed and angle when encountering an object. A high $x$ value also corresponds to a very rare event occurring, namely that both antennae detect objects with high colour values, meaning that they are all near 1. As the objective was to train the creatures to behave as rationally as possible to common events, the sigmoid function was chosen to slow down the learning rate of rare, extreme events and behaviours, which are far from zero, and accelerate the learning of commonly occurring events and behaviours, near zero.
+In the equation a sigmoid function $S$ is used to limit the the outputs to be within $[-1,1]$. The function $\frac{1}{1+e^{-x}} * 2 -1$ as sigmoid but any function $f:x\rightarrow y, x\in [-6,6], y \in [-1,1]$ would have worked as the only concern was to limit the output range to $[-1,1]$. The sigmoid function was however used as linear behaviour, with a relatively high steepness, near $x=0$ was desired. That gives the best learning rate and a flatter curve at the extremes. An $x$ value near the extremes of $[-6,6]$ corresponds to radical behaviour such as turning 180$^\circ$ or accelerating very rapidly and an $x$ value near 0 corresponds to making minor adjustments of speed and angle when encountering an object. A high $x$ value also corresponds to a very rare event occurring, namely that both antennae detect objects with high colour values, meaning that they are all near 1. As the objective was to train the creatures to behave as rationally as possible to common events, the sigmoid function was chosen to slow down the learning rate of rare, extreme events and behaviours, which are far from zero, and accelerate the learning of commonly occurring events and behaviours, near zero.
 In this way, the creatures still have the ability to make strong reactions, e.g. turning 180$^\circ$ when seeing a predator, but learning focuses more on the interesting behaviours, namely in which direction to turn or in which direction to accelerate. The reason a more simple function, such as $f(x) = x/6$ was not used as a normalising function was that it would have slowed down learning considerably as the more extreme cases have a larger effect than desired.
 
 \subsection{RBF-Based Decision Making}
@@ -255,13 +258,47 @@ In random decision making, only the fourth input which denotes whether an object
 
 \subsection{Genetic Algorithm}
 
+The implemented genetic algorithm was similar to the one described in Section \ref{ga_overview}. The main difference is that a combination of selection methods are used. Instead of only applying roulette selection elitism is included as well. This means that 10\% of the next population are exact copies of this generation's population, selected as the individuals with highest fitness. The modified algorithm is depicted in Figure \ref{our_ga_overview}. 
 
+Elitism is used as roulette selection is a highly probabilistic algorithm, and it is then possible that some individuals with high fitnesses are not selected for the next generation. Elitism prevents these individuals from disappearing from the population by guaranteeing their genes will survive until the next generation. Typically these also provide a stable max fitness for the population, as they are expected to perform equally well in the next simulation. It should however be noted that this is  not the case with the simulations used in this report, as both creature, plant, and predator placement are random.
 
+% Should mention probabilities for each swap, and for applying crossover at all
+The crossover algorithm used for the experiments is a modified version of the uniform crossover algorithm mentioned in Section \ref{background_mutation}. The difference is that instead of probabilistically replacing each gene, a "region" of genes are replaced instead. The idea behind this is that when applying crossover to RBF-based brains and only $\mu$ or $\sigma$ are replaced for a certain RBF then the resulting fitness will likely be lower than any of the parents'. A region is therefore defined as a group of subsequent genes. For the RBF-based brains the size of these regions are three genes long as both a weight, $\mu$ and $\sigma$ are needed for each RBF, and only one gene long for the linear brains as they only require one gene per calculation. This results in that when a crossover is applied one calculation, i.e. RBF or linear unit, for either speed or rotation and for either the left or right antennae is switched. % Could mention that we had to be careful when choosing crossover operator as they could give quite crazy results. This seemed like a safe bet
+
+Mutator
+
+\begin{figure}
+\begin{algorithmic}
+\State $S \gets$ a random distribution of genomes
+\State $G \gets$ number of generations
+    \For{$g \gets 1; g < G; g++$}
+        \State $fitnesses \gets run\_simulations(S)$
+	\Comment Simulates parts of $S$, collects result
+	\State $couple\_fitnesses(S,fitnesses)$
+	\Comment Associates a fitness value with a creature
+	\State $B \gets select\_best(S, length(S)/10)$
+	\Comment Select 10\% best genomes
+	\State $R \gets select\_roulette(S, length(S) * 9/10)$
+	\Comment Selects rest using roulette
+	\For{$child1 \in R, child2 \in R$}
+		\State $crossover(child1,child2)$
+		\Comment Probabilistically applies crossover
+	\EndFor
+	\For{$mutant \in R$}
+		\State $mutate(mutant)$
+		\Comment Probabilistically mutates an individual
+	\EndFor
+	\State $S \gets B \cup N$
+	\Comment Restart with the new generation
+    \EndFor
+\end{algorithmic}
+\caption{An overview of the genetic algorithm used in the simulation}
+\label{our_ga_overview}
+\end{figure}
 
 What kind of genetic algorithm do we plan to use?\\
 Fitness, crossover, mutation, selection, which ones?\\
 Flow chart of our algorithm\\
-NSGA-II\\
 Roulette selection\\
 
 \subsection{Experiments}

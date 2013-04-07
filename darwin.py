@@ -83,7 +83,7 @@ class Darwin(object):
 		#if cTools_available:
 		#	self.toolbox.register("select", cTools.selNSGA2)
 		#else:
-		self.toolbox.register("select", tools.selNSGA2)
+		self.toolbox.register("select", tools.selRoulette)
 
 		self.pop = self.toolbox.population(n=Darwin.NINDS)
 		self.pred_pop = self.toolbox.population(n=Darwin.NPRED)
@@ -244,9 +244,15 @@ class Darwin(object):
 	def printStatsCreatures(self,pop,gen,dba,dbb,dbp):
 		fits = [ind.fitness.values[0] for ind in pop]
 		mean = sum(fits) / len(pop)
+		reds = [0.1 + (genome[-1] + 1) * 0.5 for genome in pop]
+		greens = [0.1 + (genome[-1] + 1) * 0.5 for genome in pop]
+		blues = [0.1 + (genome[-1] + 1) * 0.5 for genome in pop]
 		stats.add("creature_fitness.avg",mean)
 		stats.add("creature_fitness.min",min(fits))
 		stats.add("creature_fitness.max",max(fits))
 		stats.add("creature.death_by_bush_procent",dbb*1.0/(dbb+dba+dbp))
 		stats.add("creature.death_by_predator_procent",dbp*1.0/(dbb+dba+dbp))
+		stats.add("creature_color.red", sum(reds)/len(reds))
+		stats.add("creature_color.blue", sum(blues)/len(blues))
+		stats.add("creature_color.green", sum(greens)/len(greens))
 		return ("(%3i): Max: %6.2f, Avg: %6.2f, Min: %5.2f, DBBP: %.2f" % (gen, max(fits), mean, min(fits),dbb*1.0/(dbb+dba)))
