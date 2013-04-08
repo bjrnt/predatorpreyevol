@@ -24,14 +24,14 @@ def default():
 
         ('Darwin','save_file'): save_file or 'save.txt',
 
-        ('Creature','World','Darwin','brain_type'): brain_type or 'BrainLinear',
+        ('Creature','World','Darwin','brain_type'): brain_type or 'BrainRBF',
 
         ('Darwin','NGEN'): num_gens or 0,
         ('Darwin','CXPB'):0.3,
         ('Darwin','MUTPB'):0.4,
         
         ('Creature','G_MAX_SPEED'):0.01,
-        ('Creature','health'):1000,
+        ('Creature','health'):500,
         ('Darwin','NTICKS'):2500,
 
         ('Darwin','NPRED'): num_preds or 0, # Must be divisible by NINDS / num_inds_per_sim and 10

@@ -87,7 +87,7 @@ class Creature(Inhabitant):
 
 	def on_collision(self, target):
 		if self.predator and isinstance(target,Creature) and not target.predator:
-			self.energy += 100
+			self.energy += 150
 			target.cod = 'predator'
 			target.alive = False
 
