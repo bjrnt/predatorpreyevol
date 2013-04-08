@@ -104,7 +104,10 @@ class World(object):
 
 	def run_ticks(self):
 		for tick in xrange(self.nticks):
-			self.run_tick()
+			if len(self.creatures) != 0 or len(self.predators) != 0:
+				self.run_tick()
+			else:
+				break
 
 	def detect_walls(self, looker, left, right):
 		looker_pos = looker.get_pos()
@@ -117,7 +120,6 @@ class World(object):
 			antennae_point1 = funcs.vplus(looker_pos, v_an1)
 
 			if antennae_point1[0] < 0 or antennae_point1[0] > 1 or antennae_point1[1] < 0 or antennae_point1[1] > 1:
-				looker.energy -= 20
 				left[0] = 1
 				left[1], left[2], left[3] = [0,0,1]
 
@@ -128,7 +130,6 @@ class World(object):
 			antennae_point2 = funcs.vplus(looker_pos, v_an2)
 
 			if antennae_point2[0] < 0 or antennae_point2[0] > 1 or antennae_point2[1] < 0 or antennae_point2[1] > 1:
-				looker.energy -= 20
 				right[0] = 1
 				right[1], right[2], right[3] = [0,0,1]
 

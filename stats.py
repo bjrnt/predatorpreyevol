@@ -67,6 +67,7 @@ def save_all(save_prefix):
 
 	for stat_group in grouped_stats:
 		fig = create_figure(stat_group,grouped_stats[stat_group])
+		print "Saving %s..." % stat_group
 		fig.savefig(save_prefix + "_" + stat_group + '.png',bbox_inches=0)
 
 def create_figure(name,stat_group):
