@@ -245,8 +245,8 @@ class Darwin(object):
 		fits = [ind.fitness.values[0] for ind in pop]
 		mean = sum(fits) / len(pop)
 		reds = [0.1 + (genome[-1] + 1) * 0.5 for genome in pop]
-		greens = [0.1 + (genome[-1] + 1) * 0.5 for genome in pop]
-		blues = [0.1 + (genome[-1] + 1) * 0.5 for genome in pop]
+		greens = [0.1 + (genome[-2] + 1) * 0.5 for genome in pop]
+		blues = [0.1 + (genome[-3] + 1) * 0.5 for genome in pop]
 		stats.add("creature_fitness.avg",mean)
 		stats.add("creature_fitness.min",min(fits))
 		stats.add("creature_fitness.max",max(fits))
