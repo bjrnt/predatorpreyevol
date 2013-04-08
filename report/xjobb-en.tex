@@ -50,6 +50,8 @@
 
 \section{Background}
 
+% Där så är relevant för uppgiften, visa viss medvetenhet om samhälleliga och etiska aspekter, inklusive ekonomiskt, socialt och ekologiskt hållbar utveckling.
+
 Genetic algorithms are algorithms that emulate evolution in order to achieve a optimal solution to a problem. 
 These algorithms have many uses and it is therefore interesting to investigate whether the phenomena which occur in nature due to evolution also occur when using genetic algorithms. In nature evolution has spawned a wide variety
 of survival strategies such as adaptation, camouflaging colours and mimicry. Genetic algorithms, however, are 
@@ -62,7 +64,7 @@ The main objective is to simulate animal behaviour using radial-basis functions 
 
 The animals will be given different tasks to do in each experiment, ranging from simply gathering food to avoiding predators to mimicking things in the world to survive. In each experiment the three brain architectures are compared and contrasted. One goal of this project is to find out the pros and cons of both brains using radial-basis functions and linear functions, when used for simulating artificial intelligence in this way.
 
-Genetic algorithms have been used successfully in the past in similar experiments. They have been used to train artificial neural networks \cite{montana}, for robot motion planning \cite{huijsmann} and for the evolution simulator Gaia \cite{gracias}. Gaia is a artificial life simulator using neural networks and gentic algorithms where several interesting behavoiurs where shown, the two most prominent ones being food seeking and obstacle avoidance. Gaia uses advanced neural networks for the behavoiur of its creatures and these netoworks are trained using a combination of genetic algorithms and Hebbian lerning. In the report, the authors acknowledge that many of the behaviours observed could be implemented using simple linear associations and one of this project's goals is to determine which behaviours that can be observed using the simpler brain types - linear and RBF functions. 
+Genetic algorithms have been used successfully in the past in similar experiments. They have been used to train artificial neural networks \cite{montana}, for robot motion planning \cite{huijsmann} and for the evolution simulator Gaia \cite{gracias}. Gaia is a artificial life simulator using neural networks and genetic algorithms where several interesting behaviours where shown, the two most prominent ones being food seeking and obstacle avoidance. Gaia uses advanced neural networks for the behaviour of its creatures and these networks are trained using a combination of genetic algorithms and Hebbian learning. In the report, the authors acknowledge that many of the behaviours observed could be implemented using simple linear associations and one of this project's goals is to determine which behaviours that can be observed using the simpler brain types - linear and RBF functions. 
 
 % TODO: What did we manage to simulate?
 %  Forcing them to adapt certain genetic phenomena such as adaptation (learning), co-evolution and extinction, mimicry, group forming and co-operation prioritised in the order presented (as increasingly complex behaviour and difficulty to simulate).
@@ -115,10 +117,9 @@ A better approach is the so called roulette wheel selection where each individua
 \centering\includegraphics[scale=0.9]{roulettewheel.png}
 \caption{A visual representation of how the roulette wheel selection algorithm works.}
 % Behöver vi source till detta? Hittades här: http://www.edc.ncl.ac.uk/highlight/rhjanuary2007g02.php/
+% Gör om denna!
 \label{roulettewheelpic}
 \end{figure}
-
-Undrar om vi ska skriva något om NSGA II...
  
 \subsection{Mutation}
 \label{background_mutation}
@@ -132,6 +133,17 @@ Mutation is a random, usually small, change of an individuals genome. In nature 
 
 \subsection{Crossover}
 Crossover is the operation of combining two genomes into two new genomes. One common crossover operator is known as  single point crossover and it consists of splitting two genomes at the same position and merging the split parts into two new genomes. The split position is chosen randomly and the two new genomes share no genes with each other. This process is displayed in Figure \ref{crossover-figure} There is also multiple point crossover where there are multiple splitting positions as well as uniform crossover where each gene can be exchanged with a certain probability.
+
+\section{Evolutionary Concepts in Nature}
+\subsection{Overview}
+\label{evolutionary_overview}
+This section provides a short overview of evolutionary concepts in nature which occur in this report. As each individual solution the genetic algorithm proposes can be thought of as an individual in a population, many of the normal evolutionary phenomena can be observed in genetic algorithms as well.
+
+\emph{Adaptation} is when an individual is forced to adapt to its surroundings in order to survive. In nature adaptation occurs over generations and the need to adapt is the primary motivator behind evolution. The fitness of an individual depends to a great extent on how well-adapted an individual is to its surroundings. In extreme environmental changes adaptation typically is accelerated and once the population can handle itself in the new environment smaller changes are made to meet secondary goals. An example of this in nature is how the polar bear evolved to have thicker, whiter fur when moving to a colder, snow-covered environment.
+
+\emph{Co-evolution} is when the evolution of a species is affected by the evolution of another. This could be in both in a symbiotic, parasitic or in a predator-versus-prey manner.  
+
+\emph{Mimicry} 
 
 \section{Radial Basis Functions}
 \subsection{Overview}
@@ -147,9 +159,9 @@ A radial basis function (RBF) is a bell-shaped function whose value depends on t
 Radial basis functions are commonly implemented using a formula such as in Figure \ref{RBF-1}, which is a three-dimensional function centred around $(\mu _{x}$, $\mu _{y}$, $\mu _{z})$. The width of the bell-curve in each dimension is determined by $\sigma _{x}$, $\sigma _{y}$ and $\sigma _{z}$ respectively.
 
 \begin{figure}
-\begin{equation}
+\begin{equation*}
 f(x,y,z) = A_x*\exp(-\frac{(x-\mu_{x})^{2}}{2 \sigma _{x}^{2}}) + A_y*\exp(-\frac{(y-\mu_{y})^{2}}{2 \sigma _{y}^{2}}) + A_z*\exp(-\frac{(z-\mu_{z})^{2}}{2 \sigma _{z}^{2}})
-\end{equation}
+\end{equation*}
 \caption{A sum of three radial basis functions, corresponding to three input values.$A_x$, $A_y$ and $A_z$ lies within the interval $[-1,1]$ and ensures that $f(x,y,z)$ can be negative.}
 \label{RBF-1}
 \end{figure}
@@ -164,6 +176,9 @@ f(x,y,z) = A_x*\exp(-\frac{(x-\mu_{x})^{2}}{2 \sigma _{x}^{2}}) + A_y*\exp(-\fra
 
 Python was chosen as the language to implement our simulation in as it is a high-level language suited for quickly building prototypes. It also has an abundance of third-party libraries which helps reduce implementation time significantly. A third-party library called DEAP (Distributed Evolutionary Algorithms in Python) was used for the evolutionary algorithms. DEAP proved to be flexible enough for the task as it allows the user to define their own selection, mutation and crossover algorithms as well as mixing them with the accompanying built-in algorithms. Pygame and Matplotlib were used for graphical rendering, Pygame for rendering the actual simulation and Matplotlib for producing graphs from the extracted data. To increase performance Pypy, Numpy and Python's built-in support for multiprocessing were used to decrease runtime significantly. For a comprehensive list of the tools used, please see Appendix \ref{list-of-third-party-tools}.
 
+\subsection{Simulated World}
+
+% Mention GitHub for exact values, different constants etc
 These libraries were combined to create a model of the world in which the creatures will be simulated. The word contains creatures, which are spheres with two antennae protruding from their bodies at angles $\pi /6$ and $-\pi / 6$. The creatures' colours are decided by their genes. There may also be predators in the world that are similar to creatures apart from that they consume different food and always have a strong red colour. While creatures eat green plants, which are green circles placed randomly within the world, predators instead eat creatures. To make things more difficult creatures also have to avoid red plants, which are red circles. These represent "bad" or poisonous food. After a plant is eaten there is a small probability each tick that a new one will be placed into the world at a random location. As predators have no interest in eating plants they do not detect or have any consequences from colliding with plants. There are also walls around the border of the world which the creatures cannot pass through. They are coloured blue in order for the creatures to be able to make a clear distinction between walls, plants, predators and other creatures. Collision and detection, which are the only ways of interaction between two objects, are governed by the following rules:
 
 \begin{enumerate}
@@ -175,7 +190,9 @@ At first each possible collision is checked and if one has occurred its effect i
 
 Due to performance issues all the predators and creatures are not present in the one and same simulation. Instead parts of the populations are broken off and simulated separately and the results were then gathered and used to create the next generation. The reason behind this is due to the fact that the detection and collision algorithms have a time-complexity of $O({n}^{2})$ and therefore scale poorly. In practice this means that each simulation takes four times as long if the number of predators and creatures per simulation is doubled. By doing this trade-off where a lower number per simulation was used it was possible to run a higher number of iterations of the genetic algorithm in the same amount of time.
 
+% Need to mention how new plants are spawned
 % This section is a bit messy. It's difficult to describe all the mechanics of the world using small steps. 
+
 
 \subsection{Methods of Enforcing Behaviour}
 
@@ -186,19 +203,19 @@ Another addition which allowed for more dynamics in the world was the choice to 
 
 Adding predators\\ % Not really mentioned
 Placing objects into the world\\ % Should we mention this as we didn't implement it?
-\subsection{Decision making}
+\subsection{Decision Making}
 All brains in our simulation have a similar structure, they are functions with eight inputs and two outputs. When input is received by a creature, it is in the form of eight numbers, four for each antenna. Three of the inputs for each antenna are the red-, green- and blue components of the currently detected object's colour. These inputs are normalised within the interval $[0,1]$. The fourth input is zero when no object is detected and one when an object is. It was deemed necessary to include the fourth input saying if an object is detected or not to avoid certain edge-cases, namely should the creature detect a black object.
 
-The outputs produced from this consists of the values $\Delta r$ and $\Delta s$ which denotes change in rotation and change in speed. Both output values are normalised to the interval $[-1,1]$ to account for the possibilities of negative rotation and negative acceleration. These values are then translated into reasonable values in the simulation. The maximum acceleration is determined by the size of the creatures, the size of the world, the maximum speed of the creatures to enable scaling of the world without affecting the simulation itself. The maxiumum allowed change in rotation is 180$^\circ$ or $\pi$ since the interval $[-\pi,\pi]$ covers the entire circle. A larger allowed change in rotation would have made learning harder as there would be multiple correct responses to a situation, e.g $\Delta r = v, \Delta r = v+ 2\pi, \Delta r = v+ 4\pi \dots $.
+The outputs produced from this consists of the values $\Delta r$ and $\Delta s$ which denotes change in rotation and change in speed. Both output values are normalised to the interval $[-1,1]$ to account for the possibilities of negative rotation and negative acceleration. These values are then translated into reasonable values in the simulation. The maximum acceleration is determined by the size of the creatures, the size of the world, the maximum speed of the creatures to enable scaling of the world without affecting the simulation itself. The maximum allowed change in rotation is 180$^\circ$ or $\pi$ since the interval $[-\pi,\pi]$ covers the entire circle. A larger allowed change in rotation would have made learning harder as there would be multiple correct responses to a situation, e.g $\Delta r = v, \Delta r = v+ 2\pi, \Delta r = v+ 4\pi \dots $.
 
 \subsection{Linear Decision Making}
 \label{linear-decision-making}
 The linear brain is a very simple model for artificial intelligence. There are twelve genes in total in the interval $[-1,1]$ These genes correspond to three colours per antenna times two antennae times two outputs from the brain. Both $\Delta r$ and $\Delta s$ are calculated using the same method as mentioned previously.
 %Ref?
-In equation \ref{linear-decide}, the first three components of the left and right antennae vectors, the ones containing the colour data, are called $\mathbf{x_{l}}$ and $\mathbf{x_{r}}$ respectively. The fourth components are called $l_4$ and $r_4$, and are the variables which show if an object has been detected or not. There are twelve genes involved in total in the linear brain, six of them apply to this equation and they are divided into two vectors $\mathbf{g_{1-3}}$ and $\mathbf{g_{4-6}}$ using genes 1-3 and 4-6. The change in speed $\Delta s$ is calculated in the exact same way using the same inputs but genes 7-12 instead.
+In Figure \ref{linear-decide}, the first three components of the left and right antennae vectors, the ones containing the colour data, are called $\mathbf{x_{l}}$ and $\mathbf{x_{r}}$ respectively. The fourth components are called $l_4$ and $r_4$, and are the variables which show if an object has been detected or not. There are twelve genes involved in total in the linear brain, six of them apply to this equation and they are divided into two vectors $\mathbf{g_{1-3}}$ and $\mathbf{g_{4-6}}$ using genes 1-3 and 4-6. The change in speed $\Delta s$ is calculated in the exact same way using the same inputs but genes 7-12 instead.
 
 \begin{figure}
-\begin{equation}
+\begin{equation*}
 \Delta r =
 \begin{cases}
 	0 																				& \text{if $l_4 = 0$ and $r_4 = 0$},\\
@@ -206,7 +223,7 @@ In equation \ref{linear-decide}, the first three components of the left and righ
 	S(\mathbf{g_{4-6}} \circ \mathbf{x_r}) 											& \text{if $r_4 \neq 0$ and $l_4 = 0$}\\
 	S(\mathbf{g_{1-3}} \circ \mathbf{x_l} + \mathbf{g_{4-6}} \circ \mathbf{x_r} ) 	& \text{if $r_4 \neq 0$ and $l_4 \neq 0$}\\
 \end{cases}	
-\end{equation}
+\end{equation*}
 \caption{The linear brain's decision formula for change of rotation $\Delta r$. $S$ corresponds to a sigmoid function described in Chapter \ref{linear-decision-making}.}
 \label{linear-decide}
 \end{figure}
@@ -292,36 +309,65 @@ Mutator
 \label{our_ga_overview}
 \end{figure}
 
-What kind of genetic algorithm do we plan to use?\\
-Fitness, crossover, mutation, selection, which ones?\\
-Flow chart of our algorithm\\
-Roulette selection\\
+\section{Experiments}
+\subsection{Finding and eating food}
+This experiment consists of placing creatures with randomly generated genes in a world with only green plants in it. The number of green plants is variable and the results are checked after 500 generations. The population size is 200 and split into groups of 20 individuals, which are simulated separately for each generation. In each simulation the creatures and plants are placed randomly into the world, with the creatures having a random initial rotation. This is to avoid learning fixed patterns, that is doing the same sequence of actions each simulation. The downside of this is that the fitness values are not guaranteed to increase each generation, instead a longer interval needs to be examined. The number of plants in the beginning of the simulation is zero, and the number of plants may never exceed a fixed limit. As per described in Section \ref{simulated_world}, a creature's life length is increased when eating a green plant and the fitness of a creature is its life length.
 
-\subsection{Experiments}
-We mainly performed three kinds of experiments
-(In every experiment linear and RBF are compared, eventually mixed)\\
-Interested in:\\
-Time to maximal fitness\\
-Highest possible fitness\\
-\begin{itemize}
-\item Adaptation 1. Finding and eating food
-\item Adaptation 2. Finding and eating food, avoiding "bad" food
-\item Co-evolution and extinction 1. Predator vs prey, prey eats food as in first experiment. (bushes are bad for predators)
-\item Speciation and co-operation 1. Allow the creatures to evolve which "colour" food they can eat, attempt to create two separate species from one, one species eating green bushes and one red.
-\item Mimicry 1. Making the prey mimic bushes or predators to avoid being eaten.
-\item Mimicry 2. Predators attempt to mimic bushes to make prey run into them.
-\item Group forming 1. Rerun all previous experiments, but with the ability to detect the nearest creature of the same species.
-\end{itemize}
+The purpose of this experiment is to see whether they are able to learn at all and how fast learning occurs. This will be an example of adaptation, as described in Section \ref{evolutionary_overview}, where the herbivores need to adapt to their new surroundings. It is also interesting to see if any specific behaviours occur in order to eat as many plants as possible. The results from the linear, RBF-based, and random brains will be compared in order to see if there are any clear differences between them when running such a simple experiment. 
 
+In theory, a valid strategy could be not reacting to plants at all. Simply accelerating to maximum speed and "combing" the world for plants by rotating randomly is a plausible strategy. According to \cite{gracias} a good strategy is to simply continue in the same direction and when accelerating towards a bush when it is detected. Another strategy observed in the same paper was to follow the walls of the world.
+
+\subsection{Avoiding bad food}
+This is a variation of the experiment described in the previous section, with the addition of red plants. Similar to the green plants, the number of red plants is zero at the beginning of the simulation and always below a fixed amount, and they are also spawned in random locations. A problem with this approach is that a creature may be placed on top of a red plant, or vice versa. Nothing is done to prevent this, as with a large enough population size this is negligible. Another issue with this is that red and green plants could be placed above, or near, each other in the world, thus making it difficult for the creatures to eat the green plant, while avoiding the red plant. The expected result of this is a lower average fitness value, but the decision to allow this to happen was based on comparing the brain types and seeing if they would handle this case differently.
+
+By adding red plants to the simulation the task of living as long as possible becomes more complex. It is no longer a valid strategy to randomly pick a direction to go in each time a wall is encountered and not reacting to the detected plants. There are essentially two strategies for coping with this; the first strategy is trying to avoid red plants as much as possible, and the second is to focus more on eating green plants than avoiding red ones. 
+
+\subsection{Predators and prey}
+In this experiment predators are added into the world. As mentioned in Section \label{simulated_world}, the predators' objective is to eat herbivores. The predators have a strong red colour. This is due to the fact that the prey are already learning to avoid red bushes and if the predators are red as well it will be easier for them to avoid getting eaten.  The reason the predators had to be red as well is due to the limitations of the linear brains. In order not to give the RBF-based brains an unfair advantage a single colour was chosen for the predators. As the world is now it is beneficial to be able to treat blue, green, and red objects differently, and if the colours are mixed it quickly becomes too difficult for the linear brains to handle. This is as their reactions will be a sum of the reactions to the individual components of the colour. 
+
+In previous experiments there is no benefit in changing colour for the herbivores. In this experiment however, it may be beneficial to try to mimic either predators or walls. When this phenomena occurs in nature it is known as mimicry and described in Section \ref{evolutionary_overview}. Another interesting evolutionary phenomena which could occur is co-evolution. In this simulation that could mean the predator's average fitness continuously increasing while the herbivores' fitness slowly decreases, or vice versa, if the herbivores become proficient at avoiding predators.
 
 \chapter{Results}
 \section{Simulation results}
+\subsection{Finding and eating food}
+Can they learn at all?\\
+Increased life length desired\\
+How much better than random\\
+RBF vs Linear, learning rate, maximum average fitness\\
+Food eating strategies\\
+Population size, lowest possible, higher makes it more probable to have a successful randomly initialised individual\\
+Colour converges to random point\\
+Minimum fitness almost never goes over 0\\
+Maximum almost never reached ceiling\\
+Adaptation 1. Finding and eating food\\ 
+
+\subsection{Avoiding bad food}
+Difference in strategies between linear and RBF brains\\
+Comparison against random brains\\
+Comparison between RBF and linear\\
+Colours still converge to random point\\
+Difference in average fitness against first experiment\\
+Adaptation 2. Finding and eating food, avoiding "bad" food\\
+
+\subsection{Predators and prey}
+Comparison between RBF and linear\\
+Random brained predators\\
+Adding red plants to the mix\\
+Strategies, look at death by predator graphs etc\\
+Colours\\
+Evolutionary mechanisms\\
+Co-evolution and extinction 1. Predator vs prey, prey eats food as in first experiment.\\
+Mimicry 1. Making the prey mimic walls or predators to avoid being eaten.\\
+
 \subsection{Observed Behaviours}
 \section{Discussion}
 \subsection{Constraints and problems}
 One serious and unexpected constraint was the performance of our algorithm.
 
+% Självständigt identifiera egna behov av ny kunskap, samt inhämta dessa kunskaper.	
+
 Performance problems\\
+Few runs of each experiment due to time constraints\\
 Other unexpected problems?\\
 
 \section{Conclusions and Future Work}
@@ -345,6 +391,8 @@ Darwin, C, (1861) \emph{On the origin of species by means of natural selection; 
 Vij, K. and Biswas, R. (2004) \emph{Basics of DNA \& Evidentiary Issues}. Jaypee Brothers Publishers
 \bibitem{huijsmann}
 Huijsmann, R., Haasdijk E., Eiben A. E. (2012) An On-line On-board Distributed Algorithm for Evolutionary Robotics. In \emph{Artificial Evolution} (pp. 73-84). Springer Berlin Heidelberg
+\bibitem{wright}
+Wright, S., (1932), The Roles of Mutation, Inbreeding, Crossbreeding and Selection in Evolution. In \emph{Proceedings of the Sixth International Congress on Genetics} (pp. 355-366). Brooklyn Botanic Garden % Refer to this one when discussing fitness landscape. Sewall Wright proposed that populations occupy adaptive peaks on a fitness landscape. In order to evolve to another, higher peak, a population would first have to pass through a valley of maladaptive intermediate stages.[65] A given population might be "trapped" on a peak that is not optimally adapted.
 \end{thebibliography}
 
 \appendix

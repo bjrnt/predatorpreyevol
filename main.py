@@ -24,7 +24,7 @@ def default():
 
         ('Darwin','save_file'): save_file or 'save.txt',
 
-        ('Creature','World','Darwin','brain_type'): brain_type or 'BrainLinear',
+        ('Creature','World','Darwin','brain_type'): brain_type or 'BrainRBF',
 
         ('Darwin','NGEN'): num_gens or 0,
         ('Darwin','CXPB'):0.3,

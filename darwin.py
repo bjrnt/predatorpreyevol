@@ -255,4 +255,4 @@ class Darwin(object):
 		stats.add("creature_color.red", sum(reds)/len(reds))
 		stats.add("creature_color.blue", sum(blues)/len(blues))
 		stats.add("creature_color.green", sum(greens)/len(greens))
-		return ("(%3i): Max: %6.2f, Avg: %6.2f, Min: %5.2f, DBBP: %.2f" % (gen, max(fits), mean, min(fits),dbb*1.0/(dbb+dba)))
+		return ("(%3i): Max: %6.2f, Avg: %6.2f, Min: %5.2f, DBBP: %.2f" % (gen, max(fits), mean, min(fits),dbb*1.0/(dbb+dbp+dba)))

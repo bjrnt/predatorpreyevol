@@ -95,7 +95,6 @@ class Creature(Inhabitant):
 		self.energy -= 1
 		self.life_length += 1
 		if self.energy <= 0 and self.alive == True:
-			print "Died at age %d" % self.life_length
 			self.alive = False
 			self.cod = 'age'
 

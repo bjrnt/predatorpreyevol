@@ -17,3 +17,4 @@ os.system("python stats.py -m disk -l stats_%s_gen%d_ind%d_pred%d_bg%d_br%d.txt 
 # Gröna buskar, inga preds x 2 
 # Gröna buskar, preds x 2
 # Gröna röda buskar x 2
+# Random med alla också
