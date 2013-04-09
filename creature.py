@@ -12,15 +12,9 @@ class Creature(Inhabitant):
 
 	def __init__(self, genes=None, x=0.0, y=0.0, predator=False):
 		
-		R = 0.1 + (genes[-1] + 1) * 0.5 
-		G = 0.1 + (genes[-2] + 1) * 0.5
-		B = 0.1 + (genes[-3] + 1) * 0.5
-		R = R if R < 1 else 1
-		R = R if R > 0 else 0
-		G = G if G < 1 else 1
-		G = G if G > 0 else 0
-		B = B if B < 1 else 1
-		B = B if B > 0 else 0
+		R = funcs.gene2color(genes[-1])
+		G = funcs.gene2color(genes[-2])
+		B = funcs.gene2color(genes[-3])
 
 		if predator:
 			R,G,B = 0.9, 0.1, 0.1

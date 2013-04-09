@@ -1,4 +1,4 @@
-import multiprocessing, platform, random, itertools, time, stats
+import multiprocessing, platform, random, itertools, time, stats, funcs
 
 import numpy as np
 from deap import base,creator,tools
@@ -244,9 +244,9 @@ class Darwin(object):
 	def printStatsCreatures(self,pop,gen,dba,dbb,dbp):
 		fits = [ind.fitness.values[0] for ind in pop]
 		mean = sum(fits) / len(pop)
-		reds = [0.1 + (genome[-1] + 1) * 0.5 for genome in pop]
-		greens = [0.1 + (genome[-2] + 1) * 0.5 for genome in pop]
-		blues = [0.1 + (genome[-3] + 1) * 0.5 for genome in pop]
+		reds = [funcs.gene2color(genome[-1]) for genome in pop]
+		greens = [funcs.gene2color(genome[-2]) for genome in pop]
+		blues = [funcs.gene2color(genome[-3]) for genome in pop]
 		stats.add("creature_fitness.avg",mean)
 		stats.add("creature_fitness.min",min(fits))
 		stats.add("creature_fitness.max",max(fits))

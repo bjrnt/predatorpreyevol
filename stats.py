@@ -103,7 +103,7 @@ def create_figure(name,stat_group):
 
 def main():
 	parser = argparse.ArgumentParser(description='Stand alone plotting program.')
-	parser.add_argument('-m', dest='mode', metavar='str', type=str, help="Run the program in the following mode.")
+	parser.add_argument('-m', dest='mode', metavar='str', type=str, help="Run the program in the following mode. Available modes are: plot, disk")
 	parser.add_argument('-l', dest='load_file', metavar='file', type=str, help="The file to load.")
 	parser.add_argument('-s', dest='save_prefix', metavar='file', type=str, help="Prefix for saving images.")
 	args = parser.parse_args(sys.argv[1:])

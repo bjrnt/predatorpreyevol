@@ -2,6 +2,12 @@ import math
 import numpy as np
 from numpy import array
 
+def gene2color(gene):
+	color = 0.1 + (gene + 1) * 0.5
+	color = color if color < 1 else 1
+	color = color if color > 0 else 0
+	return color
+
 def dot(v1, v2):
 	return v1.dot(v2)
 

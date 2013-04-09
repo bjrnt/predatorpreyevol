@@ -8,7 +8,7 @@ class Bush(Inhabitant):
 		if poisonous:
 			super(Bush, self).__init__([x,y], radius_multiplier=0.55, color=(1.0,0.0,0.0), energy=0)
 		else:
-			super(Bush, self).__init__([x,y], radius_multiplier=0.1, color=(0.0,1.0,0.0), energy=25)
+			super(Bush, self).__init__([x,y], radius_multiplier=0.1, color=(0.0,1.0,0.0), energy=75)
 
 	def think(self):
 		if self.radius_multiplier < 0.4:

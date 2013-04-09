@@ -21,7 +21,10 @@ class Renderer(object):
 		disp_freq = self.disp_freq
 			
 		for tick in xrange(world.nticks):
-			world.run_tick()
+			if len(world.creatures) != 0 or len(world.predators) != 0:
+				world.run_tick()
+			else:
+				break
 			if tick % disp_freq == 0:
 				self.render(world)
 
