@@ -14,7 +14,9 @@
 % Fix width of pictures.
 % Make a new roulette selection picture.
 % Check that all references are used.
+% Check that all figures are referred to.
 % Check that the bibliography is consistent.
+
 
 
 \title{Evolution of Artificial Brains in Simulating Animal Behaviour}
@@ -53,15 +55,19 @@
 
 % Där så är relevant för uppgiften, visa viss medvetenhet om samhälleliga och etiska aspekter, inklusive ekonomiskt, socialt och ekologiskt hållbar utveckling.
 
-Genetic algorithms are algorithms that emulate evolution in order to achieve a optimal solution to a problem. These algorithms have many uses and it is therefore interesting to investigate whether the phenomena which occur in nature due to evolution also occur when using genetic algorithms. In nature evolution has spawned a wide variety of survival strategies such as adaptation, camouflaging colours and mimicry. Genetic algorithms, however, are simplified mathematical models of these mechanisms which means that these phenomena might not occur at all. This report tries to investigate these phenomena using two different kinds of decision making models.
+Genetic algorithms are algorithms that emulate evolution in order to approximate an optimal solution to a problem. These algorithms have many uses and evolutionary phenomena which occur in nature frequently occur when using genetic algorithms as well. In nature, evolution has spawned a wide variety of survival strategies such as adaptation, camouflaging colours and mimicry. Genetic algorithms have been used on several occasions to simulate artificial life as well as artificial intelligence and this report is a continuation of that research. They have been used to train machine learning algorithms \cite{montana}, for robot motion planning \cite{huijsmann} and for the evolution simulator Gaia which utilises advanced genetic algorithms to train artificial neural networks \cite{gracias}. Artifical neural networks are commonly used machine learning algorithms for artificial intelligence. The results from Gaia showed several interesting behaviours, two prominent ones being food seeking and obstacle avoidance.
+
+Since genetic algorithms emulate the natural process of evolution, several natural phenomena such as mimicry can be observed in genetic algorithms as well. This makes this group of algorithms especially suited for simulating populations of artificial animals, giving a very genuine impression of evolution. Since genetic algorithms are such a good metaphore for evolution in nature, they can be used to simulate real life evolution as well. The precision of the simulations depend on the ability to mimic real life evolution of traits and behaviours.  Genetic algorithms provide a simplified model of these and makes it possible to analyse different evolutionary scenarios, including extremes that are uncommon in nature today, from different perspectives. The ability to accurately predict these scenarios becomes increasingly important as our environment becomes increasingly volatile. 
 
 \section{Scope and Objectives}
 
-The main objective is to simulate animal behaviour using radial-basis functions and linear functions. As a baseline, a brain which makes random decisions is also used. To train the animals, genetic algorithms are used. The genetic algorithms provide the genes which are used as input to the decision making models. Statistics such as learning speed, choice of strategy and how well the animals are able to adapt to their surroundings will then be analysed. 
+%In this report two simple forms of decision making models are implemented. Both are driven by genetic algorithms and both are compared to previous research on more advanced brain architechtures. Interesting patterns and phenomena are also recorded.
 
-The animals will be given different tasks to do in each experiment, ranging from simply gathering food to avoiding predators to mimicking things in the world to survive. In each experiment the three brain architectures are compared and contrasted. One goal of this project is to find out the pros and cons of both brains using radial-basis functions and linear functions, when used for simulating artificial intelligence in this way.
+This report focuses on evolving simulated animal behaviour using two kinds of mathematical functions. As a baseline, a brain which makes random decisions is also used.  The genetic algorithms provide the genes which are used as input to the decision making models. Statistics such as learning speed, choice of strategy and how well the animals are able to adapt to their surroundings are then analysed. 
 
-Genetic algorithms have been used successfully in the past in similar experiments. They have been used to train artificial neural networks \cite{montana}, for robot motion planning \cite{huijsmann} and for the evolution simulator Gaia \cite{gracias}. Gaia is a artificial life simulator using neural networks and genetic algorithms where several interesting behaviours where shown, the two most prominent ones being food seeking and obstacle avoidance. Gaia uses advanced neural networks for the behaviour of its animals and these networks are trained using a combination of genetic algorithms and Hebbian learning. In the report, the authors acknowledge that many of the behaviours observed could be implemented using simple linear associations and one of this project's goals is to determine which behaviours that can be observed using the simpler brain types - linear and RBF functions. 
+The animals will be given different tasks to do in each experiment, ranging from simply gathering food to avoiding predators to mimicking things in the world to survive. In each experiment the three decision making models are compared and contrasted. One goal of this project is to find out the advantages and disadvantages of both models, when used for simulating artificial intelligence.
+
+Genetic algorithms have been used successfully in the past in similar experiments. In the Gaia report, the authors acknowledge that many of the behaviours observed could be implemented using simple linear associations \ref{gracias}. One of this project's goals is to determine which behaviours that can be observed using the simpler brain types - linear functions and RBF functions. 
 
 % TODO: What did we manage to simulate?
 %  Forcing them to adapt certain genetic phenomena such as adaptation (learning), co-evolution and extinction, mimicry, group forming and co-operation prioritised in the order presented (as increasingly complex behaviour and difficulty to simulate).
@@ -150,7 +156,7 @@ This section provides a short overview of evolutionary concepts in nature which 
 \label{3-RBF-functions}
 \end{figure}
 
-A radial basis function (RBF) is a bell-shaped function whose value depends on the distance from some origin\cite[p.~1-8]{buhmann}, denoted $\mu$ in Figure \ref{RBF-1}.  Radial basis functions are commonly used in neural networks as a way to encode input information. They are favourable to use as they have locality, something which linear functions do not. In particular they are used for function approximation, as any function can be approximated as the sum of a number of weighted radial basis functions. A property of radial basis functions which can both be interpreted as an advantage and disadvantage is that their value never exceeds a given constant, compared to a linear function which can grow to infinitely high or low numbers.
+A radial basis function (RBF) is a bell-shaped function whose value depends on the distance from some origin\cite[p.~1-8]{buhmann}, denoted $\mu$ in Figure \ref{RBF-1}.  Radial basis functions are commonly used in artifical neural networks as a way to encode input information. They are favourable to use as they have locality, something which linear functions do not. Locality means that the function value is zero in almost the entire domain of the function. This is displayed in Figure \ref{3-RBF-functions}. This makes them useful for function approximation, as any function can be approximated as the sum of a number of weighted radial basis functions. Linear functions do not have this property. A property of radial basis functions which can both be interpreted as an advantage and disadvantage is that their value never exceeds a given constant, compared to a linear function which can grow to infinitely high or low numbers.
 
 Radial basis functions are commonly implemented using a formula such as in Figure \ref{RBF-1}, which is a three-dimensional function centred around $(\mu _{x}$, $\mu _{y}$, $\mu _{z})$. The width of the bell-curve in each dimension is determined by $\sigma _{x}$, $\sigma _{y}$ and $\sigma _{z}$ respectively.
 
@@ -166,7 +172,7 @@ f(x,y,z) = A_x*\exp(-\frac{(x-\mu_{x})^{2}}{2 \sigma _{x}^{2}}) + A_y*\exp(-\fra
 \section{Model}
 \begin{figure}
 \centering\includegraphics[scale=0.5]{simulation.png}
-\caption{A screenshot of the simulation}
+\caption{A screenshot of the simulation, showing green plants(green circles), herbivores (multicoloured circels with antennae) and a predator(red circle with inner circle and antennae).}
 \end{figure}
 \subsection{Simulation in Python}
 \label{simulation-in-python}
@@ -201,6 +207,7 @@ Another addition which allowed for more dynamics in the world was the choice to 
 Adding predators\\ % Not really mentioned
 Placing objects into the world\\ % Should we mention this as we didn't implement it?
 \subsection{Decision Making}
+\label{decision_making}
 All brains in our simulation have a similar structure, they are functions with eight inputs and two outputs. When input is received by an animal, it is in the form of eight numbers, four for each antenna. Three of the inputs for each antenna are the red-, green- and blue components of the currently detected object's colour. These inputs are normalised within the interval $[0,1]$. The fourth input is zero when no object is detected and one when an object is. It was deemed necessary to include the fourth input saying if an object is detected or not to avoid certain edge-cases, namely should the animal detect a black object.
 
 The outputs produced from this consists of the values $\Delta r$ and $\Delta s$ which denotes change in rotation and change in speed. Both output values are normalised to the interval $[-1,1]$ to account for the possibilities of negative rotation and negative acceleration. These values are then translated into reasonable values in the simulation. The maximum acceleration is determined by the size of the animals, the size of the world, the maximum speed of the animals to enable scaling of the world without affecting the simulation itself. The maximum allowed change in rotation is 180$^\circ$ or $\pi$ since the interval $[-\pi,\pi]$ covers the entire circle. A larger allowed change in rotation would have made learning harder as there would be multiple correct responses to a situation, e.g $\Delta r = v, \Delta r = v+ 2\pi, \Delta r = v+ 4\pi \dots $.
@@ -248,10 +255,10 @@ In RBF-based decision making, the three inputs to each antenna are used in the f
 
 Each radial basis function has a $\sigma$ and a $\mu$ which are decided by the animals' genes. $\sigma$ and $\mu$ are in the ranges of $[0,1]$ and $[-1,1]$ respectively. An additional gene is also used to weight the output, which corresponds to $A$ in Figure \ref{3-RBF-functions}. This is required to allow the otherwise always positive RBF-functions to produce negative values as well. This means that the RBF brain has a total of 36 genes which needs to be trained as compared to the linear brain which only had twelve genes.
 
-The difference between using radial basis functions and linear functions is that there is a larger possibility to approximate any decision-making strategy. For example, an RBF-based brain could make the distinction between different shades of green and thus react differently to them while a linear function could only decide if more green is better or worse.
+The difference between using radial basis functions and linear functions is that there is a larger possibility of approximating any decision-making strategy using radial basis functions. For example, an RBF-based brain could make the distinction between different shades of green and thus react differently to them while a linear function could only decide if more green produces a stronger or weaker output.
 
 \subsection{Random Decision Making}
-
+\label{random_decision_making}
 \begin{figure}
 \begin{equation}
 \Delta r = 
@@ -343,7 +350,7 @@ After running the first experiment the conclusion can be drawn that the genetic 
    \centering
    \includegraphics[scale=0.4]{simulation.png} % change this!
    \caption{A graph over the change in the red, green, and blue components of the herbivores' colours during the experiment for the linear brains with only green plants, according to Section \ref{exp1_desc}.}
-   \label{exp1_fitness}
+   \label{exp1_colour}
 \end{figure}
 
 A population size of 200 was an adequate amount as it provided a large enough genetic diversity within the population and small enough to be computationally cheap. High genetic diversity means a higher probability of initialising an individual with relatively successful genes, thus making the initial evolution faster. When using smaller population sizes the population and associated fitness values became more unstable and vulnerable to small random occurrences, such as a successful individual being randomly placed in a bad starting position. This can be related back to nature as an example of how smaller populations are unstable and more vulnerable, as stated in Section \ref{evolutionary_overview}.
