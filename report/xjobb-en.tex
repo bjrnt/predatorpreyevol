@@ -52,15 +52,11 @@
 
 % Där så är relevant för uppgiften, visa viss medvetenhet om samhälleliga och etiska aspekter, inklusive ekonomiskt, socialt och ekologiskt hållbar utveckling.
 
-Genetic algorithms are algorithms that emulate evolution in order to achieve a optimal solution to a problem. 
-These algorithms have many uses and it is therefore interesting to investigate whether the phenomena which occur in nature due to evolution also occur when using genetic algorithms. In nature evolution has spawned a wide variety
-of survival strategies such as adaptation, camouflaging colours and mimicry. Genetic algorithms, however, are 
- simplified mathematical models of these mechanisms which means that these phenomena might not occur 
-at all.
+Genetic algorithms are algorithms that emulate evolution in order to achieve a optimal solution to a problem. These algorithms have many uses and it is therefore interesting to investigate whether the phenomena which occur in nature due to evolution also occur when using genetic algorithms. In nature evolution has spawned a wide variety of survival strategies such as adaptation, camouflaging colours and mimicry. Genetic algorithms, however, are simplified mathematical models of these mechanisms which means that these phenomena might not occur at all. This report tries to investigate these phenomena using two different kinds of decision making models.
 
 \section{Scope and Objectives}
 
-The main objective is to simulate animal behaviour using radial-basis functions and linear functions. As a baseline, a brain which makes random decisions will also be used. To train the animals, genetic algorithms are used. The genetic algorithms provide the genes which are then used in their brains to make decisions. Statistics such as learning speed, choice of strategy and how well the creatures are able to adapt to their surroundings will then be analysed. 
+The main objective is to simulate animal behaviour using radial-basis functions and linear functions. As a baseline, a brain which makes random decisions is also used. To train the animals, genetic algorithms are used. The genetic algorithms provide the genes which are used as input to the decision making models. Statistics such as learning speed, choice of strategy and how well the creatures are able to adapt to their surroundings will then be analysed. 
 
 The animals will be given different tasks to do in each experiment, ranging from simply gathering food to avoiding predators to mimicking things in the world to survive. In each experiment the three brain architectures are compared and contrasted. One goal of this project is to find out the pros and cons of both brains using radial-basis functions and linear functions, when used for simulating artificial intelligence in this way.
 
@@ -70,6 +66,10 @@ Genetic algorithms have been used successfully in the past in similar experiment
 %  Forcing them to adapt certain genetic phenomena such as adaptation (learning), co-evolution and extinction, mimicry, group forming and co-operation prioritised in the order presented (as increasingly complex behaviour and difficulty to simulate).
 
 \section{Achievements}
+
+finding food. food seeking strategies. Can you see similar strategies as in 
+Avoiding red bushes. Differences between different brain types.
+Predators, avoiding predators, patterns? strategies
 
 \chapter{Technical Overview}
 
@@ -173,7 +173,7 @@ f(x,y,z) = A_x*\exp(-\frac{(x-\mu_{x})^{2}}{2 \sigma _{x}^{2}}) + A_y*\exp(-\fra
 \caption{A screenshot of the simulation}
 \end{figure}
 \subsection{Simulation in Python}
-
+\label{simulation-in-python}
 Python was chosen as the language to implement our simulation in as it is a high-level language suited for quickly building prototypes. It also has an abundance of third-party libraries which helps reduce implementation time significantly. A third-party library called DEAP (Distributed Evolutionary Algorithms in Python) was used for the evolutionary algorithms. DEAP proved to be flexible enough for the task as it allows the user to define their own selection, mutation and crossover algorithms as well as mixing them with the accompanying built-in algorithms. Pygame and Matplotlib were used for graphical rendering, Pygame for rendering the actual simulation and Matplotlib for producing graphs from the extracted data. To increase performance Pypy, Numpy and Python's built-in support for multiprocessing were used to decrease runtime significantly. For a comprehensive list of the tools used, please see Appendix \ref{list-of-third-party-tools}.
 
 \subsection{Simulated World}
@@ -188,11 +188,10 @@ These libraries were combined to create a model of the world in which the creatu
 
 At first each possible collision is checked and if one has occurred its effect is immediate. If a creature collides with a plant, that plant is eaten. If it is a green plant the creature's lifespan is increased slightly. If it is a red one the creature is killed. If a predator collides with a plant nothing happens and if it collides with a creature the creature is killed and the predator's lifespan is increased. After that a check for detection occurs and the creatures and/or predators which have detected objects are allowed to process the inputs and apply a $\Delta s$ and a $\Delta r$ (delta speed and rotation) to their current speed and rotation. Every creature and predator are then moved in accordance with their speed and rotation.
 
-Due to performance issues all the predators and creatures are not present in the one and same simulation. Instead parts of the populations are broken off and simulated separately and the results were then gathered and used to create the next generation. The reason behind this is due to the fact that the detection and collision algorithms have a time-complexity of $O({n}^{2})$ and therefore scale poorly. In practice this means that each simulation takes four times as long if the number of predators and creatures per simulation is doubled. By doing this trade-off where a lower number per simulation was used it was possible to run a higher number of iterations of the genetic algorithm in the same amount of time.
+Due to performance issues all the predators and creatures are not present in the one and same simulation. Instead parts of the populations are broken off and simulated separately and the results were then gathered and used to create the next generation. The reason behind this is due to the fact that the detection and collision algorithms have a time-complexity of $O(n^{2})$ and therefore scale poorly. In practice this means that each simulation takes four times as long if the number of predators and creatures per simulation is doubled. By doing this trade-off where a lower number per simulation was used it was possible to run a higher number of iterations of the genetic algorithm in the same amount of time.
 
 % Need to mention how new plants are spawned
 % This section is a bit messy. It's difficult to describe all the mechanics of the world using small steps. 
-
 
 \subsection{Methods of Enforcing Behaviour}
 
@@ -362,9 +361,9 @@ Mimicry 1. Making the prey mimic walls or predators to avoid being eaten.\\
 \subsection{Observed Behaviours}
 \section{Discussion}
 \subsection{Constraints and problems}
-One serious and unexpected constraint was the performance of our algorithm.
+One serious and unexpected constraint was the performance of our algorithm. After profiling the code, several improvements were made. The main problem was the matching algorithms which compared all animals and plants to each other to determine collisions and detections. Checking all members of a list towards themselves is an operation which takes the time $O(n^2)$ on the size of the list and this is unacceptable as n grows. The solution was to split up the population into several subpopulations as mentioned in Chapter \ref{simulation-in-python} and run their simulation separately, sequientially or in parallell. This trick reduces the time complexity to $O(K*n)$ where $K$ is a constant.
 
-% Självständigt identifiera egna behov av ny kunskap, samt inhämta dessa kunskaper.	
+The algorithms for collisions and detections were also scrutinised and all floating point calculations were replaced with precalculated values wherever possible. After the discovery of the scalar dot product as a big consumer of computation time, an alternative implementation was developed using precalculated values which sacrificed some memory and accuracy to achieve better running times. The standard Python implementation was also deemed too slow and PyPy, a fast Just-In-Time compiler was used to run the code for most of the time. Finally, multiple cores were utilised by using Python's built-in support for multiprocessing. The alternative of using c++ instead of Python was not an option since Python allows for a much faster development process which shortened the time consumed significantly.
 
 Performance problems\\
 Few runs of each experiment due to time constraints\\
