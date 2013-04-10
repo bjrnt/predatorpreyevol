@@ -28,7 +28,7 @@ class BrainRandom(object):
 
 	# assuming that the last three genes are not used
 	def import_genes(self, genes):
-		self.genes = genes[0:-3]
+		self.genes = genes
 
 	def diagnose(self):
 		print "Random"
