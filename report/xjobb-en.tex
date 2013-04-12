@@ -1,4 +1,5 @@
-\documentclass[openany,a4paper,11pt]{kth-mag} % Remove open any before handing in
+%\documentclass[openany,a4paper,11pt]{kth-mag} % No blank pages
+\documentclass[a4paper,11pt]{kth-mag}
 \usepackage[swedish,english]{babel}
 \usepackage{textcomp}
 \usepackage{lmodern}
@@ -11,21 +12,24 @@
 \usepackage{hyperref}
 
 % Todo:
-% Fix width of pictures.
+% Fix width of pictures. - Fixat
 % Make a new roulette selection picture. - Fixed torsdag
 % Check that all references are used. - Fixed torsdag
 % Check that all figures are referred to. - Fixed torsdag
-% Check that the bibliography is consistent.
+% Check that the bibliography is consistent. - Fixat
 % Make sure hyphens are in all the correct places. See: http://oxforddictionaries.com/words/hyphen, e.g. decision-making
 % Decision making - Fixed torsdag
 % All "section" should use small S. - Fixed torsdag
 % All "figure" should use large F. - Fixed torsdag
+% Define brains - Fixat
+% Upload code to github and refer in appendix b - Fixat 
+% Sortera listan med källor i bokstavsordning - Fixat
 
 \title{Evolution of Artificial Brains in Simulated Animal Behaviour}
-\subtitle{Comparing radial basis, linear and random functions for decision-making}
+\subtitle{Using radial basis, linear and random functions for decision-making}
 \foreigntitle{Evolution av artificiella hjärnor vid simulering av djurs beteende}
 \author{Björn Tegelund\\Johan Wikström}
-\date{November 2003}
+\date{April 2013}
 \blurb{Bachelor's Thesis at CSC\\Supervisor: Petter Ögren\\Examiner: Mårten Björkman}
 \trita{TRITA xxx yyyy-nn}
 \begin{document}
@@ -35,12 +39,30 @@
 \maketitle
 \selectlanguage{english}
 \begin{abstract}
-  Write this. % Write this
+In this report we simulate artificial intelligence in animals using genetic algorithms. 
+In similar models, advanced artificial neural networks have been used for decision making. 
+We present two simpler decision-making models. 
+Using two models based on linear and radial basis functions we find similar behaviours as those found in other studies, including food seeking, obstacle avoidance and predator-versus-prey dynamics.
+ 
+The results show that both decision-making models are equally efficient at gathering food and avoiding obstacles. 
+The models differed in survival strategies when faced with dangerous obstacles and in a predator-versus-prey situation the predators based on radial basis functions performed better. 
+
+Some evolutionary phenomena were observed during the evolution of the animals, including an evolutionary arms-race between predator and prey. 
+We hoped to find signs of mimicry as well, but classic mimicry was not found in the results.
 
 \end{abstract}
 \clearpage
 \begin{foreignabstract}{swedish}
-  Skriv detta. % Write this
+I denna rapport simulerar vi artificiell intelligens hos djur med hjälp av genetiska algoritmer. 
+I liknande modeller har man tidigare använd avancerade artificiella neuronnät som beslutsmodeller. 
+I denna rapport presenterar vi två enklare beslutsmodeller. 
+Med två modeller baserade på linjära och radiella basfunktioner hittas liknande beteenden som i tidigare rapporter, inklusive födoletande, hinderundvikande och predator-bytesdjursdynamik.
+
+Resultaten visar att båda beslutsmodeller är lika effektiva vid födoletande och hinderundvikande. 
+Modellernas överlevnadsstrategier skiljer sig när farliga hinder införs och i predator-bytesdjurssitationer är predatorn baserad på radiella basfunktioner effektivare.
+
+Vissa evolutionära fenomen observerades under evolutionen av djuren, inklusive en evolutionär  kapplöpning mellan bytesdjur och predator. 
+Vi hoppades även finna tecken på mimikry, men klassisk mimikry observerades inte i resultaten.
 
 \end{foreignabstract}
 \clearpage
@@ -51,35 +73,38 @@
 
 \section{Background}
 
-% Där så är relevant för uppgiften, visa viss medvetenhet om samhälleliga och etiska aspekter, inklusive ekonomiskt, socialt och ekologiskt hållbar utveckling.
+Today's environment is becoming more and more extreme.
+This makes it increasingly important to model and simulate different ecological scenarios.
+A typical scenario could be moving a species of animals from one ecosystem to another, or predicting which species may face extinction in a continuously changing environment.
+What these scenarios have in common is that the animals need to adapt to the changes occurring around them. 
+They need to evolve new traits and behaviours to survive.
+An important tool used to model evolution is genetic algorithms, which simulate evolution to approximate an optimal solution to an algorithmic problem.
 
-Genetic algorithms are algorithms that emulate evolution in order to approximate an optimal solution to a problem. These algorithms have many uses and several natural evolutionary phenomena occur when using genetic algorithms as well. In nature, evolution has spawned a wide variety of survival strategies such as adaptation, camouflaging colours and mimicry. Genetic algorithms have been used on several occasions to simulate artificial life as well as artificial intelligence and this report is a continuation of that research. They have been used to train machine learning algorithms \cite{montana}, for robot motion planning \cite{huijsmann} and for the evolution simulator Gaia which utilises advanced genetic algorithms to train artificial neural networks \cite{gracias}. Artificial neural networks are commonly used machine learning algorithms for artificial intelligence. The results from Gaia showed several interesting behaviours, two prominent ones being searching for food and obstacle avoidance. Another study used artificial neural networks as a way to simulate camouflaging colours and mimicry, using a more mathematical and controlled model \cite{holmgren}.
-
-Since genetic algorithms emulate the natural process of evolution, several natural phenomena such as mimicry can be observed in genetic algorithms as well. This makes this group of algorithms especially suited for simulating populations of artificial animals, giving a very genuine impression of evolution. Since genetic algorithms are such a good metaphor for evolution in nature, they can be used to simulate natural evolution as well. The precision of the simulations depend on the ability to mimic evolution of traits and behaviours in nature.  Genetic algorithms provide a simplified model of these and makes it possible to analyse different evolutionary scenarios, including extremes that are uncommon in nature today, from different perspectives. The ability to accurately predict these scenarios becomes increasingly important as our environment becomes increasingly volatile. 
-
-% Check this out: http://www.bbc.co.uk/news/science-environment-22039872 very current research, could be cool to refer to
+Genetic algorithms have been used on several occasions to simulate artificial life as well as artificial intelligence and this report is a continuation of that research, focusing on the behaviour of the animals.
+They have for example been used for training machine learning algorithms \cite{montana}, for robot motion planning \cite{huijsmann} and for training artificial neural networks in the ecosystem simulator Gaia \cite{gracias}.
+The animals simulated in Gaia showed several interesting behaviours, two prominent ones being searching for food and obstacle avoidance. 
+The authors of that report acknowledged that many of the behaviours observed could be implemented using simple linear associations instead of advanced and computationally expensive neural networks \cite{gracias}.
+The goal of this report is to find out if that is possible.
 
 \section{Scope and Objectives}
 
-%In this report two simple forms of decision making models are implemented. Both are driven by genetic algorithms and both are compared to previous research on more advanced brain architechtures. Interesting patterns and phenomena are also recorded.
+This report focuses on evolving simulated animal behaviour using two kinds of simple mathematical functions capable of linear associations, namely linear and radial basis functions. 
+As a baseline, a decision-making model which makes random decisions is also used.  
+Each decision-making model takes genes as input, which are produced by the genetic algorithm.
+Each model can be thought of as the "brain" of the simulated animal.
+Statistics such as learning capabilities, choice of strategy and how well the animals are able to adapt to their surroundings are then analysed. 
 
-Genetic algorithms have been used successfully in the past in similar experiments, such as in the Gaia report. The authors  acknowledged that many of the behaviours observed could be implemented using simple linear associations instead of advanced and computationally expensive neural networks \cite{gracias}.
-This report focuses on evolving simulated animal behaviour using two kinds of simple mathematical functions, namely linear and radial basis functions. 
-As a baseline, a model which makes random decisions is also used.  
-Each model takes genes as input, which are used in calculations and provided by a genetic algorithm.
-The genetic algorithms provide the genes which are used as input to the decision-making models. 
-Statistics such as learning speed, choice of strategy and how well the animals are able to adapt to their surroundings are then analysed. A goal is to see which evolutionary phenomena can be observed when running the simulation.
+In nature evolution is not a straight-forward process. 
+Instead, many different evolutionary phenomena affect the course a species takes when evolving.
+A secondary goal of this project is therefore to see which evolutionary phenomena can be observed when running the simulation and in particular how they may relate to the animals' behaviour.
 
 In each experiment the animals are presented with different surroundings, which can contain food, predators and other objects.
-The two decision-making models are compared and contrasted after each experiment has been run, with the random model included when necessary. 
-One goal of this project is to find the advantages and disadvantages of both models when simulating artificial life.
-
-% TODO: What did we manage to simulate?
+The two primary decision-making models are compared and contrasted after each experiment has been run, with the random model included when necessary. 
 
 \section{Problem Statement}
 
 \begin{enumerate}
-\item Is it possible simulate evolution of animal behaviour using linear and radial basis functions using genetic algorithms?
+\item Is it possible to simulate evolution of animal behaviour using linear and radial basis functions in combination with a genetic algorithm?
 \item Are there any significant differences between the two decision-making models?
 \item Which, if any, evolutionary phenomena can be observed in the simulated animals?
 \end{enumerate}
@@ -104,7 +129,7 @@ An example of adaptation in nature is how the polar bear evolved to have thicker
 This could be both in a symbiotic, parasitic or a predator-versus-prey manner. 
 When in a predator-versus-prey situation and the predator evolves faster, the prey is usually faced with extinction. 
 If it is the other way around the predators are faced with extinction as they may not be able to catch enough prey for their population to survive. 
-An example of this is how cheetah and its prey is in a constant battle of being able to run the fastest.
+An example of this is the evolutionary arms-race between the cheetah and its prey, which are in a constant battle of being able to run the fastest.
 
 \emph{Mimicry} is a kind of adaptation where one species mimics an object's appearance or behaviour \cite[p.~278]{king}. 
 This could be camouflaging oneself as a stone or evolving brightly coloured patterns, characteristic of poisonous animals, despite not being poisonous. 
@@ -233,7 +258,7 @@ f(x,y,z) = A_x*\exp(-\frac{(x-\mu_{x})^{2}}{2 \sigma _{x}^{2}}) + A_y*\exp(-\fra
 
 \chapter{Implementation}
 \section{Model}
-\subsection{Simulation in Python}
+\subsection{Implementation in Python}
 \label{simulation-in-python}
 Python was chosen as implementation language since it is a high-level language suited for quickly building prototypes. 
 It also has an abundance of third-party libraries which helps reduce implementation time significantly. 
@@ -257,7 +282,7 @@ After a plant is eaten there is a small probability each moment that a new one w
 The maximum number of red and green plants possible in the world is fixed, and it becomes increasingly probable to spawn a new plant if there only are a few left. 
 There are also walls around the border of the world which the animals cannot pass through. 
 The walls are coloured blue in order for the herbivores to be able to make a clear distinction between walls, plants, predators and other herbivores. 
-How the world is represented graphically can be see in Figure~\ref{sim_pic}
+How the world is represented graphically can be see in Figure~\ref{sim_pic}.
 Collision and detection, which are the only means of interaction between two objects, are governed by the following rules:
 
 \begin{enumerate}
@@ -267,7 +292,7 @@ Collision and detection, which are the only means of interaction between two obj
 
 \begin{figure}
 \centering\includegraphics[scale=0.5]{simulation.png}
-\caption{A screenshot of the simulation, showing green plants (green circles), red plants (slightly larger red circles), herbivores (multicoloured circles with antennae) and a predator (red circle with inner circle and antennae).}
+\caption{A screenshot of the simulation, showing green plants (green circles), red plants (slightly larger red circles), herbivores (multicoloured circles with antennae) and a predator (red circle with inner white circle and antennae).}
 \label{sim_pic}
 \end{figure}
 
@@ -296,15 +321,13 @@ In order to investigate the natural evolutionary phenomena that can be observed 
 It is also interesting to see which evolutionary strategies are favoured by the different brains when placed in particular situations. 
 Methods of doing this could be either adding additional inputs to the brains or adding extra terms in the calculations to allow the approximation of more complex functions and thus more complex behaviour. 
 This approach does however come at the cost of computing power. 
-For each gene added the expected time for convergence is increased \cite{marsland}. % Stämmer denna ref?
+For each gene added the expected time for convergence is increased \cite{marsland}.
 
 To focus more on which natural evolutionary phenomena occur, an approach was chosen which focused more on changing the animals' environment instead of the animals themselves. 
 An example of an approach used was to add red plants into the world. 
 The task of eating green plants then became more difficult as the animals also had to avoid mistakingly colliding with red plants. 
 Another addition which allowed for more dynamics in the world was the choice to allow the herbivores to have different colours which also depended on their genes. 
-By doing this it enabled the use of the evolutionary strategy known as mimicry, described in section \ref{evolutionary_overview}. % Could also refer to results here.
-
-%Adding predators\\ % Not really mentioned
+By doing this it enabled the use of the evolutionary strategy known as mimicry, described in section \ref{evolutionary_overview}.
 
 \subsection{Decision Making}
 \label{decision_making}
@@ -330,7 +353,7 @@ The linear brain is a simple model for artificial intelligence.
 There are in total twelve genes associated with the brain in the interval $[-1,1]$.
 These genes correspond to two outputs from the brain times two antennae times three colours.
 Both $\Delta r$ and $\Delta s$ are calculated using the same method as mentioned in the previous section.
-%Ref?
+
 In Figure \ref{linear-decide}, the first three components of the left and right antennae vectors, the ones containing the colour data, are called $\mathbf{x_{l}}$ and $\mathbf{x_{r}}$ respectively. 
 The fourth components are called $l_4$ and $r_4$, and show if an object has been detected or not, as mentioned earlier.
 Six out of the twelve genes involved in total in the linear brain apply to this equation and they are divided into two vectors $\mathbf{g_{1-3}}$ and $\mathbf{g_{4-6}}$ using genes 1-3 and 4-6. 
@@ -418,7 +441,7 @@ Elitism prevents these individuals from disappearing from the population by guar
 Typically, these individuals also provide a stable maximum fitness for the population, as they are expected to perform equally well in the next simulation. 
 It should however be noted that this is  not the case with the simulations discussed in this report, as both herbivore, plant, and predator placement are random.
 
-Once individuals for the new generation have been selected, crossover and mutation are applied. The probability for applying crossover to a pair of individuals are 30\% and mutation 40\%. Exactly what operators are used is described in the subsequent paragraphs in this section.
+Once individuals for the new generation have been selected, crossover and mutation are applied. The probability of applying crossover to a pair of individuals is 30\%. The probability of applying mutation is 40\%. Exactly what operators are used is described in the subsequent paragraphs in this section.
 
 The crossover algorithm used for the experiments is a modified version of the uniform crossover algorithm mentioned in section~\ref{background_mutation}. 
 If a uniform crossover algorithm is used, it could be the case that the $\mu$ of a radial basis function came from one parent and the $\sigma$ or $A$ from the other. 
@@ -427,7 +450,7 @@ Instead, "regions" of genes are replaced when applying crossover.
 A region is defined as a group of subsequent genes. 
 For the RBF-based brains the size of these regions are three genes long while one gene long for the linear brains. 
 This means that a radial basis function's $\mu$, $\sigma$ and $A$ are all copied. 
-When crossover is applied, one calculation, i.e. a radial basis function or linear unit, for either speed or rotation and for either the left or right antenna is switched for the parent's. 
+When crossover is applied, one calculation, i.e. a radial basis function or linear unit, for either speed or rotation and for either the left or right antenna is switched for the other parent's. 
 The probability of exchanging the first individual's region for the second is 30\% for each region.
 
 A gaussian mutator is chosen as mutation algorithm, as the animals' genes are floating point numbers. 
@@ -488,10 +511,10 @@ Following the walls of the world can be a good strategy for poorly adapted indiv
 \subsection{Avoiding bad food}
 \label{exp2_desc}
 This is a variation of the experiment described in the previous section, with the addition of red plants. 
-Similar to the green plants, the number of red plants is zero at the beginning of the simulation and always below a fixed amount, and they are also spawned in random locations. 
+Similar to the green plants, the number of red plants is zero at the beginning of the simulation and always below a fixed amount and they are also spawned in random locations. 
 A problem with this approach is that a herbivore may be placed on top of a red plant, or vice versa. 
 Nothing is done to prevent this, as with a large enough population size this is negligible. 
-Another issue with this is that red and green plants could be placed above, or near, each other in the world, thus making it difficult for the herbivores to eat the green plant, while avoiding the red plant. 
+Another issue with this is that red and green plants could be placed above, or near, each other in the world, thus making it difficult for the herbivores to eat the green plant while avoiding the red plant. 
 The expected result of this is a lower average fitness value, but it is allowed to happen in order to see how the different brain types react to this case.
 
 By adding red plants to the simulation the task of living as long as possible becomes more complex. 
@@ -500,7 +523,8 @@ There are essentially two strategies for coping with this; the first strategy is
 
 \subsection{Predators and prey}
 \label{exp3_desc}
-Predators are added into the world in this experiment.
+In this experiment predators are added to the first and second experiment.
+The ratio of predators to herbivores is one to ten, which means that for each group of 20 herbivores there will be 2 predators.
 As mentioned in section~\ref{simulated_world}, the predators' objective is to eat herbivores and the predators have a strong red colour. 
 This colour is used as prey are already learning to avoid red plants and if the predators are red as well it will be easier for them to avoid getting eaten. 
 Because of the limitations of the linear brains, the RBF-based brains could have an unfair advantage if the predators could have multiple colours.
@@ -520,12 +544,12 @@ After running the first experiment the conclusion can be drawn that the genetic 
 Most of the increase in fitness did occur between generations 1 and 100, as seen in Figure~\ref{exp1_fitness}. 
 The differences between the fitnesses of the linear and RBF-based brains are small, which could be attributed to the randomness in the experiments and the simplicity of the given task. 
 As expected in section~\ref{exp1_desc}, there were mainly two prevalent food eating strategies during the experiments, namely following the walls of the world while looking for nearby food and the strategy of abruptly rotating in towards the centre of the world when encountering a wall. 
-In all cases the herbivores accelerated and turned towards the green plants, which was also expected in section~\ref{exp1_desc} and mentioned in \cite{gracias}. % Max, avg, min fitness picture for this
+In all cases the herbivores accelerated and turned towards the green plants, which was also expected in section~\ref{exp1_desc} and mentioned in \cite{gracias}. 
 
 \begin{figure}[htbp]
    \centering
    \includegraphics[height=0.45\textheight ,keepaspectratio]{exp1_fitness.png}
-   \caption{A comparison between the average fitnesses of the RBF-based, linear and random brains when tasked only with eating green plants, according to section~\ref{exp1_desc}.}
+   \caption{A comparison between the average fitnesses of the RBF-based, linear and random brains when tasked only with eating green plants, according to section~\ref{exp1_desc}. It can be seen that the linear brains reach the fitness plateau faster.}
    \label{exp1_fitness}
 \end{figure}
 
@@ -536,7 +560,7 @@ In all cases the herbivores accelerated and turned towards the green plants, whi
    \label{exp1_linearfitness}
 \end{figure}
 
-A population size of 200 was an adequate amount as it provided a large enough genetic diversity within the population and was also small enough to be computationally cheap. 
+The population size of 200 was found to be adequate as it provided a large enough genetic diversity within the population and was also small enough to be computationally cheap. 
 High genetic diversity means a higher probability of initialising an individual with relatively successful genes, thus making the initial evolution faster. 
 When using smaller population sizes the population and associated fitness values became more unstable and vulnerable to small random occurrences, such as a successful individual being randomly placed in a bad starting position. 
 This can be related back to nature as an example of how smaller populations are unstable and more vulnerable, as stated in section~\ref{evolutionary_overview}.
@@ -551,8 +575,7 @@ It could be a problem if a large share of the herbivores reached the maximum, si
 The average fitness increases steadily before reaching a plateau. 
 The linear brains reached this plateau faster than the RBF-based brains, which could be an example of the longer convergence time for a higher number of genes.
 This plateau represents a local maxima in the fitness search space, as mentioned in section~\ref{ga_fitness}. 
-The likelihood of this local maxima being the global maxima is increased as both the linear and RBF-based brains reach the same maxima.  % Are the large peaks in maximum fitness less common later in the simulation? This could be due to the fact that the herbivores become more intelligent and its not possible to be that much better than average.
-% Could calculate theoretical maximum fitness
+The likelihood of this local maxima being the global maxima is increased as both the linear and RBF-based brains reach the same maxima.  
 
 The colours of the herbivores converged to a random point which reflects the decreasing genetic diversity within the population. 
 All brains showed these tendencies in this experiment, which was expected, as there is no advantage or disadvantage associated with a certain colour.
@@ -565,26 +588,25 @@ An example of how the colours varied during the experiment can be found in Figur
    \label{exp1_colour}
 \end{figure}
 
-%Can they learn at all?\\
-%Increased life length desired\\
-%How much better than random\\
-%RBF vs Linear, learning rate, maximum average fitness\\
-%Food eating strategies\\
-%Population size, lowest possible, higher makes it more probable to have a successful randomly initialised individual\\
-%Minimum fitness almost never goes over 0\\
-%Maximum almost never reached ceiling\\
-%Adaptation 1. Finding and eating food\\ 
-
 \subsection{Avoiding bad food}
 Adding red plants to the simulation caused the fitness of both types of herbivores to decrease. 
 When using a low maximum number of red plants no particular differences between RBF-based and linear brains were found. 
 In both cases they managed to increase their fitness by about 100\% and approximately 40\% of all herbivores died from eating red plants. 
 When doubling the amount of red plants in the simulation differences between the two decision-making models began to appear. 
-Fitness was in both cases increased by about 30\%, but the ratio of herbivores killed from eating red plants differed, as shown in Figure \ref{exp2_deathrates}. 
+Fitness was in both cases increased by about 30\%, but the ratio of herbivores killed from eating red plants differed, as shown in Figure \ref{exp2_deathrates}.
+The linear brains had a death ratio between 60-70\% while the RBF-based brains had a ratio between 30-40\%.
 This could indicate the use of different strategies. 
 The linear brains seem to be more reckless by weighing the risk of eating a red plant against the possibility of eating many green plants. 
 In comparison, the RBF-based brains seem to be more focused on avoiding red plants and being more cautious when approaching green plants.
-This is also supported by the fact that the maximum fitness for the linear brains is much higher but also more unstable compared to the RBF-based brains.
+A visual observation of the herbivores in action confirmed that few of the RBF-based herbivores ever collided with a red plant.
+The differences in strategies is also supported by the fact that the maximum fitness for the linear brains is higher but also more unstable compared to the RBF-based brains.
+
+In the previous experiment it was always beneficial to have the highest speed possible. 
+In this experiment there were examples of herbivores moving slower than the maximum speed, particularly after detecting a red plant. 
+This behaviour was found in both brains. 
+One possible explanation of this could be that if they are traveling at maximum speed there is not enough time to successfully steer away from a red plant before colliding with it.
+In this experiment the herbivores' colours converged to a random point, similar to the previous experiment.
+
 
 \begin{figure}[htbp]
    \centering
@@ -592,13 +614,6 @@ This is also supported by the fact that the maximum fitness for the linear brain
    \caption{A graph showing the ratio of herbivores killed from eating red plants for both decision-making models. No predators were included in the experiment, as specified in section~\ref{exp2_desc}.}
    \label{exp2_deathrates}
 \end{figure}
-
-%Difference in strategies between linear and RBF brains\\
-%Comparison against random brains\\
-%Comparison between RBF and linear\\
-%Colours still converge to random point\\
-%Difference in average fitness against first experiment\\
-%Adaptation 2. Finding and eating food, avoiding "bad" food\\
 
 \subsection{Predators and prey}
 In the simulation when only predators, herbivores and green plants were present the predators dominated. 
@@ -611,6 +626,7 @@ This indicates that RBF-based herbivores typically get eaten early on in the sim
 RBF-based predators seem to be more effective than the linear predators, as they are able to eat a larger portion of their prey early on. 
 
 In the linear case, signs of an evolutionary arms-race have been found where spontaneous changes in colours triggered a decrease in number of herbivores killed by predators, as shown in Figure \ref{exp3_lineardbp}. 
+This suggests co-evolution between the herbivores and predators, as described in section \ref{evolutionary_overview}.
 This in turn leads to the predators adapting to the herbivores' new colour, and again increasing the ratio of herbivores killed by predators. 
 The arms-race was not as apparent with the RBF-based brains, which is believed to be due to the locality property of the radial basis functions. 
 The locality property in this case means that a small change in colour can still give the same, or similar, reaction, which is believed to make them better predators as the herbivores' colours are dynamic during the initial phase of the simulation.
@@ -633,6 +649,13 @@ Initially it was believed that the herbivores would converge towards either a st
 An explanation as to why this did not occur could be that the motivation to increase one colour component while decreasing the two others is not apparent until perfect mimicry already has been reached.
 When using Sewall Wright's analogy from section~\ref{ga_fitness}, the valley in the fitness landscape between the current peak and a peak where mimicry is present is too deep.
 
+In the runs with both green and red plants it was observed that all animals had lower fitness. 
+This was due to the herbivores dying of red plants which lead to predators having fewer herbivores to eat. 
+In general, it seemed easier to avoid red plants than predators which is expected as the herbivores only can see in front of them. 
+A clear inverse correlation was found between the ratio of herbivores killed by red plants and the ratio killed by predators. 
+When herbivores learnt to avoid red plants they were instead eaten by predators and vice versa.
+Apart from this no new results were found.
+
 \begin{figure}[htbp]
    \centering
    \includegraphics[height=0.45\textheight ,keepaspectratio]{exp3_rbfcolour.png}
@@ -640,17 +663,8 @@ When using Sewall Wright's analogy from section~\ref{ga_fitness}, the valley in 
    \label{exp3_rbfcolour}
 \end{figure}
 
-%Comparison between RBF and linear\\
-%Random brained predators\\
-%Adding red plants to the mix\\
-%Strategies, look at death by predator graphs etc\\
-%Colours\\
-%Evolutionary mechanisms\\
-%Co-evolution and extinction 1. Predator vs prey, prey eats food as in first experiment.\\
-%Mimicry 1. Making the prey mimic walls or predators to avoid being eaten.\\
-
 \section{Discussion}
-\subsection{Constraints and problems}
+\subsection{Constraints and Problems}
 One serious and unexpected constraint was the performance of our algorithm. 
 After profiling the code and making several improvements the performance was still a major issue. 
 The main problem was the matching algorithms which compared all animals and plants to each other to determine collisions and detections. 
@@ -664,50 +678,84 @@ The standard Python implementation was also deemed too slow and PyPy, a fast Jus
 Finally, multiple cores were utilised by using Python's built-in support for multiprocessing. 
 Python was chosen over C++ since Python allows for a much faster development process which made this project feasible given the allotted amount of time.
 
-%Performance problems\\
-%Few runs of each experiment due to time constraints\\
-%Other unexpected problems?\\
+\subsection{Simulation Accuracy and Applications}
 
-\subsection{Simulation Accuracy and Application}
+The model created in this project is mainly intended for studying evolutionary phenomena, not to provide a biologically accurate model of an ecosystem.
+It is useful for modelling specific evolutionary scenarios, as the simple model reduces the amount of external parameters which may affect the simulation.
+This could also have drawbacks as the model may be too simplified to realistically model real-life scenarios.
+The most significant limitations of the model are:
 
-%Highly simplified model, no flockbeteende, few predators\\
-%Useful as it shows that neural networks aren't always needed\\
-%Does show the phenomena which were sought after, but there are many more in nature\\
-%More useful for looking at specific aspects of evolution than a general simulation\\
-%Interesting as it combines results from holmberg and gracias\\
-%Antennae model is not realistic, can not see in front of them or more than 1 thing per eye\\
-%Herbivores would most likely notice being chased\\
+\begin{itemize}
+\item The antennae model is in most cases not a realistic input-gathering system. Each antenna can for example only detect one object at a time and the animals cannot control the antennae.
+\item The predators have an unfair advantage as the herbivores cannot know if they are being chased.
+\item The way reproduction works is simplified in the experiments. In real-life, reproduction is a continuous process and the population size is not fixed.
+\item Due to the performance issues outlined in the previous section, the population sizes in each simulation are smaller than they would be in nature.
+\end{itemize}
+
+Despite these limitations the model was fully adequate to fulfil the goals of this project.
+A more biologically correct model would not necessarily have helped answer the questions posed in this report better, since a less complex model using fewer parameters gives a clearer connection between cause and effect.
+Using antennae to detect colours might not be biologically correct, but it still enabled the sought after behaviours to develop. 
+Using colours also made analysis easier, as opposed to, for example, texture or shape, which may have been more biologically accurate. 
+If another system for reproduction had been used it would have been more difficult to compare generations and the desired effects still appeared using the current system.
+
+The simple deterministic brains used in the model could in some cases be a realistic model of real organisms. 
+When considering primitive eucaryote and procaryote organisms, which employ limited movement and input capabilities, this model might still contain the complexity required to model their behaviour accurately.
+It is however important to keep in mind that simulating growing populations is problematic due to the genetic algorithm used and performance issues.
 
 \section{Conclusions and Future Work}
+In this report it has been found that it is possible to simulate evolution of animal behaviour using both linear and radial basis functions. 
+As theorised in \cite{gracias}, it is possible to model food-seeking strategies as well as more advanced survival strategies using linear associations. 
+The food-seeking strategies observed in \cite{gracias}, namely following the walls of the world and accelerating towards food upon detection, were also developed by the animals simulated in this project.
+
+The differences found between the when using radial basis functions and using linear functions were relatively small. 
+When using linear functions the animals tended to use a more aggressive strategy when seeking food in a dangerous environment.
+When encountered with both edible and poisonous food they chose a strategy where they risked eating poisonous food in return for eating a possibly larger portion of edible food.
+The animals which used radial basis functions seemed to be more restrained, minimising the risk of eating poisonous food while losing some of the edible food.
+Unexpectedly, both these strategies lead to similar performance of the animals' populations.
+Another difference found was that the predators using radial basis functions were more successful in killing prey. 
+It is however not certain that this applies in all situations, as more experiments are needed to fully investigate the reasons behind this.
+
+Certain similarities between the model and natural evolution were observed. 
+When the animals were first placed into the simulated world they behaved randomly and were not able to find and eat food.
+The genetic algorithm incrementally improved their genes, thus making them adapt to their new environment well.
+The animals had colours determined by their genes and when predators were introduced to the world the prey used this mechanism for self-defence.
+It was expected that the prey would use mimicry to camouflage themselves as other objects within the world, but that was not the case.
+Instead, a tendency to favour strong colours was found.
+This could in many cases induce a stronger reaction in the predators, which could be to the predator's disadvantage.
+This is an example of an evolutionary arms-race between the prey's ability to change their colour and the predator's ability to adapt to that change, which the prey in all cases lost during our simulations. 
+
+This kind of simulation could be used in the future to examine other functions or strategies used for decision making as well. 
+Even though mimicry was not clearly observed it is believed that it could be, given experiments specifically targeted towards it. 
+It is also believed that this model could be modified to realistically model simple biological organisms, such as primitive prokaryotes or bacteria. 
+The authors of this report hope that more similar projects will be done in future using genetic algorithms, as they tend to go beyond human imagination in search for potential solutions.
 
 \begin{thebibliography}{99}
-% We are using the APA style of referencing
 
-\bibitem{montana} 
-Montana, D. J.,  and Davis, L. (1989, August). Training feedforward neural networks using genetic algorithms. In \emph{Proceedings of the eleventh international joint conference on artificial Intelligence} (Vol. 1, pp. 762-767).
-\bibitem{gracias}
-Gracias N., Pereira H., Lima J.A., Rosa A. (1997). Gaia: An Artificial Life Environment for Ecological Systems Simulation \emph{Artificial Life V: Proceedings of the Fifth International Workshop on the Synthesis and Simulation of Living Systems} (Vol. 5). Mit Press.
-\bibitem{marsland}
-Marsland, S. (2009). \emph{Machine Learning, an Algorithmic Perspective}. CSC-Press
-\bibitem{holland}
-Holland, J. H. (1992). Genetic algorithms. \emph{Scientific american, 267(1)} (pp. 66-72).
 \bibitem{buhmann}
 Buhmann, M. D. (2003) \emph{Radial Basis Functions: Theory and Implementations}. Cambridge University Press
 \bibitem{darwin}
 Darwin, C, (1861) \emph{On the origin of species by means of natural selection; or, The preservation of favoured races in the struggle for life}. D. Appleton and Company
-\bibitem{vij}
-Vij, K. and Biswas, R. (2004) \emph{Basics of DNA \& Evidentiary Issues}. Jaypee Brothers Publishers
+\bibitem{gracias}
+Gracias N., Pereira H., Lima J.A., Rosa A. (1997). Gaia: An Artificial Life Environment for Ecological Systems Simulation \emph{Artificial Life V: Proceedings of the Fifth International Workshop on the Synthesis and Simulation of Living Systems} 
+\bibitem{holland}
+Holland, J. H. (1992). Genetic algorithms. \emph{Scientific american, 267(1)} (pp. 66-72).
 \bibitem{huijsmann}
 Huijsmann, R., Haasdijk E., Eiben A. E. (2012) An On-line On-board Distributed Algorithm for Evolutionary Robotics. In \emph{Artificial Evolution} (pp. 73-84). Springer Berlin Heidelberg
-\bibitem{wright}
-Wright, S., (1932), The Roles of Mutation, Inbreeding, Crossbreeding and Selection in Evolution. In \emph{Proceedings of the Sixth International Congress on Genetics} (pp. 355-366). Brooklyn Botanic Garden % Refer to this one when discussing fitness landscape. Sewall Wright proposed that populations occupy adaptive peaks on a fitness landscape. In order to evolve to another, higher peak, a population would first have to pass through a valley of maladaptive intermediate stages.[65] A given population might be "trapped" on a peak that is not optimally adapted.
 \bibitem{king}
 King, R. C., Stansfield W. D., Mulligan, P. K., (2006) \emph{A Dictionary of Genetics}. Oxford University Press
-\bibitem{holmgren}
-Holmgren, N. M. A., Enquist, M., (1999) Dynamics of mimicry evolution. In \emph{Biological Journal of the Linnean Society}, issue 66 (pp. 145-158). Wiley Online Library
+\bibitem{marsland}
+Marsland, S. (2009). \emph{Machine Learning, an Algorithmic Perspective}. CSC-Press
+\bibitem{montana} 
+Montana, D. J.,  and Davis, L. (1989, August). Training feedforward neural networks using genetic algorithms. In \emph{Proceedings of the eleventh international joint conference on artificial Intelligence} (Vol. 1, pp. 762-767).
+(Vol. 5). Mit Press.
+\bibitem{vij}
+Vij, K. and Biswas, R. (2004) \emph{Basics of DNA \& Evidentiary Issues}. Jaypee Brothers Publishers
+\bibitem{wright}
+Wright, S., (1932), The Roles of Mutation, Inbreeding, Crossbreeding and Selection in Evolution. In \emph{Proceedings of the Sixth International Congress on Genetics} (pp. 355-366). Brooklyn Botanic Garden
 \end{thebibliography}
 
 \pagestyle{plain}
+\removepagenumbers
 \listoffigures
 \emph{Note:} all of the figures have been created by the authors.
 
@@ -725,7 +773,8 @@ Holmgren, N. M. A., Enquist, M., (1999) Dynamics of mimicry evolution. In \emph{
 
 \chapter{Source Code}
 \label{src_code}
-The source code used to generate all of the results can be found at: % Remember to make a clone of the GitHub code and host it as public.
+The source code used to generate all of the results can be found at:\\
+\url{https://github.com/johanwikstrm/artificialbrains}
 
 \chapter{Statement of Collaboration}
 Both authors have spent an equal amount of time working on and contributing to the code, experiments and this report.
