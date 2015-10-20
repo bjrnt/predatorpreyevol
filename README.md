@@ -1,5 +1,4 @@
 # Predator vs. Prey Evolution
-=== 
 
 Simulation of artificial brains and evolution using genetic algorithms.
 
