@@ -1,10 +1,8 @@
-# Kexjobb
+# Predator vs. Prey Evolution
 === 
 
-Härnäst:
+Simulation of artificial brains and evolution using genetic algorithms.
 
-* Byt till NSGA-II (C versionen om möjligt)
-* PyPy, separera grafiskt och logiskt
-* C++ version av world.py
-* Multicore
-* Börja skriva på rapporten
+This code was intended to do simulations, not to be a beautiful masterpiece of code. Use it on your own risk ;-)
+
+If you want to run the code, type python main.py --help for command line options.
